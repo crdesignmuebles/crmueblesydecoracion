@@ -254,6 +254,37 @@
   </div>
 </section>
 
+  Precio estimado (configurador): €${price().toLocaleString('es-ES')}
+ 
+━━━━━━━━━━━━━━━━━━━━━━━
+MIS DATOS
+━━━━━━━━━━━━━━━━━━━━━━━
+Nombre:    ${name}
+Email:     ${email}
+Teléfono:  ${phone||'No indicado'}
+ 
+Notas:
+${notes||'—'}
+ 
+Gracias,
+${name}`
+    );
+ 
+    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
+    closeModal();
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3500);
+  }
+ 
+  // Init
+  draw();
+  sync();
+</script>
+</body>
+</html>
+ 
+
 <!-- GALERÍA -->
 <section class="gallery" id="galeria">
   <div class="gallery-header">
