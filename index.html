@@ -254,64 +254,6 @@
   </div>
 </section>
 
-  Precio estimado (configurador): €${price().toLocaleString('es-ES')}
- 
-━━━━━━━━━━━━━━━━━━━━━━━
-MIS DATOS
-━━━━━━━━━━━━━━━━━━━━━━━
-Nombre:    ${name}
-Email:     ${email}
-Teléfono:  ${phone||'No indicado'}
- 
-Notas:
-${notes||'—'}
- 
-Gracias,
-${name}`
-    );
- 
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
-    closeModal();
-    const t = document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 3500);
-  }
- 
-  // Init
-  draw();
-  sync();
-</script>
-</body>
-</html>
- 
-
-<!-- GALERÍA -->
-<section class="gallery" id="galeria">
-  <div class="gallery-header">
-    <div>
-      <div class="section-label">Nuestros Trabajos</div>
-      <h2 class="section-title">Portafolio Real</h2>
-      <div class="section-line"></div>
-    </div>
-    <a href="https://www.instagram.com/crmueblesydecoracion?igsh=MW40eG9wcjBoYTZoZA%3D%3D&utm_source=qr" target="_blank" class="btn-outline" style="color:var(--brown);border-color:var(--brown);white-space:nowrap">Ver más en Instagram ↗</a>
-  </div>
-  <div class="gallery-grid">
-
-    <div class="gallery-item">
-      <img src="https://res.cloudinary.com/dnqzhisyj/image/upload/f_auto,q_auto/53e51f30-74de-41e5-9075-376fe86ffb89_oqealc" alt="Armario a medida">
-    </div>
-
-    <div class="gallery-item">
-      <img src="https://res.cloudinary.com/dnqzhisyj/image/upload/v1776466657/5622a02d-dfb5-4c26-b88b-ee04b420c09f_fhhifg.jpg" alt="Armario a medida">
-    </div>
-
-    <div class="gallery-item">
-      <img src="https://res.cloudinary.com/dnqzhisyj/image/upload/v1776457446/0b343e7b-a5ae-444f-adf4-56cbf62794bc_bzzxjr.jpg" alt="Armario a medida">
-    </div>
-    
-    </section>
-    
-
 <!-- STATS -->
 <div class="stats">
   <div class="stats-grid">
