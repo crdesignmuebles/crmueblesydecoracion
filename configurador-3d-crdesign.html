@@ -20,7 +20,6 @@
     height: 100vh;
   }
 
-  /* HEADER */
   header {
     height: 50px;
     background: #0D0B08;
@@ -37,7 +36,6 @@
     font-size: 15px;
     color: #E8E0D0;
     text-decoration: none;
-    letter-spacing: 0.04em;
   }
 
   .logo em {
@@ -92,68 +90,40 @@
     font-weight: 500;
   }
 
-  .hba:hover {
-    background: #9E7E48;
-    color: #fff;
-  }
-
-  /* LAYOUT */
   .layout {
     display: flex;
     height: calc(100vh - 50px);
   }
 
-  /* LEFT PANEL */
   .lp {
     width: 260px;
     background: #181510;
     border-right: 1px solid #252018;
     overflow-y: auto;
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .lp::-webkit-scrollbar {
-    width: 3px;
-  }
-
-  .lp::-webkit-scrollbar-thumb {
-    background: #302820;
-    border-radius: 2px;
-  }
-
-  .tabbar {
-    display: flex;
-    border-bottom: 1px solid #252018;
-    flex-shrink: 0;
-  }
-
-  .tab {
-    flex: 1;
-    padding: 9px 2px;
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #3A3628;
-    text-align: center;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all .15s;
-  }
-
-  .tab.on {
-    color: #C4A46B;
-    border-bottom-color: #C4A46B;
-  }
-
-  .pane {
     padding: 12px;
-    display: none;
   }
 
-  .pane.on {
+  .rp {
+    width: 200px;
+    background: #181510;
+    border-left: 1px solid #252018;
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 12px;
+  }
+
+  .vp {
+    flex: 1;
+    position: relative;
+    background: #13110E;
+    overflow: hidden;
+  }
+
+  #canvas3d {
     display: block;
+    width: 100%;
+    height: 100%;
   }
 
   .sh {
@@ -193,13 +163,11 @@
     width: 100%;
     padding: 5px 26px 5px 8px;
     font-size: 12px;
-    font-family: 'DM Sans', sans-serif;
     background: #201C14;
     border: 1px solid #302820;
     border-radius: 2px;
     color: #E8E0D0;
     outline: none;
-    transition: border-color .15s;
   }
 
   .di:focus {
@@ -213,70 +181,6 @@
     transform: translateY(-50%);
     font-size: 9px;
     color: #3A3628;
-    pointer-events: none;
-  }
-
-  .dn {
-    font-size: 9px;
-    color: #302820;
-    margin-top: -4px;
-    margin-bottom: 7px;
-    padding-left: 57px;
-  }
-
-  .og {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .ob {
-    padding: 5px 9px;
-    font-size: 10px;
-    font-family: 'DM Sans', sans-serif;
-    border: 1px solid #252018;
-    border-radius: 2px;
-    background: #201C14;
-    color: #6B6050;
-    cursor: pointer;
-    transition: all .15s;
-  }
-
-  .ob:hover {
-    border-color: #C4A46B;
-    color: #E8E0D0;
-  }
-
-  .ob.on {
-    background: rgba(196, 164, 107, 0.14);
-    color: #C4A46B;
-    border-color: #C4A46B;
-  }
-
-  .mel-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
-    margin-bottom: 6px;
-  }
-
-  .mel {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 3px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-    transition: all .15s;
-  }
-
-  .mel:hover {
-    transform: scale(1.08);
-  }
-
-  .mel.on {
-    outline-color: #C4A46B;
   }
 
   .clist {
@@ -295,7 +199,6 @@
     align-items: center;
     gap: 5px;
     cursor: pointer;
-    transition: border-color .15s;
   }
 
   .ci.sel {
@@ -357,36 +260,42 @@
     color: #C4A46B;
   }
 
-  /* VIEWPORT */
-  .vp {
-    flex: 1;
-    position: relative;
-    background: #13110E;
-    overflow: hidden;
+  .mel-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 6px;
   }
 
-  #c3 {
-    display: block;
+  .mel {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    outline: 2px solid transparent;
+  }
+
+  .mel.on {
+    outline-color: #C4A46B;
   }
 
   .vctrl {
     position: absolute;
-    top: 10px;
+    bottom: 15px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 3px;
-    background: rgba(13, 11, 8, .9);
+    gap: 5px;
+    background: rgba(13, 11, 8, 0.9);
     border: 1px solid #252018;
     border-radius: 3px;
-    padding: 3px;
+    padding: 5px;
     z-index: 10;
   }
 
   .vc {
-    padding: 4px 10px;
+    padding: 5px 12px;
     font-size: 9px;
     background: transparent;
     color: #5A5650;
@@ -411,29 +320,9 @@
     transform: translateX(-50%);
     font-size: 8px;
     color: rgba(255, 255, 255, 0.15);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
     pointer-events: none;
     white-space: nowrap;
     z-index: 10;
-  }
-
-  /* RIGHT PANEL */
-  .rp {
-    width: 200px;
-    background: #181510;
-    border-left: 1px solid #252018;
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 12px;
-  }
-
-  .rsh {
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #302820;
-    margin-bottom: 8px;
   }
 
   .sblk {
@@ -484,10 +373,6 @@
     border: none;
     border-radius: 2px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
   }
 
   .bem2 {
@@ -516,7 +401,6 @@
     opacity: 0;
     transition: all .3s;
     pointer-events: none;
-    white-space: nowrap;
     z-index: 999;
   }
 
@@ -529,54 +413,38 @@
 <body>
 
 <header>
-  <a class="logo" href="index.html" target="_blank">CR <em>Design</em> Muebles</a>
+  <a class="logo" href="index.html">CR <em>Design</em> Muebles</a>
   <div class="hbtns">
     <a class="hb hbg" href="index.html">← Volver</a>
     <button class="hb hbw" id="whatsappBtn">WhatsApp</button>
-    <button class="hb hba" id="citaBtn">✉ Solicitar cita</button>
+    <button class="hb hba" id="citaBtn">✉ Cita</button>
   </div>
 </header>
 
 <div class="layout">
 
-  <!-- LEFT PANEL -->
   <div class="lp">
-    <div class="tabbar">
-      <div class="tab on" data-tab="dims">Medidas</div>
-      <div class="tab" data-tab="cols">Columnas</div>
-      <div class="tab" data-tab="mat">Material</div>
+    <div class="sec">
+      <div class="sh">Dimensiones</div>
+      <div class="dr"><label>Alto</label><div class="diw"><input class="di" type="number" id="altoInput" value="220" min="150" max="300"><span class="du">cm</span></div></div>
+      <div class="dr"><label>Fondo</label><div class="diw"><input class="di" type="number" id="fondoInput" value="60" min="30" max="80"><span class="du">cm</span></div></div>
+      <div class="dr"><label>Ancho</label><div class="diw"><input class="di" type="text" id="anchoDisplay" readonly><span class="du">cm</span></div></div>
     </div>
 
-    <div class="pane on" id="pane-dims">
-      <div class="sec">
-        <div class="sh">Dimensiones generales</div>
-        <div class="dr"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300"><span class="du">cm</span></div></div>
-        <div class="dn">Min 150 · Max 300 cm</div>
-        <div class="dr"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80"><span class="du">cm</span></div></div>
-        <div class="dn">Min 30 · Max 80 cm</div>
-        <div class="dr"><label>Ancho total</label><div class="diw"><input class="di" type="number" id="inW" value="200" readonly><span class="du">cm</span></div></div>
-      </div>
+    <div class="sec">
+      <div class="sh">Columnas</div>
+      <div class="clist" id="colList"></div>
+      <button class="addbtn" id="addColBtn">+ Añadir columna</button>
     </div>
 
-    <div class="pane" id="pane-cols">
-      <div class="sec">
-        <div class="sh">Columnas</div>
-        <div class="clist" id="colList"></div>
-        <button class="addbtn" id="addColBtn">+ Añadir columna</button>
-      </div>
-    </div>
-
-    <div class="pane" id="pane-mat">
-      <div class="sec">
-        <div class="sh">Color del cuerpo</div>
-        <div class="mel-grid" id="mpicker"></div>
-      </div>
+    <div class="sec">
+      <div class="sh">Color</div>
+      <div class="mel-grid" id="colorGrid"></div>
     </div>
   </div>
 
-  <!-- VIEWPORT -->
-  <div class="vp" id="vpEl">
-    <canvas id="c3"></canvas>
+  <div class="vp">
+    <canvas id="canvas3d"></canvas>
     <div class="vctrl">
       <button class="vc" data-view="front">Frontal</button>
       <button class="vc on" data-view="corner">Esquina</button>
@@ -585,14 +453,13 @@
     <div class="hint">🖱️ Arrastra para rotar | Rueda para zoom</div>
   </div>
 
-  <!-- RIGHT PANEL -->
   <div class="rp">
-    <div class="rsh">Resumen del diseño</div>
     <div class="sblk">
-      <div class="stit">Dimensiones</div>
-      <div class="sr2"><span class="sk">Ancho</span><span class="sv" id="rW">200 cm</span></div>
-      <div class="sr2"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
-      <div class="sr2"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
+      <div class="stit">Resumen</div>
+      <div class="sr2"><span class="sk">Ancho</span><span class="sv" id="resAncho">200 cm</span></div>
+      <div class="sr2"><span class="sk">Alto</span><span class="sv" id="resAlto">220 cm</span></div>
+      <div class="sr2"><span class="sk">Fondo</span><span class="sv" id="resFondo">60 cm</span></div>
+      <div class="sr2"><span class="sk">Columnas</span><span class="sv" id="resCols">3</span></div>
     </div>
     <div class="ctas">
       <button class="bwa2" id="whatsappBtn2">📱 WhatsApp</button>
@@ -606,126 +473,119 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
   // ============================================
-  // CONFIGURADOR 3D - VERSIÓN REPARADA
+  // CONFIGURADOR 3D - COMPLETO Y FUNCIONAL
   // ============================================
 
-  // Estado de la aplicación
+  // Estado
   let estado = {
-    H: 2.2,      // alto en metros
-    D: 0.6,      // fondo en metros
-    colorCuerpo: 0xF4F1EB,
+    alto: 2.2,
+    fondo: 0.6,
+    color: 0xF4F1EB,
     columnas: [
-      { id: 1, ancho: 0.65, label: 'Col A' },
-      { id: 2, ancho: 0.70, label: 'Col B' },
-      { id: 3, ancho: 0.65, label: 'Col C' }
+      { id: 1, ancho: 0.65, nombre: 'Col A' },
+      { id: 2, ancho: 0.70, nombre: 'Col B' },
+      { id: 3, ancho: 0.65, nombre: 'Col C' }
     ],
-    columnaSeleccionada: 0
+    seleccion: 0
   };
 
-  let siguienteId = 4;
-  let scene, camera, renderer, grupoMueble;
-  let rotando = false;
-  let ultimaX = 0, ultimaY = 0;
+  let nextId = 4;
+  let scene, camera, renderer, muebleGroup;
+  let rotating = false;
+  let lastX = 0, lastY = 0;
   let rotX = 0.3, rotY = 0.5;
-  let distancia = 3.5;
-  let hitObjects = [];
+  let distance = 3.5;
+  let hitboxes = [];
 
   // Colores disponibles
-  const coloresDisponibles = [
+  const colores = [
     { nombre: 'Blanco Ártico', hex: 0xF4F1EB },
     { nombre: 'Roble Nórdico', hex: 0xD4BC98 },
     { nombre: 'Roble Natural', hex: 0xC8A87A },
-    { nombre: 'Nogal Europeo', hex: 0xA8845C },
+    { nombre: 'Nogal', hex: 0xA8845C },
     { nombre: 'Wengué', hex: 0x3C2A1A },
     { nombre: 'Ébano', hex: 0x1C1410 },
-    { nombre: 'Gris Cemento', hex: 0x9A9890 },
-    { nombre: 'Verde Salvia', hex: 0x7A9878 }
+    { nombre: 'Gris', hex: 0x9A9890 },
+    { nombre: 'Verde', hex: 0x7A9878 }
   ];
 
-  // Calcular ancho total
   function anchoTotal() {
-    return estado.columnas.reduce((sum, col) => sum + col.ancho, 0);
+    return estado.columnas.reduce((s, c) => s + c.ancho, 0);
   }
 
-  // Inicializar Three.js
-  function initThree() {
-    const canvas = document.getElementById('c3');
-    const container = document.getElementById('vpEl');
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+  function init3D() {
+    const canvas = document.getElementById('canvas3d');
+    const container = canvas.parentElement;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x13110E);
     scene.fog = new THREE.Fog(0x13110E, 8, 20);
 
-    camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 50);
+    camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
     camera.position.set(2.5, 1.5, 3.5);
-    camera.lookAt(0, 1, 0);
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(width, height);
+    renderer.setSize(w, h);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
 
     // Luces
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-    scene.add(ambientLight);
-
+    const ambient = new THREE.AmbientLight(0x404040, 0.6);
+    scene.add(ambient);
+    
     const mainLight = new THREE.DirectionalLight(0xFFF5E0, 1);
     mainLight.position.set(3, 5, 2);
     mainLight.castShadow = true;
-    mainLight.receiveShadow = true;
     scene.add(mainLight);
-
+    
     const fillLight = new THREE.DirectionalLight(0x88AACC, 0.4);
     fillLight.position.set(-2, 2, 3);
     scene.add(fillLight);
-
+    
     const backLight = new THREE.PointLight(0xFFAA66, 0.3);
     backLight.position.set(0, 1.5, -1.5);
     scene.add(backLight);
 
     // Suelo
-    const gridHelper = new THREE.GridHelper(8, 20, 0x3A3628, 0x252018);
-    gridHelper.position.y = -0.01;
-    scene.add(gridHelper);
+    const grid = new THREE.GridHelper(8, 20, 0x3A3628, 0x252018);
+    grid.position.y = -0.01;
+    scene.add(grid);
 
-    grupoMueble = new THREE.Group();
-    scene.add(grupoMueble);
+    muebleGroup = new THREE.Group();
+    scene.add(muebleGroup);
 
-    // Controles de cámara
+    // Controles
     canvas.addEventListener('mousedown', (e) => {
-      rotando = true;
-      ultimaX = e.clientX;
-      ultimaY = e.clientY;
+      rotating = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
     });
 
     window.addEventListener('mouseup', () => {
-      rotando = false;
+      rotating = false;
     });
 
     window.addEventListener('mousemove', (e) => {
-      if (!rotando) return;
-      const dx = e.clientX - ultimaX;
-      const dy = e.clientY - ultimaY;
+      if (!rotating) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
       rotY += dx * 0.008;
       rotX += dy * 0.008;
       rotX = Math.max(0.1, Math.min(1.2, rotX));
-      ultimaX = e.clientX;
-      ultimaY = e.clientY;
-      actualizarCamara();
+      lastX = e.clientX;
+      lastY = e.clientY;
+      updateCamera();
     });
 
     canvas.addEventListener('wheel', (e) => {
-      distancia += e.deltaY * 0.005;
-      distancia = Math.max(1.2, Math.min(6, distancia));
-      actualizarCamara();
+      distance += e.deltaY * 0.005;
+      distance = Math.max(1.2, Math.min(6, distance));
+      updateCamera();
     });
 
-    window.addEventListener('resize', onWindowResize, false);
-    onWindowResize();
-
-    // Click para seleccionar columna
+    // Click para seleccionar
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
       const mouse = new THREE.Vector2();
@@ -734,257 +594,268 @@
 
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(hitObjects);
+      const intersects = raycaster.intersectObjects(hitboxes);
 
       if (intersects.length > 0) {
-        const idx = intersects[0].object.userData.columnaIdx;
+        const idx = intersects[0].object.userData.idx;
         if (idx !== undefined) {
-          estado.columnaSeleccionada = idx;
-          construirMueble();
-          actualizarUI();
+          estado.seleccion = idx;
+          buildFurniture();
+          updateUI();
         }
       }
     });
 
-    construirMueble();
-    actualizarCamara();
-    animar();
+    window.addEventListener('resize', onResize);
+    
+    buildFurniture();
+    updateCamera();
+    animate();
   }
 
-  function actualizarCamara() {
-    const x = Math.sin(rotY) * distancia * Math.cos(rotX);
-    const z = Math.cos(rotY) * distancia * Math.cos(rotX);
-    const y = Math.sin(rotX) * distancia + estado.H / 2;
+  function updateCamera() {
+    const x = Math.sin(rotY) * distance * Math.cos(rotX);
+    const z = Math.cos(rotY) * distance * Math.cos(rotX);
+    const y = Math.sin(rotX) * distance + estado.alto / 2;
     camera.position.set(x, y, z);
-    camera.lookAt(0, estado.H / 2, 0);
+    camera.lookAt(0, estado.alto / 2, 0);
   }
 
-  function onWindowResize() {
-    const container = document.getElementById('vpEl');
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
+  function onResize() {
+    const container = document.getElementById('canvas3d').parentElement;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
 
-  function construirMueble() {
-    while (grupoMueble.children.length > 0) {
-      grupoMueble.remove(grupoMueble.children[0]);
+  function buildFurniture() {
+    while (muebleGroup.children.length > 0) {
+      muebleGroup.remove(muebleGroup.children[0]);
     }
-    hitObjects = [];
+    hitboxes = [];
 
-    const anchoTotalM = anchoTotal();
-    const alto = estado.H;
-    const fondo = estado.D;
-    const grosor = 0.018;
-    const colorMat = new THREE.MeshStandardMaterial({ color: estado.colorCuerpo, roughness: 0.6, metalness: 0.1 });
+    const totalW = anchoTotal();
+    const alto = estado.alto;
+    const fondo = estado.fondo;
+    const thick = 0.018;
+    const material = new THREE.MeshStandardMaterial({ color: estado.color, roughness: 0.6 });
 
     // Panel trasero
-    const backPanel = new THREE.Mesh(new THREE.BoxGeometry(anchoTotalM, alto, grosor), colorMat);
-    backPanel.position.set(0, alto / 2, -fondo / 2 + grosor / 2);
-    backPanel.castShadow = true;
-    backPanel.receiveShadow = true;
-    grupoMueble.add(backPanel);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(totalW, alto, thick), material);
+    back.position.set(0, alto / 2, -fondo / 2 + thick / 2);
+    back.castShadow = true;
+    muebleGroup.add(back);
 
     // Techo y piso
-    const topPanel = new THREE.Mesh(new THREE.BoxGeometry(anchoTotalM, grosor, fondo), colorMat);
-    topPanel.position.set(0, alto - grosor / 2, 0);
-    topPanel.castShadow = true;
-    grupoMueble.add(topPanel);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(totalW, thick, fondo), material);
+    top.position.set(0, alto - thick / 2, 0);
+    top.castShadow = true;
+    muebleGroup.add(top);
 
-    const bottomPanel = new THREE.Mesh(new THREE.BoxGeometry(anchoTotalM, grosor, fondo), colorMat);
-    bottomPanel.position.set(0, grosor / 2, 0);
-    bottomPanel.castShadow = true;
-    grupoMueble.add(bottomPanel);
+    const bottom = new THREE.Mesh(new THREE.BoxGeometry(totalW, thick, fondo), material);
+    bottom.position.set(0, thick / 2, 0);
+    bottom.castShadow = true;
+    muebleGroup.add(bottom);
 
     // Laterales
-    const leftPanel = new THREE.Mesh(new THREE.BoxGeometry(grosor, alto, fondo), colorMat);
-    leftPanel.position.set(-anchoTotalM / 2 + grosor / 2, alto / 2, 0);
-    leftPanel.castShadow = true;
-    grupoMueble.add(leftPanel);
+    const left = new THREE.Mesh(new THREE.BoxGeometry(thick, alto, fondo), material);
+    left.position.set(-totalW / 2 + thick / 2, alto / 2, 0);
+    left.castShadow = true;
+    muebleGroup.add(left);
 
-    const rightPanel = new THREE.Mesh(new THREE.BoxGeometry(grosor, alto, fondo), colorMat);
-    rightPanel.position.set(anchoTotalM / 2 - grosor / 2, alto / 2, 0);
-    rightPanel.castShadow = true;
-    grupoMueble.add(rightPanel);
+    const right = new THREE.Mesh(new THREE.BoxGeometry(thick, alto, fondo), material);
+    right.position.set(totalW / 2 - thick / 2, alto / 2, 0);
+    right.castShadow = true;
+    muebleGroup.add(right);
 
-    // Columnas y divisiones
-    let xActual = -anchoTotalM / 2 + grosor;
-    
+    // Columnas
+    let xPos = -totalW / 2 + thick;
     estado.columnas.forEach((col, idx) => {
-      const anchoCol = col.ancho;
-      const centroX = xActual + anchoCol / 2;
+      const colW = col.ancho;
+      const centerX = xPos + colW / 2;
 
-      // División vertical
+      // Divider
       if (idx < estado.columnas.length - 1) {
-        const divider = new THREE.Mesh(new THREE.BoxGeometry(grosor, alto - grosor * 2, fondo - grosor * 2), colorMat);
-        divider.position.set(xActual + anchoCol, alto / 2, 0);
+        const divider = new THREE.Mesh(new THREE.BoxGeometry(thick, alto - thick * 2, fondo - thick * 2), material);
+        divider.position.set(xPos + colW, alto / 2, 0);
         divider.castShadow = true;
-        grupoMueble.add(divider);
+        muebleGroup.add(divider);
       }
 
-      // Hitbox para selección
+      // Hitbox
       const hitbox = new THREE.Mesh(
-        new THREE.BoxGeometry(anchoCol - grosor, alto - grosor * 2, fondo - grosor * 2),
+        new THREE.BoxGeometry(colW - thick, alto - thick * 2, fondo - thick * 2),
         new THREE.MeshBasicMaterial({ visible: false })
       );
-      hitbox.position.set(centroX, alto / 2, 0);
-      hitbox.userData = { columnaIdx: idx };
-      grupoMueble.add(hitbox);
-      hitObjects.push(hitbox);
+      hitbox.position.set(centerX, alto / 2, 0);
+      hitbox.userData = { idx: idx };
+      muebleGroup.add(hitbox);
+      hitboxes.push(hitbox);
 
-      // Resaltado de columna seleccionada
-      if (idx === estado.columnaSeleccionada) {
-        const highlightMat = new THREE.MeshBasicMaterial({ color: 0xC4A46B, wireframe: true, transparent: true, opacity: 0.3 });
-        const highlight = new THREE.Mesh(new THREE.BoxGeometry(anchoCol - grosor, alto - grosor * 2, fondo - grosor * 2), highlightMat);
-        highlight.position.set(centroX, alto / 2, 0);
-        grupoMueble.add(highlight);
+      // Selección highlight
+      if (idx === estado.seleccion) {
+        const highlight = new THREE.Mesh(
+          new THREE.BoxGeometry(colW - thick, alto - thick * 2, fondo - thick * 2),
+          new THREE.MeshBasicMaterial({ color: 0xC4A46B, wireframe: true, transparent: true, opacity: 0.3 })
+        );
+        highlight.position.set(centerX, alto / 2, 0);
+        muebleGroup.add(highlight);
       }
 
-      // Estantes internos (simplificado)
-      const estanteMat = new THREE.MeshStandardMaterial({ color: estado.colorCuerpo, roughness: 0.7 });
+      // Estantes
+      const shelfMat = new THREE.MeshStandardMaterial({ color: estado.color, roughness: 0.7 });
       for (let i = 1; i <= 2; i++) {
-        const estante = new THREE.Mesh(new THREE.BoxGeometry(anchoCol - grosor * 2, 0.015, fondo - grosor * 2), estanteMat);
-        estante.position.set(centroX, i * (alto / 3), 0);
-        estante.castShadow = true;
-        grupoMueble.add(estante);
+        const shelf = new THREE.Mesh(new THREE.BoxGeometry(colW - thick * 2, 0.015, fondo - thick * 2), shelfMat);
+        shelf.position.set(centerX, i * (alto / 3), 0);
+        shelf.castShadow = true;
+        muebleGroup.add(shelf);
       }
 
-      xActual += anchoCol;
+      xPos += colW;
     });
   }
 
-  function actualizarUI() {
-    const anchoCm = (anchoTotal() * 100).toFixed(0);
-    document.getElementById('inW').value = anchoCm;
-    document.getElementById('rW').textContent = anchoCm + ' cm';
-    document.getElementById('rH').textContent = estado.H * 100 + ' cm';
-    document.getElementById('rD').textContent = estado.D * 100 + ' cm';
+  function updateUI() {
+    const totalCm = (anchoTotal() * 100).toFixed(0);
+    document.getElementById('anchoDisplay').value = totalCm;
+    document.getElementById('resAncho').textContent = totalCm + ' cm';
+    document.getElementById('resAlto').textContent = estado.alto * 100 + ' cm';
+    document.getElementById('resFondo').textContent = estado.fondo * 100 + ' cm';
+    document.getElementById('resCols').textContent = estado.columnas.length;
 
-    // Renderizar lista de columnas
+    // Lista de columnas
     const container = document.getElementById('colList');
-    if (container) {
-      container.innerHTML = '';
-      estado.columnas.forEach((col, i) => {
-        const div = document.createElement('div');
-        div.className = 'ci' + (i === estado.columnaSeleccionada ? ' sel' : '');
-        div.innerHTML = `
-          <span class="clb">${col.label}</span>
-          <input class="cwi" type="number" value="${(col.ancho * 100).toFixed(0)}" min="30" max="250" step="5">
-          ${estado.columnas.length > 1 ? '<button class="cdel">×</button>' : ''}
-        `;
-        
-        const input = div.querySelector('.cwi');
-        input.addEventListener('change', (e) => {
-          const nuevoAncho = parseFloat(e.target.value) / 100;
-          if (nuevoAncho >= 0.3 && nuevoAncho <= 2.5) {
-            estado.columnas[i].ancho = nuevoAncho;
-            construirMueble();
-            actualizarUI();
-          } else {
-            e.target.value = (estado.columnas[i].ancho * 100).toFixed(0);
+    container.innerHTML = '';
+    estado.columnas.forEach((col, i) => {
+      const div = document.createElement('div');
+      div.className = 'ci' + (i === estado.seleccion ? ' sel' : '');
+      div.innerHTML = `
+        <span class="clb">${col.nombre}</span>
+        <input class="cwi" type="number" value="${(col.ancho * 100).toFixed(0)}" min="30" max="250" step="5">
+        ${estado.columnas.length > 1 ? '<button class="cdel">×</button>' : ''}
+      `;
+      
+      const input = div.querySelector('.cwi');
+      input.addEventListener('change', (e) => {
+        let val = parseFloat(e.target.value);
+        if (val < 30) val = 30;
+        if (val > 250) val = 250;
+        estado.columnas[i].ancho = val / 100;
+        e.target.value = val;
+        buildFurniture();
+        updateUI();
+      });
+
+      const delBtn = div.querySelector('.cdel');
+      if (delBtn) {
+        delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (estado.columnas.length > 1) {
+            estado.columnas.splice(i, 1);
+            if (estado.seleccion >= estado.columnas.length) {
+              estado.seleccion = estado.columnas.length - 1;
+            }
+            buildFurniture();
+            updateUI();
           }
         });
+      }
 
-        const delBtn = div.querySelector('.cdel');
-        if (delBtn) {
-          delBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (estado.columnas.length > 1) {
-              estado.columnas.splice(i, 1);
-              if (estado.columnaSeleccionada >= estado.columnas.length) {
-                estado.columnaSeleccionada = estado.columnas.length - 1;
-              }
-              construirMueble();
-              actualizarUI();
-            }
-          });
-        }
-
-        div.addEventListener('click', () => {
-          estado.columnaSeleccionada = i;
-          construirMueble();
-          actualizarUI();
-        });
-
-        container.appendChild(div);
+      div.addEventListener('click', () => {
+        estado.seleccion = i;
+        buildFurniture();
+        updateUI();
       });
-    }
 
-    // Renderizar colores
-    const colorContainer = document.getElementById('mpicker');
-    if (colorContainer && colorContainer.children.length === 0) {
-      coloresDisponibles.forEach((color) => {
+      container.appendChild(div);
+    });
+
+    // Colores
+    const colorContainer = document.getElementById('colorGrid');
+    if (colorContainer.children.length === 0) {
+      colores.forEach((c) => {
         const div = document.createElement('div');
-        div.className = 'mel' + (color.hex === estado.colorCuerpo ? ' on' : '');
-        div.style.backgroundColor = '#' + color.hex.toString(16).padStart(6, '0');
+        div.className = 'mel' + (c.hex === estado.color ? ' on' : '');
+        div.style.backgroundColor = '#' + c.hex.toString(16).padStart(6, '0');
         div.style.border = '1px solid rgba(255,255,255,0.1)';
         div.onclick = () => {
-          document.querySelectorAll('#mpicker .mel').forEach(c => c.classList.remove('on'));
+          document.querySelectorAll('#colorGrid .mel').forEach(el => el.classList.remove('on'));
           div.classList.add('on');
-          estado.colorCuerpo = color.hex;
-          construirMueble();
+          estado.color = c.hex;
+          buildFurniture();
         };
         colorContainer.appendChild(div);
       });
     }
   }
 
-  function animar() {
-    requestAnimationFrame(animar);
+  function setView(view) {
+    switch(view) {
+      case 'front':
+        rotY = 0;
+        rotX = 0.1;
+        distance = 3;
+        break;
+      case 'corner':
+        rotY = 0.65;
+        rotX = 0.25;
+        distance = 3.5;
+        break;
+      case 'top':
+        rotY = 0.1;
+        rotX = 1.2;
+        distance = 3;
+        break;
+    }
+    updateCamera();
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
     if (renderer && scene && camera) {
       renderer.render(scene, camera);
     }
   }
 
-  // Controles de vista
-  function setView(view) {
-    const centerY = estado.H / 2;
-    switch(view) {
-      case 'front':
-        rotY = 0;
-        rotX = 0.1;
-        distancia = 3;
-        break;
-      case 'corner':
-        rotY = 0.65;
-        rotX = 0.25;
-        distancia = 3.5;
-        break;
-      case 'top':
-        rotY = 0.1;
-        rotX = 1.2;
-        distancia = 3;
-        break;
-    }
-    actualizarCamara();
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  function cotizar() {
+    const totalCm = (anchoTotal() * 100).toFixed(0);
+    const msg = `Hola CR Design Muebles! Me interesa este armario:\n\n📐 Dimensiones:\n- Ancho: ${totalCm} cm\n- Alto: ${estado.alto * 100} cm\n- Fondo: ${estado.fondo * 100} cm\n\n📦 Columnas: ${estado.columnas.length}\n\n¿Podrían darme información y presupuesto?`;
+    window.open(`https://wa.me/573146309609?text=${encodeURIComponent(msg)}`, '_blank');
+    showToast('✓ Abriendo WhatsApp...');
   }
 
   // Eventos
-  document.getElementById('inH').addEventListener('change', (e) => {
-    estado.H = parseInt(e.target.value) / 100;
-    construirMueble();
-    actualizarUI();
-    actualizarCamara();
+  document.getElementById('altoInput').addEventListener('change', (e) => {
+    estado.alto = parseInt(e.target.value) / 100;
+    buildFurniture();
+    updateUI();
+    updateCamera();
   });
 
-  document.getElementById('inD').addEventListener('change', (e) => {
-    estado.D = parseInt(e.target.value) / 100;
-    construirMueble();
-    actualizarUI();
+  document.getElementById('fondoInput').addEventListener('change', (e) => {
+    estado.fondo = parseInt(e.target.value) / 100;
+    buildFurniture();
+    updateUI();
   });
 
   document.getElementById('addColBtn').addEventListener('click', () => {
-    const letras = ['A', 'B', 'C', 'D', 'E', 'F'];
-    const nuevaLabel = `Col ${letras[estado.columnas.length % letras.length]}`;
+    const letras = ['D', 'E', 'F', 'G', 'H'];
     estado.columnas.push({
-      id: siguienteId++,
+      id: nextId++,
       ancho: 0.60,
-      label: nuevaLabel
+      nombre: `Col ${letras[estado.columnas.length % letras.length]}`
     });
-    construirMueble();
-    actualizarUI();
+    buildFurniture();
+    updateUI();
   });
 
   document.querySelectorAll('.vc').forEach(btn => {
@@ -995,18 +866,13 @@
     });
   });
 
-  // Tabs
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabId = tab.dataset.tab;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
-      tab.classList.add('on');
-      document.getElementById(`pane-${tabId}`).classList.add('on');
-    });
-  });
+  document.getElementById('whatsappBtn').addEventListener('click', cotizar);
+  document.getElementById('whatsappBtn2').addEventListener('click', cotizar);
+  document.getElementById('citaBtn').addEventListener('click', cotizar);
+  document.getElementById('citaBtn2').addEventListener('click', cotizar);
 
-  // WhatsApp
-  function cotizarWhatsApp() {
-    const anchoCm = (anchoTotal() * 100).toFixed(0);
-    const mensaje = `Hola CR Design Muebles! Me interesa este armario:\n\n📐 Dimensiones:\n- Ancho: ${anchoCm} cm\n- Alto: ${estado.H * 100} cm\n- Fondo: ${estado.D * 100} cm\n\n📦 Columnas: ${estado.columnas.length}\
+  // Iniciar
+  init3D();
+</script>
+</body>
+</html>
