@@ -388,4 +388,304 @@ function build() {
         }
       } else if (mod.type === 'pantalonero') {
         const barMat = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.7 });
-        
+        for (let i = 0; i < 3; i++) {
+          const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, cw - 0.1, 8), barMat);
+          bar.rotation.z = Math.PI / 2;
+          bar.position.set(cx, cy - altura * 0.3 + i * altura * 0.35, D * 0.08);
+          wg.add(bar);
+        }
+      } else if (mod.type === 'espejo_int') {
+        const esp = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 3, altura * 0.9, 0.006), new THREE.MeshStandardMaterial({ color: 0xC8D8E8, metalness: 0.95, roughness: 0.05, transparent: true, opacity: 0.6 }));
+        esp.position.set(cx, cy, -D / 2 + T * 2);
+        wg.add(esp);
+      } else if (mod.type === 'joyero') {
+        const joy = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 3, altura * 0.7, D * 0.75), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.5 }));
+        joy.position.set(cx, cy, 0);
+        wg.add(joy);
+      } else if (mod.type === 'luz') {
+        const ledMat = new THREE.MeshStandardMaterial({ color: 0xFFEEAA, emissive: 0xFFDD88, emissiveIntensity: 1.2 });
+        const led = new THREE.Mesh(new THREE.BoxGeometry(cw * 0.8, 0.006, 0.015), ledMat);
+        led.position.set(cx, cy + altura / 2, -D * 0.22);
+        wg.add(led);
+      }
+
+      yOffset += altura;
+    }
+
+    // Puertas
+    if (S.door !== 'sin') {
+      let dColor = S.bc, dmt = 0, drg = 0.6, dop = 1;
+      if (S.door === 'espejo') { dColor = '#C8D8E8'; dmt = 0.95; drg = 0.05; dop = 0.5; }
+      else if (S.door === 'cristal') { dColor = '#A8D8F0'; dmt = 0.1; drg = 0.05; dop = 0.28; }
+      const door = new THREE.Mesh(new THREE.BoxGeometry(cw - 0.005, H - 0.005, T * 1.2), new THREE.MeshStandardMaterial({ color: h3(dColor), metalness: dmt, roughness: drg, transparent: dop < 1, opacity: dop }));
+      door.position.set(cx, H / 2, D / 2 + T * 0.6);
+      door.castShadow = true;
+      wg.add(door);
+
+      if (S.handle !== 'sin') {
+        const hCol = S.handle === 'dorado' ? 0xC4A46B : S.handle === 'plateado' ? 0xC0C8D0 : 0x1A1814;
+        const hMat = new THREE.MeshStandardMaterial({ color: hCol, metalness: 0.85 });
+        const manija = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.09, 8), hMat);
+        manija.position.set(cx + (idx % 2 === 0 ? cw * 0.3 : -cw * 0.3), H / 2, D / 2 + T * 1.3);
+        wg.add(manija);
+      }
+    }
+    xc += cw;
+  });
+  syncUI();
+  renderColList();
+  renderModulesList();
+}
+
+// UI Functions
+function renderColList() {
+  const el = document.getElementById('colList');
+  if (!el) return;
+  el.innerHTML = '';
+  S.cols.forEach((col, idx) => {
+    const d = document.createElement('div');
+    d.className = 'ci' + (idx === S.sel ? ' sel' : '');
+    d.innerHTML = `<span class="clbl">${col.lbl}</span><input class="cwi" type="number" value="${(col.w * 100).toFixed(0)}" min="30" max="200" step="5"><button class="cdel" onclick="delCol(${idx})">×</button>`;
+    d.querySelector('.cwi').addEventListener('change', (e) => {
+      let v = parseFloat(e.target.value);
+      if (v < 30) v = 30;
+      if (v > 200) v = 200;
+      S.cols[idx].w = v / 100;
+      e.target.value = v;
+      build();
+    });
+    d.addEventListener('click', () => { S.sel = idx; build(); renderModulesList(); });
+    el.appendChild(d);
+  });
+  document.getElementById('colSelHint').textContent = S.cols[S.sel]?.lbl || '—';
+}
+
+function renderModulesList() {
+  const el = document.getElementById('modulesList');
+  if (!el) return;
+  const col = S.cols[S.sel];
+  if (!col) { el.innerHTML = '<div style="color:#666;text-align:center">Selecciona una columna</div>'; return; }
+  el.innerHTML = '';
+  col.mods.forEach((mod, idx) => {
+    const mt = moduleTypes[mod.type] || { nombre: 'Módulo', icon: '📦' };
+    const div = document.createElement('div');
+    div.className = 'mod-item';
+    div.draggable = true;
+    div.ondragstart = (e) => { e.dataTransfer.setData('text/plain', idx); div.classList.add('dragging'); };
+    div.ondragend = () => div.classList.remove('dragging');
+    div.ondragover = (e) => e.preventDefault();
+    div.ondrop = (e) => {
+      e.preventDefault();
+      const from = parseInt(e.dataTransfer.getData('text/plain'));
+      if (from === idx) return;
+      const moved = col.mods.splice(from, 1)[0];
+      col.mods.splice(idx, 0, moved);
+      build();
+      renderModulesList();
+    };
+    div.innerHTML = `
+      <div class="mod-header"><span class="mod-name">${mt.icon} ${mt.nombre}</span><button class="mod-del" onclick="removeModule(${idx})">×</button></div>
+      <div class="mod-controls"><select onchange="changeModuleType(${idx}, this.value)"><option value="barra" ${mod.type==='barra'?'selected':''}>🎽 Barra estándar</option><option value="barra_larga" ${mod.type==='barra_larga'?'selected':''}>👗 Barra vestidos largos</option><option value="estantes" ${mod.type==='estantes'?'selected':''}>📦 Estantes</option><option value="cajones" ${mod.type==='cajones'?'selected':''}>🗂 Cajones x3</option><option value="zapatero" ${mod.type==='zapatero'?'selected':''}>👟 Zapatero</option><option value="pantalonero" ${mod.type==='pantalonero'?'selected':''}>👖 Pantalonero</option><option value="espejo_int" ${mod.type==='espejo_int'?'selected':''}>🪞 Espejo interior</option><option value="joyero" ${mod.type==='joyero'?'selected':''}>💍 Joyero</option><option value="luz" ${mod.type==='luz'?'selected':''}>💡 Luz LED</option></select><button onclick="moveModuleUp(${idx})">↑</button><button onclick="moveModuleDown(${idx})">↓</button></div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function addModuleToCurrentCol() {
+  const col = S.cols[S.sel];
+  if (!col) return;
+  const type = document.getElementById('addModuleSelect').value;
+  col.mods.push({ type: type, id: 'm' + Date.now() + Math.random() });
+  build();
+  renderModulesList();
+}
+
+function removeModule(idx) {
+  const col = S.cols[S.sel];
+  if (col && col.mods[idx]) col.mods.splice(idx, 1);
+  build();
+  renderModulesList();
+}
+
+function changeModuleType(idx, newType) {
+  const col = S.cols[S.sel];
+  if (col && col.mods[idx]) col.mods[idx].type = newType;
+  build();
+  renderModulesList();
+}
+
+function moveModuleUp(idx) {
+  const col = S.cols[S.sel];
+  if (col && idx > 0) {
+    [col.mods[idx - 1], col.mods[idx]] = [col.mods[idx], col.mods[idx - 1]];
+    build();
+    renderModulesList();
+  }
+}
+
+function moveModuleDown(idx) {
+  const col = S.cols[S.sel];
+  if (col && idx < col.mods.length - 1) {
+    [col.mods[idx], col.mods[idx + 1]] = [col.mods[idx + 1], col.mods[idx]];
+    build();
+    renderModulesList();
+  }
+}
+
+function addCol() {
+  const letras = ['D', 'E', 'F', 'G', 'H'];
+  S.cols.push({ id: nextId++, w: 0.60, lbl: `Col ${letras[S.cols.length % letras.length]}`, mods: [] });
+  S.sel = S.cols.length - 1;
+  build();
+}
+
+function delCol(i) {
+  if (S.cols.length <= 1) return;
+  S.cols.splice(i, 1);
+  if (S.sel >= S.cols.length) S.sel = S.cols.length - 1;
+  build();
+}
+
+function syncUI() {
+  const tw = (anchoTotal() * 100).toFixed(0);
+  document.getElementById('inW').value = tw;
+  document.getElementById('rW').textContent = tw + ' cm';
+  document.getElementById('rH').textContent = (S.H * 100).toFixed(0) + ' cm';
+  document.getElementById('rD').textContent = (S.D * 100).toFixed(0) + ' cm';
+  document.getElementById('rDoor').textContent = S.door === 'correderas' ? 'Correderas' : S.door === 'abatibles' ? 'Abatibles' : S.door === 'espejo' ? 'Espejo' : S.door === 'cristal' ? 'Cristal' : 'Sin puerta';
+  document.getElementById('rCols').textContent = S.cols.length;
+}
+
+function getConfigText() {
+  let txt = `🔷 DISEÑO DE ARMARIO 🔷\n\n📏 MEDIDAS:\n• Ancho total: ${(anchoTotal() * 100).toFixed(0)} cm\n• Alto: ${(S.H * 100).toFixed(0)} cm\n• Fondo: ${(S.D * 100).toFixed(0)} cm\n• Puertas: ${S.door}\n• Color: ${S.bcn}\n• Tiradores: ${S.handle}\n\n📦 COLUMNAS:\n`;
+  S.cols.forEach((col, i) => {
+    txt += `\n${col.lbl} (${(col.w * 100).toFixed(0)} cm):\n`;
+    col.mods.forEach(mod => txt += `  • ${moduleTypes[mod.type]?.nombre || mod.type}\n`);
+  });
+  return txt;
+}
+
+// Cámara
+let ry = 0.65, rx = 0.25, cdist = 1, isDrag = false, lmx = 0, lmy = 0;
+function posCam() {
+  const H = S.H, tgt = new THREE.Vector3(0, H * 0.5, 0);
+  cam.position.x = Math.sin(ry) * cdist * Math.cos(rx);
+  cam.position.z = Math.cos(ry) * cdist * Math.cos(rx);
+  cam.position.y = H * 0.5 + cdist * Math.sin(rx);
+  cam.lookAt(tgt);
+}
+function setView(v, btn) {
+  document.querySelectorAll('.vc').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const H = S.H, W = anchoTotal();
+  cdist = Math.max(H, W) * 1.5 + 1.5;
+  if (v === 'front') { ry = 0; rx = 0.1; }
+  else if (v === 'corner') { ry = 0.65; rx = 0.25; }
+  else if (v === 'top') { ry = 0.1; rx = 1.2; }
+  posCam();
+}
+cv.addEventListener('mousedown', e => { isDrag = true; lmx = e.clientX; lmy = e.clientY; });
+window.addEventListener('mouseup', () => isDrag = false);
+window.addEventListener('mousemove', e => {
+  if (!isDrag) return;
+  ry += (e.clientX - lmx) * 0.007;
+  rx += (e.clientY - lmy) * 0.004;
+  rx = Math.max(-0.5, Math.min(1.4, rx));
+  lmx = e.clientX; lmy = e.clientY;
+  posCam();
+});
+cv.addEventListener('wheel', e => { cdist = Math.max(0.8, Math.min(20, cdist * (1 + e.deltaY * 0.001))); posCam(); });
+cv.addEventListener('click', e => {
+  const r = cv.getBoundingClientRect();
+  const m2 = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(m2, cam);
+  const hits = ray.intersectObjects(hitMeshes);
+  if (hits.length) { S.sel = hits[0].object.userData.ci; build(); renderModulesList(); }
+});
+function resize() { const w = cv.parentElement.clientWidth, h = cv.parentElement.clientHeight; ren.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+window.addEventListener('resize', resize);
+resize();
+function animate() { requestAnimationFrame(animate); ren.render(sc, cam); }
+animate();
+
+// Eventos inputs
+document.getElementById('inH').addEventListener('change', e => { S.H = parseInt(e.target.value) / 100; build(); posCam(); });
+document.getElementById('inD').addEventListener('change', e => { S.D = parseInt(e.target.value) / 100; build(); });
+document.getElementById('dtypes').addEventListener('click', e => {
+  const b = e.target.closest('.fb');
+  if (!b) return;
+  document.querySelectorAll('#dtypes .fb').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  S.door = b.dataset.v;
+  build();
+});
+document.getElementById('handles').addEventListener('click', e => {
+  const b = e.target.closest('.fb');
+  if (!b) return;
+  document.querySelectorAll('#handles .fb').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  S.handle = b.dataset.v;
+  build();
+});
+document.getElementById('cpicker').addEventListener('click', e => {
+  const d = e.target.closest('.sw');
+  if (!d) return;
+  document.querySelectorAll('#cpicker .sw').forEach(x => x.classList.remove('active'));
+  d.classList.add('active');
+  S.bc = d.dataset.c;
+  S.bcn = d.dataset.n;
+  document.getElementById('clbl').textContent = d.dataset.n;
+  build();
+});
+
+function switchTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('pane-' + id).classList.add('active');
+}
+
+// Funciones de exportación
+function downloadPDF() {
+  const configText = getConfigText();
+  const htmlContent = `
+    <html><head><meta charset="UTF-8"><title>Diseño Armario CR Design</title>
+    <style>body{font-family:sans-serif;padding:20px;background:white}pre{white-space:pre-wrap}</style></head>
+    <body><h1 style="color:#C4A46B">CR Design Muebles</h1><h2>Diseño de armario a medida</h2><pre>${configText}</pre><p style="margin-top:30px;font-size:12px;color:#666">Documento generado desde el configurador 3D CR Design</p></body></html>
+  `;
+  const opt = { margin: 1, filename: `armario_CRDesign_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+  html2pdf().set(opt).from(htmlContent).save();
+  showToast('📄 PDF descargado');
+}
+
+function openWA() {
+  const msg = `Hola CR Design! Me interesa este diseño:\n\n${getConfigText()}\n\n¿Podrían darme información y presupuesto?`;
+  window.open(`https://wa.me/573146309609?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function openModal() {
+  document.getElementById('mconf').textContent = getConfigText();
+  document.getElementById('overlay').classList.add('open');
+}
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+
+function sendEmail() {
+  const name = document.getElementById('cName').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  if (!name || !email) { alert('Por favor ingresa tu nombre y email'); return; }
+  const phone = document.getElementById('cPhone').value.trim();
+  const notes = document.getElementById('cNotes').value.trim();
+  const body = `Hola CR Design Muebles,\n\n${name} solicita información sobre el siguiente diseño:\n\n${getConfigText()}\n\n━━━━━━━━━━━━━━━━━━━━\nDATOS DE CONTACTO\n━━━━━━━━━━━━━━━━━━━━\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone || 'No indicado'}\n\nNotas: ${notes || '—'}`;
+  window.location.href = `mailto:miguel_716@hotmail.com?subject=${encodeURIComponent('Diseño de armario desde configurador 3D')}&body=${encodeURIComponent(body)}`;
+  closeModal();
+  showToast('✓ Diseño enviado por email');
+}
+
+// Inicializar
+build();
+posCam();
+</script>
+</body>
+</html>
