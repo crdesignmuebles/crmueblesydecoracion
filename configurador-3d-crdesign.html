@@ -2,457 +2,950 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Configurador 3D — CR Design Muebles</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>CR Design 3D Pro - Configurador SketchUp Style</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--acc:#C4A46B;--bg:#16140F;--panel:#1A1814;--border:#2A2620;--muted:#6B685F;--cream:#F7F4EE;--green:#25D366}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--cream);overflow:hidden;height:100vh}
-header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px}
-.logo{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);text-decoration:none}
-.logo span{color:var(--acc)}
-.hb{padding:6px 11px;font-size:10px;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
-.hb-g{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.hb-w{background:var(--green);color:#fff}
-.hb-a{background:var(--acc);color:#1E1C18}
-.layout{display:flex;height:calc(100vh - 50px)}
-.lpanel{width:280px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
-.viewport{flex:1;position:relative}
-.rpanel{width:220px;background:var(--panel);border-left:1px solid var(--border);overflow-y:auto;padding:12px}
-@media(max-width:700px){.lpanel{width:100%;max-height:40%}.rpanel{display:none}}
-.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:12px}
-.tab{flex:1;padding:8px;font-size:9px;text-align:center;color:var(--muted);cursor:pointer}
-.tab.active{color:var(--acc);border-bottom:2px solid var(--acc)}
-.pane{display:none}
-.pane.active{display:block}
-.sec{margin-bottom:16px}
-.shd{font-size:9px;color:#3A3630;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px}
-.dim-row{display:flex;gap:7px;margin-bottom:7px;align-items:center}
-.dim-row label{font-size:10px;color:var(--muted);width:46px}
-.diw{flex:1;position:relative}
-.di{width:100%;padding:6px 26px 6px 8px;background:#242018;border:1px solid #3A3630;border-radius:3px;color:var(--cream)}
-.du{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#4A4740}
-.col-list{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
-.ci{background:#242018;border:1px solid var(--border);border-radius:3px;padding:7px;display:flex;gap:5px;align-items:center;cursor:pointer}
-.ci.sel{border-color:var(--acc)}
-.clbl{flex:1;font-size:10px}
-.cwi{width:50px;padding:3px;background:#1A1814;border:1px solid #3A3630;border-radius:2px;color:var(--acc);text-align:center}
-.cdel{background:transparent;border:none;color:#4A3030;cursor:pointer;font-size:14px}
-.add-btn{width:100%;padding:6px;background:transparent;border:1px dashed #3A3630;border-radius:3px;color:var(--muted);cursor:pointer}
-.mod-item{background:#242018;border:1px solid var(--border);border-radius:3px;margin-bottom:6px;padding:8px;cursor:grab}
-.mod-header{display:flex;justify-content:space-between;margin-bottom:5px}
-.mod-name{font-size:11px;color:var(--acc)}
-.mod-del{background:transparent;border:none;color:#4A3030;cursor:pointer}
-.mod-controls{display:flex;gap:5px;margin-top:5px}
-.mod-controls select{flex:1;background:#1A1814;border:1px solid #3A3630;color:var(--cream);padding:3px}
-.mod-controls button{background:var(--acc);border:none;border-radius:2px;padding:3px 6px;cursor:pointer}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.fb{padding:6px;background:#242018;border:1px solid var(--border);border-radius:3px;color:var(--muted);cursor:pointer;text-align:center}
-.fb.active{background:rgba(196,164,107,0.12);color:var(--acc);border-color:var(--acc)}
-.cgrid{display:flex;flex-wrap:wrap;gap:5px}
-.sw{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent}
-.sw.active{outline:2px solid var(--acc);outline-offset:1px}
-#c3{width:100%;height:100%;display:block}
-.vctrl{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(0,0,0,0.7);border-radius:4px;padding:3px}
-.vc{padding:4px 9px;font-size:9px;background:transparent;color:var(--muted);border:none;cursor:pointer}
-.vc.active{color:var(--acc)}
-.hint{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-size:7px;color:#3A3630;white-space:nowrap}
-.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#100E0A;padding:8px;gap:6px}
-@media(max-width:700px){.mob-bar{display:flex}.hint{display:none}}
-.mob-bar button{flex:1;padding:10px;font-size:10px;border:none;border-radius:3px}
-.mb-wa{background:var(--green);color:#fff}
-.mb-em{background:var(--acc);color:#1E1C18}
-.mb-pdf{background:#242018;color:var(--cream);border:1px solid var(--border)}
-.sblock{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:10px;margin-bottom:11px}
-.stitle{font-size:8px;color:var(--acc);margin-bottom:6px}
-.sr{display:flex;justify-content:space-between;padding:3px 0;font-size:10px;border-bottom:1px solid var(--border)}
-.sk{color:var(--muted)}.sv{color:var(--cream)}
-.ctas{display:flex;flex-direction:column;gap:5px}
-.bwa,.bem,.bpdf{padding:10px;font-size:10px;border:none;border-radius:3px;cursor:pointer}
-.bwa{background:var(--green);color:#fff}
-.bem{background:var(--acc);color:#1E1C18}
-.bpdf{background:#242018;color:var(--cream);border:1px solid var(--border)}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center}
-.overlay.open{display:flex}
-.modal{background:#1E1C18;border:1px solid #3A3630;width:90%;max-width:360px;border-radius:4px}
-.mhd{background:#100E0A;padding:12px;display:flex;justify-content:space-between}
-.mbdy{padding:12px}
-.mcfg{background:#100E0A;border:1px solid var(--border);padding:6px;font-size:9px;margin-bottom:10px;white-space:pre-wrap;max-height:80px;overflow:auto}
-.fld{margin-bottom:8px}
-.fld label{font-size:8px;color:var(--muted);display:block}
-.fld input,.fld textarea{width:100%;padding:6px;background:#100E0A;border:1px solid var(--border);color:var(--cream)}
-.mact{display:flex;gap:6px;margin-top:8px}
-.mact button{flex:1;padding:8px}
-.mbc{background:transparent;border:1px solid var(--border);color:var(--muted)}
-.mbs{background:var(--acc);border:none;color:#1E1C18}
-.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#100E0A;border:1px solid var(--acc);padding:8px 16px;border-radius:3px;font-size:11px;opacity:0;transition:0.3s;z-index:999}
-.toast.show{opacity:1}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #1a1a1a;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* Toolbar principal */
+  .toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: #2c2c2c;
+    border-bottom: 1px solid #444;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 15px;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+
+  .logo {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #C4A46B, #E8D8B0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-right: 20px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    background: #3a3a3a;
+    border: none;
+    border-radius: 6px;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn:hover {
+    background: #4a4a4a;
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background: #C4A46B;
+    color: #1a1a1a;
+  }
+
+  .btn-primary:hover {
+    background: #D4B47B;
+  }
+
+  .btn-danger {
+    background: #8B3A3A;
+    color: #fff;
+  }
+
+  .btn-danger:hover {
+    background: #A54A4A;
+  }
+
+  .separator {
+    width: 1px;
+    height: 30px;
+    background: #555;
+    margin: 0 5px;
+  }
+
+  /* Panel lateral izquierdo - Propiedades */
+  .sidebar-left {
+    position: fixed;
+    left: 0;
+    top: 56px;
+    bottom: 0;
+    width: 280px;
+    background: #252525;
+    border-right: 1px solid #444;
+    overflow-y: auto;
+    z-index: 90;
+    padding: 15px;
+  }
+
+  /* Panel lateral derecho - Capas/Elementos */
+  .sidebar-right {
+    position: fixed;
+    right: 0;
+    top: 56px;
+    bottom: 0;
+    width: 260px;
+    background: #252525;
+    border-left: 1px solid #444;
+    overflow-y: auto;
+    z-index: 90;
+    padding: 15px;
+  }
+
+  /* Canvas 3D */
+  #canvas-container {
+    position: fixed;
+    top: 56px;
+    left: 280px;
+    right: 260px;
+    bottom: 0;
+    background: #1a1a1a;
+  }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Secciones del panel */
+  .section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #3a3a3a;
+    padding-bottom: 15px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #C4A46B;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  /* Lista de elementos */
+  .element-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .element-item {
+    background: #333;
+    margin-bottom: 6px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .element-item:hover {
+    background: #3d3d3d;
+  }
+
+  .element-item.selected {
+    border-color: #C4A46B;
+    background: #3a3a3a;
+  }
+
+  .element-name {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .element-actions {
+    display: flex;
+    gap: 5px;
+  }
+
+  .element-actions button {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .element-actions button:hover {
+    background: #555;
+    color: #fff;
+  }
+
+  /* Controles de transformación */
+  .transform-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .transform-input {
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 6px 8px;
+    color: #e0e0e0;
+    font-size: 12px;
+    width: 100%;
+  }
+
+  .transform-input:focus {
+    outline: none;
+    border-color: #C4A46B;
+  }
+
+  .color-picker {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid #555;
+  }
+
+  .medidas-realtime {
+    background: #333;
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  .medidas-realtime span {
+    color: #C4A46B;
+    font-weight: bold;
+  }
+
+  /* Botones flotantes */
+  .float-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 280px;
+    display: flex;
+    gap: 8px;
+    z-index: 95;
+  }
+
+  .float-btn {
+    width: 40px;
+    height: 40px;
+    background: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+  }
+
+  .float-btn:hover {
+    background: #C4A46B;
+    border-color: #C4A46B;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #2a2a2a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar-left, .sidebar-right {
+      display: none;
+    }
+    #canvas-container {
+      left: 0;
+      right: 0;
+    }
+    .float-buttons {
+      right: 20px;
+    }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <a class="logo" href="index.html">CR <span>Design</span> Muebles</a>
-  <div class="hbtns">
-    <a class="hb hb-g" href="index.html">← Volver</a>
-    <button class="hb hb-w" onclick="openWA()">WhatsApp</button>
-    <button class="hb hb-a" onclick="openModal()">✉ Cita</button>
-  </div>
-</header>
+<div class="toolbar">
+  <div class="logo">🎨 CR DESIGN 3D PRO</div>
+  <button class="btn" onclick="addElement('barra')">➕ Barra colgador</button>
+  <button class="btn" onclick="addElement('estante')">📦 Estante</button>
+  <button class="btn" onclick="addElement('cajon')">🗄️ Cajón</button>
+  <button class="btn" onclick="addElement('puerta')">🚪 Puerta</button>
+  <button class="btn" onclick="addElement('luz')">💡 Luz LED</button>
+  <div class="separator"></div>
+  <button class="btn btn-primary" onclick="exportPDF()">📄 Exportar PDF</button>
+  <button class="btn btn-primary" onclick="sendEmail()">✉ Enviar diseño</button>
+  <div class="separator"></div>
+  <button class="btn" onclick="resetView()">🎥 Reset vista</button>
+</div>
 
-<div class="layout">
-  <div class="lpanel">
-    <div class="tab-bar">
-      <div class="tab active" onclick="switchTab('dims',this)">Medidas</div>
-      <div class="tab" onclick="switchTab('cols',this)">Columnas</div>
-      <div class="tab" onclick="switchTab('mods',this)">Módulos</div>
-      <div class="tab" onclick="switchTab('mats',this)">Material</div>
+<div class="sidebar-left">
+  <div class="section">
+    <div class="section-title">📐 Dimensiones del armario</div>
+    <div style="margin-bottom: 10px;">
+      <label style="font-size: 12px; color: #aaa;">Alto (cm)</label>
+      <input type="number" id="alto-armario" class="transform-input" value="220" step="5" onchange="updateWardrobeSize()">
     </div>
-
-    <div class="pane active" id="pane-dims">
-      <div class="sec">
-        <div class="shd">Dimensiones</div>
-        <div class="dim-row"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300"><span class="du">cm</span></div></div>
-        <div class="dim-row"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80"><span class="du">cm</span></div></div>
-        <div class="dim-row"><label>Ancho</label><div class="diw"><input class="di" type="text" id="inW" readonly><span class="du">cm</span></div></div>
-      </div>
-      <div class="sec">
-        <div class="shd">Puertas</div>
-        <div class="fgrid" id="dtypes">
-          <button class="fb active" data-v="correderas">Correderas</button>
-          <button class="fb" data-v="abatibles">Abatibles</button>
-          <button class="fb" data-v="espejo">Espejo</button>
-          <button class="fb" data-v="cristal">Cristal</button>
-          <button class="fb" data-v="sin">Sin puerta</button>
-        </div>
-      </div>
+    <div style="margin-bottom: 10px;">
+      <label style="font-size: 12px; color: #aaa;">Ancho (cm)</label>
+      <input type="number" id="ancho-armario" class="transform-input" value="200" step="5" onchange="updateWardrobeSize()">
     </div>
-
-    <div class="pane" id="pane-cols">
-      <div class="sec">
-        <div class="shd">Columnas</div>
-        <div class="col-list" id="colList"></div>
-        <button class="add-btn" onclick="addCol()">+ Añadir columna</button>
-      </div>
-    </div>
-
-    <div class="pane" id="pane-mods">
-      <div class="sec">
-        <div class="shd">Módulos — <span id="colSelHint" style="color:var(--acc)">Col A</span></div>
-        <div id="modulesList"></div>
-        <select id="addModuleSelect" style="width:100%;padding:6px;margin:6px 0;background:#242018;border:1px solid var(--border);color:var(--cream)">
-          <option value="barra">🎽 Barra colgador</option>
-          <option value="barra_larga">👗 Barra vestidos largos</option>
-          <option value="estantes">📦 Estantes</option>
-          <option value="cajones">🗂 Cajones x3</option>
-          <option value="zapatero">👟 Zapatero</option>
-          <option value="pantalonero">👖 Pantalonero</option>
-          <option value="luz">💡 Luz LED</option>
-        </select>
-        <button class="add-btn" onclick="addModule()">+ Añadir módulo</button>
-      </div>
-    </div>
-
-    <div class="pane" id="pane-mats">
-      <div class="sec">
-        <div class="shd">Color</div>
-        <div class="cgrid" id="cpicker">
-          <div class="sw active" data-c="#F5F0E8" data-n="Blanco" style="background:#F5F0E8"></div>
-          <div class="sw" data-c="#E8D8C4" data-n="Roble" style="background:#E8D8C4"></div>
-          <div class="sw" data-c="#C4A882" data-n="Nogal" style="background:#C4A882"></div>
-          <div class="sw" data-c="#8B7355" data-n="Wengué" style="background:#8B7355"></div>
-          <div class="sw" data-c="#4A4A4A" data-n="Grafito" style="background:#4A4A4A"></div>
-          <div class="sw" data-c="#1E1C18" data-n="Negro" style="background:#1E1C18"></div>
-        </div>
-      </div>
-      <div class="sec">
-        <div class="shd">Tiradores</div>
-        <div class="fgrid" id="handles">
-          <button class="fb active" data-v="dorado">Dorado</button>
-          <button class="fb" data-v="plateado">Plateado</button>
-          <button class="fb" data-v="negro">Negro</button>
-          <button class="fb" data-v="sin">Sin</button>
-        </div>
-      </div>
+    <div style="margin-bottom: 10px;">
+      <label style="font-size: 12px; color: #aaa;">Fondo (cm)</label>
+      <input type="number" id="fondo-armario" class="transform-input" value="60" step="5" onchange="updateWardrobeSize()">
     </div>
   </div>
 
-  <div class="viewport">
-    <canvas id="c3"></canvas>
-    <div class="vctrl">
-      <button class="vc" onclick="setView('front',this)">Frontal</button>
-      <button class="vc active" onclick="setView('corner',this)">Esquina</button>
-      <button class="vc" onclick="setView('top',this)">Planta</button>
+  <div class="section">
+    <div class="section-title">🎨 Apariencia</div>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+      <div>Color cuerpo:</div>
+      <input type="color" id="color-cuerpo" value="#F5F0E8" class="color-picker" onchange="updateColors()">
     </div>
-    <div class="hint">🖱️ Arrastra para rotar | Rueda zoom</div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div>Color puertas:</div>
+      <input type="color" id="color-puertas" value="#E8D8C4" class="color-picker" onchange="updateColors()">
+    </div>
   </div>
 
-  <div class="rpanel">
-    <div class="sblock">
-      <div class="stitle">Resumen</div>
-      <div class="sr"><span class="sk">Ancho</span><span class="sv" id="rW">0 cm</span></div>
-      <div class="sr"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
-      <div class="sr"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
-      <div class="sr"><span class="sk">Puertas</span><span class="sv" id="rDoor">Correderas</span></div>
-      <div class="sr"><span class="sk">Columnas</span><span class="sv" id="rCols">3</span></div>
+  <div class="section">
+    <div class="section-title">⚙️ Elemento seleccionado</div>
+    <div id="selected-info">
+      <div style="color: #aaa; font-size: 12px;">Ninguno seleccionado</div>
     </div>
-    <div class="ctas">
-      <button class="bwa" onclick="openWA()">📱 WhatsApp</button>
-      <button class="bem" onclick="openModal()">✉ Email</button>
-      <button class="bpdf" onclick="downloadPDF()">📄 PDF</button>
+    <div id="transform-controls" style="display: none;">
+      <div class="transform-controls">
+        <div>
+          <label style="font-size: 10px;">X (cm)</label>
+          <input type="number" id="pos-x" class="transform-input" step="1" onchange="updateElementPosition()">
+        </div>
+        <div>
+          <label style="font-size: 10px;">Y (cm)</label>
+          <input type="number" id="pos-y" class="transform-input" step="1" onchange="updateElementPosition()">
+        </div>
+        <div>
+          <label style="font-size: 10px;">Z (cm)</label>
+          <input type="number" id="pos-z" class="transform-input" step="1" onchange="updateElementPosition()">
+        </div>
+        <div>
+          <label style="font-size: 10px;">Ancho (cm)</label>
+          <input type="number" id="size-x" class="transform-input" step="5" onchange="updateElementSize()">
+        </div>
+        <div>
+          <label style="font-size: 10px;">Alto (cm)</label>
+          <input type="number" id="size-y" class="transform-input" step="5" onchange="updateElementSize()">
+        </div>
+        <div>
+          <label style="font-size: 10px;">Fondo (cm)</label>
+          <input type="number" id="size-z" class="transform-input" step="5" onchange="updateElementSize()">
+        </div>
+      </div>
+      <button class="btn btn-danger" style="margin-top: 10px; width: 100%;" onclick="deleteSelected()">🗑 Eliminar seleccionado</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📊 Medidas en tiempo real</div>
+    <div class="medidas-realtime">
+      <div>Ancho total: <span id="med-ancho">0</span> cm</div>
+      <div>Alto total: <span id="med-alto">0</span> cm</div>
+      <div>Fondo total: <span id="med-fondo">0</span> cm</div>
+      <div>Elementos: <span id="med-elementos">0</span></div>
     </div>
   </div>
 </div>
 
-<div class="mob-bar">
-  <button class="mb-wa" onclick="openWA()">WhatsApp</button>
-  <button class="mb-em" onclick="openModal()">Email</button>
-  <button class="mb-pdf" onclick="downloadPDF()">PDF</button>
-</div>
-
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="mhd"><h2>Enviar diseño</h2><button onclick="closeModal()" style="background:none;border:none;color:#fff;font-size:20px">×</button></div>
-    <div class="mbdy">
-      <div class="mcfg" id="mconf"></div>
-      <div class="fld"><label>Nombre</label><input type="text" id="cName" placeholder="Tu nombre"></div>
-      <div class="fld"><label>Email</label><input type="email" id="cEmail" placeholder="correo@ejemplo.com"></div>
-      <div class="fld"><label>Teléfono</label><input type="tel" id="cPhone"></div>
-      <div class="mact"><button class="mbc" onclick="closeModal()">Cancelar</button><button class="mbs" onclick="sendEmail()">Enviar</button></div>
-    </div>
+<div class="sidebar-right">
+  <div class="section">
+    <div class="section-title">📋 Lista de elementos</div>
+    <div class="element-list" id="element-list"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">🎬 Vistas rápidas</div>
+    <button class="btn" style="width: 100%; margin-bottom: 5px;" onclick="setView('front')">◀ Frontal</button>
+    <button class="btn" style="width: 100%; margin-bottom: 5px;" onclick="setView('side')">▶ Lateral</button>
+    <button class="btn" style="width: 100%; margin-bottom: 5px;" onclick="setView('top')">▼ Superior</button>
+    <button class="btn" style="width: 100%;" onclick="setView('iso')">● Isométrica</button>
   </div>
 </div>
-<div class="toast" id="toast">✓ Enviado</div>
 
-<script>
-// ESTADO
-let S = {
-  H: 2.2, D: 0.6, door: 'correderas',
-  color: '#F5F0E8', handle: 'dorado', sel: 0,
-  cols: [
-    { id: 1, w: 0.65, lbl: 'Col A', mods: [{type:'barra'},{type:'estantes'}] },
-    { id: 2, w: 0.70, lbl: 'Col B', mods: [{type:'estantes'},{type:'estantes'}] },
-    { id: 3, w: 0.65, lbl: 'Col C', mods: [{type:'cajones'},{type:'zapatero'}] }
-  ]
-};
-let nextId = 4;
+<div id="canvas-container"></div>
 
-const modTypes = {
-  barra: '🎽 Barra', barra_larga: '👗 Barra larga', estantes: '📦 Estantes',
-  cajones: '🗂 Cajones', zapatero: '👟 Zapatero', pantalonero: '👖 Pantalonero', luz: '💡 LED'
-};
+<div class="float-buttons">
+  <div class="float-btn" onclick="setView('front')">◀</div>
+  <div class="float-btn" onclick="setView('side')">▶</div>
+  <div class="float-btn" onclick="setView('top')">▼</div>
+  <div class="float-btn" onclick="setView('iso')">●</div>
+  <div class="float-btn" onclick="resetView()">⟳</div>
+</div>
 
-function anchoTotal() { return S.cols.reduce((s,c)=>s+c.w,0); }
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+    }
+  }
+</script>
 
-// THREE.JS
-const cv = document.getElementById('c3');
-const ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
-ren.setSize(cv.clientWidth, cv.clientHeight);
-ren.shadowMap.enabled = true;
-const sc = new THREE.Scene();
-sc.background = new THREE.Color(0x16140F);
-const cam = new THREE.PerspectiveCamera(42, 1, 0.1, 50);
-sc.add(new THREE.AmbientLight(0xFFFFFF, 0.5));
-const luz = new THREE.DirectionalLight(0xFFF5E0, 1);
-luz.position.set(3, 5, 2);
-luz.castShadow = true;
-sc.add(luz);
-const wg = new THREE.Group();
-sc.add(wg);
-let hits = [];
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
-function colorNum(hex) { return new THREE.Color(parseInt(hex.replace('#',''),16)); }
-
-function build() {
-  while(wg.children.length) wg.remove(wg.children[0]);
-  hits = [];
-  const H = S.H, D = S.D, T = 0.018, TW = anchoTotal();
-  const mat = new THREE.MeshStandardMaterial({ color: colorNum(S.color), roughness: 0.6 });
+  // ============================================
+  // CONFIGURACIÓN INICIAL
+  // ============================================
   
-  // Caja exterior
-  const addBox = (w,h,d,x,y,z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat); m.position.set(x,y,z); m.castShadow=true; wg.add(m); };
-  addBox(TW, T, D, 0, H-T/2, 0);
-  addBox(TW, T, D, 0, T/2, 0);
-  addBox(T, H, D, -TW/2+T/2, H/2, 0);
-  addBox(T, H, D, TW/2-T/2, H/2, 0);
+  // Estado global
+  let scene, camera, renderer, controls, transformControls;
+  let wardrobeGroup = new THREE.Group();
+  let elements = [];
+  let selectedElement = null;
+  let elementIdCounter = 1;
   
-  let x = -TW/2 + T;
-  S.cols.forEach((col, idx) => {
-    const cw = col.w, cx = x + cw/2;
-    if(idx < S.cols.length-1) addBox(T, H-2*T, D-2*T, x+cw, H/2, 0);
+  // Dimensiones del armario
+  let wardrobeSize = {
+    width: 2.0,
+    height: 2.2,
+    depth: 0.6
+  };
+  
+  let colors = {
+    body: 0xF5F0E8,
+    doors: 0xE8D8C4
+  };
+  
+  // Inicializar escena
+  function init() {
+    const container = document.getElementById('canvas-container');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
     
-    // Hitbox
-    const hb = new THREE.Mesh(new THREE.BoxGeometry(cw-T, H-T, D-T), new THREE.MeshBasicMaterial({visible:false}));
-    hb.position.set(cx, H/2, 0);
-    hb.userData = { idx };
-    wg.add(hb);
-    hits.push(hb);
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1a1a);
+    scene.fog = new THREE.FogExp2(0x1a1a1a, 0.008);
     
-    // Highlight
-    if(idx === S.sel){
-      const hl = new THREE.Mesh(new THREE.BoxGeometry(cw-T, H-2*T, D-2*T), new THREE.MeshBasicMaterial({color:0xC4A46B, wireframe:true, transparent:true, opacity:0.3}));
-      hl.position.set(cx, H/2, 0);
-      wg.add(hl);
+    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(4, 2.5, 4);
+    camera.lookAt(0, 1.2, 0);
+    
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+    
+    // Controles de órbita
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.target.set(0, 1.2, 0);
+    
+    // Luces
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    scene.add(ambientLight);
+    
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1);
+    mainLight.position.set(5, 8, 3);
+    mainLight.castShadow = true;
+    mainLight.receiveShadow = true;
+    mainLight.shadow.mapSize.width = 1024;
+    mainLight.shadow.mapSize.height = 1024;
+    scene.add(mainLight);
+    
+    const fillLight = new THREE.PointLight(0x88aaff, 0.3);
+    fillLight.position.set(-2, 2, 3);
+    scene.add(fillLight);
+    
+    const backLight = new THREE.PointLight(0xffaa66, 0.2);
+    backLight.position.set(0, 1.5, -2);
+    scene.add(backLight);
+    
+    // Suelo tipo grid
+    const gridHelper = new THREE.GridHelper(10, 20, 0x888888, 0x444444);
+    gridHelper.position.y = -0.01;
+    scene.add(gridHelper);
+    
+    // Piso semitransparente
+    const floorPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(8, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.8, metalness: 0.1, transparent: true, opacity: 0.3 })
+    );
+    floorPlane.rotation.x = -Math.PI / 2;
+    floorPlane.position.y = -0.02;
+    floorPlane.receiveShadow = true;
+    scene.add(floorPlane);
+    
+    scene.add(wardrobeGroup);
+    
+    // Transform controls
+    transformControls = new TransformControls(camera, renderer.domElement);
+    transformControls.addEventListener('dragging-changed', function(event) {
+      controls.enabled = !event.value;
+    });
+    transformControls.addEventListener('objectChange', function() {
+      if (selectedElement && selectedElement.userData) {
+        updateUIFromElement();
+      }
+    });
+    scene.add(transformControls);
+    
+    // Construir armario base
+    buildWardrobe();
+    
+    // Elementos de ejemplo
+    addElementToScene('barra', { x: -0.5, y: 1.8, z: 0.15 }, { width: 0.8, height: 0.05, depth: 0.05 });
+    addElementToScene('estante', { x: 0, y: 1.2, z: 0 }, { width: 1.6, height: 0.02, depth: 0.5 });
+    addElementToScene('cajon', { x: 0.6, y: 0.4, z: 0 }, { width: 0.5, height: 0.25, depth: 0.45 });
+    
+    animate();
+    updateUI();
+  }
+  
+  // Construir armario base
+  function buildWardrobe() {
+    // Limpiar grupo
+    while(wardrobeGroup.children.length > 0) {
+      const child = wardrobeGroup.children[0];
+      if (child.userData && child.userData.isElement) {
+        // Los elementos se manejan aparte
+        wardrobeGroup.remove(child);
+      } else {
+        wardrobeGroup.remove(child);
+      }
     }
     
-    // Módulos
-    let yOff = T;
-    col.mods.forEach(mod => {
-      const alt = mod.type==='barra'?0.12 : mod.type==='barra_larga'?0.25 : mod.type==='estantes'?0.02 : mod.type==='cajones'?0.25 : mod.type==='zapatero'?0.15 : mod.type==='pantalonero'?0.12 : 0.05;
-      const cy = yOff + alt/2;
-      
-      if(mod.type==='barra' || mod.type==='barra_larga'){
-        const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,cw-0.08,8), new THREE.MeshStandardMaterial({color:0xC4A46B, metalness:0.85}));
-        bar.rotation.z = Math.PI/2;
-        bar.position.set(cx, cy+alt*0.4, D*0.15);
-        wg.add(bar);
-      }
-      else if(mod.type==='estantes'){
-        const est = new THREE.Mesh(new THREE.BoxGeometry(cw-T*2, 0.015, D-T*2), new THREE.MeshStandardMaterial({color:colorNum(S.color)}));
-        est.position.set(cx, cy, 0);
-        wg.add(est);
-      }
-      else if(mod.type==='cajones'){
-        for(let i=0;i<3;i++){
-          const caj = new THREE.Mesh(new THREE.BoxGeometry(cw-T*3, alt*0.25, D*0.85), mat);
-          caj.position.set(cx, cy-alt*0.3 + i*alt*0.33, T*0.5);
-          wg.add(caj);
-        }
-      }
-      else if(mod.type==='zapatero'){
-        for(let i=0;i<2;i++){
-          const zap = new THREE.Mesh(new THREE.BoxGeometry(cw-T*2, 0.02, D*0.45), mat);
-          zap.rotation.x = 0.15;
-          zap.position.set(cx, cy-alt*0.2 + i*alt*0.4, -D*0.1);
-          wg.add(zap);
-        }
-      }
-      else if(mod.type==='pantalonero'){
-        for(let i=0;i<3;i++){
-          const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,cw-0.1,8), new THREE.MeshStandardMaterial({color:0xC4A46B, metalness:0.7}));
-          bar.rotation.z = Math.PI/2;
-          bar.position.set(cx, cy-alt*0.3 + i*alt*0.35, D*0.08);
-          wg.add(bar);
-        }
-      }
-      else if(mod.type==='luz'){
-        const led = new THREE.Mesh(new THREE.BoxGeometry(cw*0.7, 0.005, 0.01), new THREE.MeshStandardMaterial({color:0xFFEEAA, emissive:0xFFAA66, emissiveIntensity:1}));
-        led.position.set(cx, cy+alt/2, -D*0.22);
-        wg.add(led);
-      }
-      yOff += alt;
+    const w = wardrobeSize.width;
+    const h = wardrobeSize.height;
+    const d = wardrobeSize.depth;
+    const thickness = 0.018;
+    
+    const bodyMat = new THREE.MeshStandardMaterial({ color: colors.body, roughness: 0.6, metalness: 0.1 });
+    const doorMat = new THREE.MeshStandardMaterial({ color: colors.doors, roughness: 0.5, metalness: 0.05 });
+    
+    // Panel superior
+    const top = new THREE.Mesh(new THREE.BoxGeometry(w, thickness, d), bodyMat);
+    top.position.set(0, h - thickness/2, 0);
+    top.castShadow = true;
+    top.receiveShadow = true;
+    wardrobeGroup.add(top);
+    
+    // Panel inferior
+    const bottom = new THREE.Mesh(new THREE.BoxGeometry(w, thickness, d), bodyMat);
+    bottom.position.set(0, thickness/2, 0);
+    bottom.castShadow = true;
+    bottom.receiveShadow = true;
+    wardrobeGroup.add(bottom);
+    
+    // Panel izquierdo
+    const left = new THREE.Mesh(new THREE.BoxGeometry(thickness, h, d), bodyMat);
+    left.position.set(-w/2 + thickness/2, h/2, 0);
+    left.castShadow = true;
+    left.receiveShadow = true;
+    wardrobeGroup.add(left);
+    
+    // Panel derecho
+    const right = new THREE.Mesh(new THREE.BoxGeometry(thickness, h, d), bodyMat);
+    right.position.set(w/2 - thickness/2, h/2, 0);
+    right.castShadow = true;
+    right.receiveShadow = true;
+    wardrobeGroup.add(right);
+    
+    // Panel trasero
+    const back = new THREE.Mesh(new THREE.BoxGeometry(w, h, thickness), bodyMat);
+    back.position.set(0, h/2, -d/2 + thickness/2);
+    back.castShadow = true;
+    back.receiveShadow = true;
+    wardrobeGroup.add(back);
+    
+    // Puertas (simuladas)
+    const doorLeft = new THREE.Mesh(new THREE.BoxGeometry(w/2 - 0.01, h - 0.02, thickness * 1.5), doorMat);
+    doorLeft.position.set(-w/4, h/2, d/2 + thickness);
+    doorLeft.castShadow = true;
+    wardrobeGroup.add(doorLeft);
+    
+    const doorRight = new THREE.Mesh(new THREE.BoxGeometry(w/2 - 0.01, h - 0.02, thickness * 1.5), doorMat);
+    doorRight.position.set(w/4, h/2, d/2 + thickness);
+    doorRight.castShadow = true;
+    wardrobeGroup.add(doorRight);
+  }
+  
+  // Agregar elemento al escenario
+  function addElementToScene(type, position, size) {
+    let geometry, material, mesh;
+    const id = elementIdCounter++;
+    
+    switch(type) {
+      case 'barra':
+        geometry = new THREE.CylinderGeometry(0.012, 0.012, size.width, 12);
+        material = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.85, roughness: 0.15 });
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.z = Math.PI / 2;
+        break;
+      case 'estante':
+        geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
+        material = new THREE.MeshStandardMaterial({ color: colors.body, roughness: 0.7 });
+        mesh = new THREE.Mesh(geometry, material);
+        break;
+      case 'cajon':
+        geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
+        material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.5 });
+        mesh = new THREE.Mesh(geometry, material);
+        // Frente del cajón
+        const front = new THREE.Mesh(new THREE.BoxGeometry(size.width + 0.02, size.height + 0.02, 0.02), 
+          new THREE.MeshStandardMaterial({ color: 0xD4BC98, roughness: 0.4 }));
+        front.position.set(0, 0, size.depth/2 + 0.01);
+        mesh.add(front);
+        break;
+      case 'puerta':
+        geometry = new THREE.BoxGeometry(size.width, size.height, 0.02);
+        material = new THREE.MeshStandardMaterial({ color: colors.doors, roughness: 0.4 });
+        mesh = new THREE.Mesh(geometry, material);
+        break;
+      case 'luz':
+        geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
+        material = new THREE.MeshStandardMaterial({ color: 0xFFEEAA, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+        mesh = new THREE.Mesh(geometry, material);
+        break;
+      default:
+        return null;
+    }
+    
+    mesh.position.set(position.x, position.y, position.z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData = {
+      id: id,
+      type: type,
+      isElement: true,
+      size: { width: size.width, height: size.height, depth: size.depth }
+    };
+    
+    wardrobeGroup.add(mesh);
+    
+    elements.push({
+      id: id,
+      type: type,
+      mesh: mesh,
+      position: { x: position.x, y: position.y, z: position.z },
+      size: { width: size.width, height: size.height, depth: size.depth }
     });
     
-    // Puerta
-    if(S.door !== 'sin'){
-      let dColor = S.color, mtal=0, rough=0.6;
-      if(S.door==='espejo'){ dColor='#C8D8E8'; mtal=0.95; rough=0.05; }
-      if(S.door==='cristal'){ dColor='#A8D8F0'; mtal=0.1; rough=0.05; }
-      const door = new THREE.Mesh(new THREE.BoxGeometry(cw-0.005, H-0.005, T*1.2), new THREE.MeshStandardMaterial({color:colorNum(dColor), metalness:mtal, roughness:rough}));
-      door.position.set(cx, H/2, D/2+T*0.6);
-      wg.add(door);
-      
-      if(S.handle !== 'sin'){
-        const hCol = S.handle==='dorado'?0xC4A46B : S.handle==='plateado'?0xC0C8D0 : 0x1A1814;
-        const man = new THREE.Mesh(new THREE.CylinderGeometry(0.006,0.006,0.08,8), new THREE.MeshStandardMaterial({color:hCol, metalness:0.85}));
-        man.position.set(cx + (idx%2===0?cw*0.3:-cw*0.3), H/2, D/2+T*1.2);
-        wg.add(man);
+    updateUI();
+    return mesh;
+  }
+  
+  // Agregar elemento desde UI
+  function addElement(type) {
+    let defaultSize = { width: 0.6, height: 0.05, depth: 0.05 };
+    let defaultPos = { x: 0, y: 1.5, z: 0.15 };
+    
+    switch(type) {
+      case 'barra':
+        defaultSize = { width: 0.8, height: 0.05, depth: 0.05 };
+        defaultPos = { x: 0, y: 1.8, z: 0.15 };
+        break;
+      case 'estante':
+        defaultSize = { width: 0.8, height: 0.02, depth: 0.5 };
+        defaultPos = { x: 0, y: 1.2, z: 0 };
+        break;
+      case 'cajon':
+        defaultSize = { width: 0.5, height: 0.25, depth: 0.45 };
+        defaultPos = { x: 0, y: 0.5, z: 0 };
+        break;
+      case 'puerta':
+        defaultSize = { width: 0.6, height: 1.8, depth: 0.02 };
+        defaultPos = { x: -0.5, y: 1.1, z: 0.32 };
+        break;
+      case 'luz':
+        defaultSize = { width: 0.4, height: 0.03, depth: 0.03 };
+        defaultPos = { x: 0, y: 2.1, z: 0.2 };
+        break;
+    }
+    
+    addElementToScene(type, defaultPos, defaultSize);
+  }
+  
+  // Seleccionar elemento
+  function selectElement(element) {
+    if (selectedElement === element) return;
+    
+    selectedElement = element;
+    if (element) {
+      transformControls.attach(element.mesh);
+      document.getElementById('transform-controls').style.display = 'block';
+      updateUIFromElement();
+    } else {
+      transformControls.detach();
+      document.getElementById('transform-controls').style.display = 'none';
+    }
+    updateUI();
+  }
+  
+  // Actualizar UI desde elemento seleccionado
+  function updateUIFromElement() {
+    if (!selectedElement) return;
+    
+    const pos = selectedElement.mesh.position;
+    const size = selectedElement.userData.size;
+    
+    document.getElementById('pos-x').value = (pos.x * 100).toFixed(1);
+    document.getElementById('pos-y').value = (pos.y * 100).toFixed(1);
+    document.getElementById('pos-z').value = (pos.z * 100).toFixed(1);
+    document.getElementById('size-x').value = (size.width * 100).toFixed(1);
+    document.getElementById('size-y').value = (size.height * 100).toFixed(1);
+    document.getElementById('size-z').value = (size.depth * 100).toFixed(1);
+  }
+  
+  // Actualizar posición del elemento
+  function updateElementPosition() {
+    if (!selectedElement) return;
+    const x = parseFloat(document.getElementById('pos-x').value) / 100;
+    const y = parseFloat(document.getElementById('pos-y').value) / 100;
+    const z = parseFloat(document.getElementById('pos-z').value) / 100;
+    selectedElement.mesh.position.set(x, y, z);
+    selectedElement.position = { x, y, z };
+  }
+  
+  // Actualizar tamaño del elemento
+  function updateElementSize() {
+    if (!selectedElement) return;
+    const w = parseFloat(document.getElementById('size-x').value) / 100;
+    const h = parseFloat(document.getElementById('size-y').value) / 100;
+    const d = parseFloat(document.getElementById('size-z').value) / 100;
+    
+    // Recrear mesh con nuevo tamaño
+    const oldType = selectedElement.type;
+    const oldPos = selectedElement.mesh.position.clone();
+    
+    wardrobeGroup.remove(selectedElement.mesh);
+    
+    const newMesh = addElementToScene(oldType, oldPos, { width: w, height: h, depth: d });
+    if (newMesh) {
+      const index = elements.findIndex(e => e.id === selectedElement.id);
+      if (index !== -1) {
+        elements[index].mesh = newMesh;
+        elements[index].size = { width: w, height: h, depth: d };
+        selectElement(elements[index]);
       }
     }
-    x += cw;
+  }
+  
+  // Eliminar elemento seleccionado
+  function deleteSelected() {
+    if (!selectedElement) return;
+    
+    const index = elements.findIndex(e => e.id === selectedElement.id);
+    if (index !== -1) {
+      wardrobeGroup.remove(selectedElement.mesh);
+      elements.splice(index, 1);
+      selectElement(null);
+      updateUI();
+    }
+  }
+  
+  // Actualizar dimensiones del armario
+  function updateWardrobeSize() {
+    wardrobeSize.width = parseFloat(document.getElementById('ancho-armario').value) / 100;
+    wardrobeSize.height = parseFloat(document.getElementById('alto-armario').value) / 100;
+    wardrobeSize.depth = parseFloat(document.getElementById('fondo-armario').value) / 100;
+    buildWardrobe();
+    
+    // Reubicar elementos existentes
+    elements.forEach(el => {
+      wardrobeGroup.add(el.mesh);
+    });
+    updateUI();
+  }
+  
+  // Actualizar colores
+  function updateColors() {
+    colors.body = parseInt(document.getElementById('color-cuerpo').value.substring(1), 16);
+    colors.doors = parseInt(document.getElementById('color-puertas').value.substring(1), 16);
+    buildWardrobe();
+    elements.forEach(el => {
+      wardrobeGroup.add(el.mesh);
+    });
+  }
+  
+  // Actualizar lista de elementos en UI
+  function updateUI() {
+    const listContainer = document.getElementById('element-list');
+    listContainer.innerHTML = '';
+    
+    elements.forEach(el => {
+      const div = document.createElement('div');
+      div.className = 'element-item' + (selectedElement === el ? ' selected' : '');
+      div.innerHTML = `
+        <div class="element-name">
+          <span>${el.type === 'barra' ? '🎽' : el.type === 'estante' ? '📦' : el.type === 'cajon' ? '🗄️' : el.type === 'puerta' ? '🚪' : '💡'}</span>
+          <span>${el.type.charAt(0).toUpperCase() + el.type.slice(1)} #${el.id}</span>
+        </div>
+        <div class="element-actions">
+          <button onclick="window.selectElementById(${el.id})">✏️</button>
+        </div>
+      `;
+      listContainer.appendChild(div);
+    });
+    
+    // Medidas en tiempo real
+    document.getElementById('med-ancho').innerHTML = (wardrobeSize.width * 100).toFixed(0);
+    document.getElementById('med-alto').innerHTML = (wardrobeSize.height * 100).toFixed(0);
+    document.getElementById('med-fondo').innerHTML = (wardrobeSize.depth * 100).toFixed(0);
+    document.getElementById('med-elementos').innerHTML = elements.length;
+    
+    // Info selección
+    const infoDiv = document.getElementById('selected-info');
+    if (selectedElement) {
+      infoDiv.innerHTML = `<div style="color: #C4A46B; font-size: 12px;">${selectedElement.type.toUpperCase()} #${selectedElement.id}</div>`;
+    } else {
+      infoDiv.innerHTML = `<div style="color: #aaa; font-size: 12px;">Ninguno seleccionado</div>`;
+    }
+  }
+  
+  // Seleccionar por ID (desde UI)
+  window.selectElementById = function(id) {
+    const el = elements.find(e => e.id === id);
+    if (el) selectElement(el);
+  };
+  
+  // Vistas predefinidas
+  function setView(view) {
+    switch(view) {
+      case 'front':
+        camera.position.set(0, 1.2, 5);
+        controls.target.set(0, 1.2, 0);
+        break;
+      case 'side':
+        camera.position.set(4, 1.2, 0);
+        controls.target.set(0, 1.2, 0);
+        break;
+      case 'top':
+        camera.position.set(0, 5, 0);
+        controls.target.set(0, 1.2, 0);
+        break;
+      case 'iso':
+        camera.position.set(4, 3, 4);
+        controls.target.set(0, 1.2, 0);
+        break;
+    }
+    controls.update();
+  }
+  
+  function resetView() {
+    camera.position.set(4, 2.5, 4);
+    controls.target.set(0, 1.2, 0);
+    controls.update();
+  }
+  
+  // Exportar a PDF
+  function exportPDF() {
+    alert('📄 Generando PDF del diseño...\n\n' + getDesignSummary());
+  }
+  
+  // Enviar por email
+  function sendEmail() {
+    const summary = getDesignSummary();
+    window.location.href = `mailto:miguel_716@hotmail.com?subject=Diseño de armario CR Design&body=${encodeURIComponent(summary)}`;
+    showToast('✉ Abriendo cliente de correo...');
+  }
+  
+  function getDesignSummary() {
+    let summary = `🔷 DISEÑO DE ARMARIO - CR DESIGN 🔷\n\n`;
+    summary += `📏 MEDIDAS:\n`;
+    summary += `• Ancho: ${(wardrobeSize.width * 100).toFixed(0)} cm\n`;
+    summary += `• Alto: ${(wardrobeSize.height * 100).toFixed(0)} cm\n`;
+    summary += `• Fondo: ${(wardrobeSize.depth * 100).toFixed(0)} cm\n\n`;
+    summary += `📦 ELEMENTOS (${elements.length}):\n`;
+    elements.forEach(el => {
+      summary += `• ${el.type}: posición (${(el.position.x*100).toFixed(0)}, ${(el.position.y*100).toFixed(0)}) cm\n`;
+    });
+    return summary;
+  }
+  
+  function showToast(msg) {
+    // Implementación simple
+    alert(msg);
+  }
+  
+  // Exponer funciones globales
+  window.addElement = addElement;
+  window.updateWardrobeSize = updateWardrobeSize;
+  window.updateColors = updateColors;
+  window.updateElementPosition = updateElementPosition;
+  window.updateElementSize = updateElementSize;
+  window.deleteSelected = deleteSelected;
+  window.setView = setView;
+  window.resetView = resetView;
+  window.exportPDF = exportPDF;
+  window.sendEmail = sendEmail;
+  
+  // Animación
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  
+  // Iniciar
+  init();
+  animate();
+  
+  // Resize
+  window.addEventListener('resize', () => {
+    const container = document.getElementById('canvas-container');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
   });
-  syncUI();
-  renderCols();
-  renderMods();
-}
-
-function renderCols(){
-  const el = document.getElementById('colList');
-  if(!el) return;
-  el.innerHTML = '';
-  S.cols.forEach((c,i)=>{
-    const d = document.createElement('div');
-    d.className = 'ci'+(i===S.sel?' sel':'');
-    d.innerHTML = `<span class="clbl">${c.lbl}</span><input class="cwi" value="${(c.w*100).toFixed(0)}"><button class="cdel" onclick="delCol(${i})">×</button>`;
-    d.querySelector('.cwi').onchange = (e) => { let v=parseFloat(e.target.value); if(v<30)v=30; if(v>200)v=200; S.cols[i].w=v/100; build(); };
-    d.onclick = () => { S.sel=i; build(); };
-    el.appendChild(d);
-  });
-  document.getElementById('colSelHint').innerHTML = S.cols[S.sel]?.lbl || '—';
-}
-
-function renderMods(){
-  const el = document.getElementById('modulesList');
-  if(!el) return;
-  const col = S.cols[S.sel];
-  if(!col){ el.innerHTML='<div style="color:#666">Selecciona una columna</div>'; return; }
-  el.innerHTML = '';
-  col.mods.forEach((mod, idx) => {
-    const d = document.createElement('div');
-    d.className = 'mod-item';
-    d.draggable = true;
-    d.ondragstart = (e) => { e.dataTransfer.setData('idx', idx); };
-    d.ondragover = (e) => e.preventDefault();
-    d.ondrop = (e) => {
-      e.preventDefault();
-      const from = parseInt(e.dataTransfer.getData('idx'));
-      if(from===idx) return;
-      const mov = col.mods.splice(from,1)[0];
-      col.mods.splice(idx,0,mov);
-      build();
-    };
-    d.innerHTML = `
-      <div class="mod-header"><span class="mod-name">${modTypes[mod.type]||mod.type}</span><button class="mod-del" onclick="delModule(${idx})">×</button></div>
-      <div class="mod-controls"><select onchange="changeModType(${idx},this.value)"><option value="barra" ${mod.type==='barra'?'selected':''}>🎽 Barra</option><option value="barra_larga" ${mod.type==='barra_larga'?'selected':''}>👗 Barra larga</option><option value="estantes" ${mod.type==='estantes'?'selected':''}>📦 Estantes</option><option value="cajones" ${mod.type==='cajones'?'selected':''}>🗂 Cajones</option><option value="zapatero" ${mod.type==='zapatero'?'selected':''}>👟 Zapatero</option><option value="pantalonero" ${mod.type==='pantalonero'?'selected':''}>👖 Pantalonero</option><option value="luz" ${mod.type==='luz'?'selected':''}>💡 LED</option></select><button onclick="moveMod(${idx},-1)">↑</button><button onclick="moveMod(${idx},1)">↓</button></div>
-    `;
-    el.appendChild(d);
-  });
-}
-
-function addModule(){ S.cols[S.sel]?.mods.push({type:document.getElementById('addModuleSelect').value}); build(); }
-function delModule(i){ S.cols[S.sel]?.mods.splice(i,1); build(); }
-function changeModType(i, t){ if(S.cols[S.sel]) S.cols[S.sel].mods[i].type = t; build(); }
-function moveMod(i, dir){ let m = S.cols[S.sel]?.mods; if(m && i+dir>=0 && i+dir<m.length){ [m[i], m[i+dir]] = [m[i+dir], m[i]]; build(); } }
-function addCol(){ S.cols.push({id:nextId++, w:0.6, lbl:'Col '+String.fromCharCode(65+S.cols.length), mods:[]}); S.sel=S.cols.length-1; build(); }
-function delCol(i){ if(S.cols.length>1){ S.cols.splice(i,1); if(S.sel>=S.cols.length) S.sel=S.cols.length-1; build(); } }
-function syncUI(){ let tw=(anchoTotal()*100).toFixed(0); document.getElementById('inW').value=tw; document.getElementById('rW').innerHTML=tw+' cm'; document.getElementById('rH').innerHTML=(S.H*100).toFixed(0)+' cm'; document.getElementById('rD').innerHTML=(S.D*100).toFixed(0)+' cm'; document.getElementById('rCols').innerHTML=S.cols.length; }
-function getConfig(){ let txt=`📏 MEDIDAS:\n• Ancho: ${(anchoTotal()*100).toFixed(0)} cm\n• Alto: ${(S.H*100).toFixed(0)} cm\n• Fondo: ${(S.D*100).toFixed(0)} cm\n• Puertas: ${S.door}\n• Color: ${S.color}\n\n📦 COLUMNAS:\n`; S.cols.forEach(c=>{ txt+=`\n${c.lbl} (${(c.w*100).toFixed(0)} cm):\n`; c.mods.forEach(m=>txt+=`  • ${modTypes[m.type]||m.type}\n`); }); return txt; }
-
-// Cámara
-let ry=0.65, rx=0.25, dist=3, dragging=false, lx=0, ly=0;
-function posCam(){ let H=S.H; cam.position.x=Math.sin(ry)*dist*Math.cos(rx); cam.position.z=Math.cos(ry)*dist*Math.cos(rx); cam.position.y=H*0.5+dist*Math.sin(rx); cam.lookAt(0,H*0.5,0); }
-function setView(v,btn){ document.querySelectorAll('.vc').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(v==='front'){ry=0;rx=0.1;} if(v==='corner'){ry=0.65;rx=0.25;} if(v==='top'){ry=0.1;rx=1.2;} posCam(); }
-cv.onmousedown = e => { dragging=true; lx=e.clientX; ly=e.clientY; };
-window.onmouseup = () => dragging=false;
-window.onmousemove = e => { if(!dragging) return; ry+=(e.clientX-lx)*0.007; rx+=(e.clientY-ly)*0.005; rx=Math.max(-0.3,Math.min(1.3,rx)); lx=e.clientX; ly=e.clientY; posCam(); };
-cv.onwheel = e => { dist=Math.max(1.2,Math.min(6,dist*(1+e.deltaY*0.002))); posCam(); };
-cv.onclick = e => { const r=cv.getBoundingClientRect(); const m2=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1); const ray=new THREE.Raycaster(); ray.setFromCamera(m2,cam); const ints=ray.intersectObjects(hits); if(ints.length){ S.sel=ints[0].object.userData.idx; build(); } };
-function resize(){ const w=cv.parentElement.clientWidth, h=cv.parentElement.clientHeight; ren.setSize(w,h); cam.aspect=w/h; cam.updateProjectionMatrix(); }
-window.onresize = resize;
-resize();
-function animate(){ requestAnimationFrame(animate); ren.render(sc,cam); }
-animate();
-
-// Eventos
-document.getElementById('inH').onchange = e => { S.H = parseInt(e.target.value)/100; build(); posCam(); };
-document.getElementById('inD').onchange = e => { S.D = parseInt(e.target.value)/100; build(); };
-document.getElementById('dtypes').onclick = e => { let b=e.target.closest('.fb'); if(b){ document.querySelectorAll('#dtypes .fb').forEach(x=>x.classList.remove('active')); b.classList.add('active'); S.door=b.dataset.v; build(); } };
-document.getElementById('handles').onclick = e => { let b=e.target.closest('.fb'); if(b){ document.querySelectorAll('#handles .fb').forEach(x=>x.classList.remove('active')); b.classList.add('active'); S.handle=b.dataset.v; build(); } };
-document.getElementById('cpicker').onclick = e => { let d=e.target.closest('.sw'); if(d){ document.querySelectorAll('#cpicker .sw').forEach(x=>x.classList.remove('active')); d.classList.add('active'); S.color=d.dataset.c; build(); } };
-function switchTab(id,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active')); if(el)el.classList.add('active'); document.getElementById('pane-'+id).classList.add('active'); }
-
-function downloadPDF(){ html2pdf().set({margin:1, filename:`armario_${Date.now()}.pdf`}).from(`<html><head><meta charset="UTF-8"></head><body><pre>${getConfig()}</pre></body></html>`).save(); showToast('📄 PDF listo'); }
-function openWA(){ window.open(`https://wa.me/573146309609?text=${encodeURIComponent('Hola! Me interesa este diseño:\n\n'+getConfig())}`,'_blank'); }
-function openModal(){ document.getElementById('mconf').innerText = getConfig(); document.getElementById('overlay').classList.add('open'); }
-function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
-function sendEmail(){ let n=document.getElementById('cName').value, e=document.getElementById('cEmail').value; if(!n||!e){ alert('Completa nombre y email'); return; } window.location.href=`mailto:miguel_716@hotmail.com?subject=Diseño armario&body=${encodeURIComponent(getConfig()+'\n\nNombre: '+n+'\nEmail: '+e)}`; closeModal(); showToast('✓ Enviado'); }
-function showToast(m){ let t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
-
-build();
-posCam();
 </script>
 </body>
 </html>
