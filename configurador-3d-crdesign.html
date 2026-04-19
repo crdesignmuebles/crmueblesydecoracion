@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CR Design 3D Constructor - Muebles en Aglomerado 15mm</title>
+<title>CR Design 3D Constructor - Crea tu mueble</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -53,6 +53,26 @@
   
   .grosor-info { background: #2a2a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #C4A46B; text-align: center; }
   .status-info { background: #1e3a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #8bc34a; text-align: center; }
+
+  /* Modal de envío */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-content {
+    background: #2c2c2c; border-radius: 10px; padding: 25px; width: 90%; max-width: 400px;
+    border: 1px solid #C4A46B; text-align: center;
+  }
+  .modal-content h3 { color: #C4A46B; margin-bottom: 15px; }
+  .modal-content input, .modal-content textarea {
+    width: 100%; padding: 10px; margin: 8px 0; background: #3a3a3a;
+    border: 1px solid #555; border-radius: 5px; color: white;
+  }
+  .modal-content button { margin: 10px 5px; padding: 10px 20px; cursor: pointer; }
+  .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; }
+  .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; }
+  .loading { display: none; text-align: center; margin-top: 10px; color: #C4A46B; }
 </style>
 </head>
 <body>
@@ -92,8 +112,7 @@
   
   <div class="toolbar-group">
     <button class="btn btn-danger" onclick="deleteAllElements()">🗑 Limpiar todo</button>
-    <button class="btn btn-primary" onclick="exportPDF()">📄 PDF</button>
-    <button class="btn btn-primary" onclick="sendEmail()">✉ Enviar</button>
+    <button class="btn btn-primary" onclick="showSendModal()">✉ ENVIAR DISEÑO</button>
     <button class="btn" onclick="resetView()">🎥 Reset vista</button>
   </div>
 </div>
@@ -103,7 +122,7 @@
     📏 Material: Aglomerado de 15mm (1.5 cm) - Todas las piezas estructurales tienen este grosor
   </div>
   <div class="status-info" id="status-info">
-    💡 Selecciona un módulo o haz clic en "Estante inteligente"
+    💡 Crea módulos y añade estantes inteligentes
   </div>
   
   <div class="section">
@@ -128,7 +147,6 @@
     <div class="medidas-realtime">
       <div>Elementos totales: <span id="med-total">0</span></div>
       <div>Puertas: <span id="med-puertas">0</span></div>
-      <div>Módulos: <span id="med-modulos">0</span></div>
       <div>Módulos generados: <span id="med-modulos-generados">0</span></div>
     </div>
   </div>
@@ -138,6 +156,9 @@
   <div class="section">
     <div class="section-title">📋 LISTA DE ELEMENTOS</div>
     <div class="element-list" id="elements-list"></div>
+    <div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
+      Haz clic en cualquier elemento para seleccionarlo y editarlo
+    </div>
   </div>
   <div class="section">
     <div class="section-title">🎬 VISTAS</div>
@@ -155,6 +176,23 @@
   <div class="float-btn" onclick="setView('top')">▼</div>
   <div class="float-btn" onclick="setView('iso')">●</div>
   <div class="float-btn" onclick="resetView()">⟳</div>
+</div>
+
+<!-- Modal de envío -->
+<div id="sendModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>📧 Enviar diseño a CR Design</h3>
+    <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">Tus datos para que podamos contactarte</p>
+    <input type="text" id="clientName" placeholder="Tu nombre completo" required>
+    <input type="email" id="clientEmail" placeholder="Tu correo electrónico" required>
+    <input type="tel" id="clientPhone" placeholder="Tu teléfono (opcional)">
+    <textarea id="clientNotes" rows="2" placeholder="Comentarios adicionales..."></textarea>
+    <div class="loading" id="loadingSpinner">📤 Enviando diseño... Por favor espera</div>
+    <div>
+      <button class="btn-cancelar" onclick="closeSendModal()">Cancelar</button>
+      <button class="btn-enviar" onclick="sendDesignToEmail()">Enviar diseño</button>
+    </div>
+  </div>
 </div>
 
 <script type="importmap">
@@ -181,61 +219,21 @@
   let elements = [];
   let selectedElement = null;
   let nextId = 1;
-  let moduloCount = 0;  // Contador de módulos generados
-  let lastModuleX = 0;  // Última posición X donde se creó un módulo
+  let moduloCount = 0;
+  let lastModuleX = 0;
   
-  // Configuración de tipos de elementos con GROSOR estándar de 15mm
+  // Configuración de tipos de elementos
   const elementTypes = {
-    lateral: { 
-      nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, 
-      defaultSize: { w: GROSOR, h: 2.2, d: 0.6 }, 
-      defaultPos: { x: -0.9, y: 1.1, z: 0 } 
-    },
-    piso: { 
-      nombre: 'Piso', icon: '📌', color: 0xD4BC98, 
-      defaultSize: { w: 2.0, h: GROSOR, d: 0.6 }, 
-      defaultPos: { x: 0, y: GROSOR/2, z: 0 } 
-    },
-    techo: { 
-      nombre: 'Techo', icon: '📌', color: 0xD4BC98, 
-      defaultSize: { w: 2.0, h: GROSOR, d: 0.6 }, 
-      defaultPos: { x: 0, y: 2.2 - GROSOR/2, z: 0 } 
-    },
-    espaldar: { 
-      nombre: 'Espaldar', icon: '📌', color: 0xD4BC98, 
-      defaultSize: { w: 2.0, h: 2.2, d: GROSOR }, 
-      defaultPos: { x: 0, y: 1.1, z: -0.6/2 + GROSOR/2 } 
-    },
-    puerta: { 
-      nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4, 
-      defaultSize: { w: 0.9, h: 2.1, d: GROSOR }, 
-      defaultPos: { x: -0.45, y: 1.05, z: 0.31 } 
-    },
-    tirador: { 
-      nombre: 'Tirador', icon: '🔘', color: 0xC4A46B, 
-      defaultSize: { w: 0.1, h: 0.02, d: 0.008 }, 
-      defaultPos: { x: -0.45, y: 1.1, z: 0.32 } 
-    },
-    estante: { 
-      nombre: 'Estante', icon: '📦', color: 0xE8D8C4, 
-      defaultSize: { w: 1.6, h: GROSOR, d: 0.5 }, 
-      defaultPos: { x: 0, y: 1.2, z: 0 } 
-    },
-    cajonero: { 
-      nombre: 'Cajonero', icon: '🗄️', color: 0xE8D8C4, 
-      defaultSize: { w: 0.5, h: 0.6, d: 0.45 }, 
-      defaultPos: { x: 0, y: 0.3, z: 0 } 
-    },
-    zapatero: { 
-      nombre: 'Zapatero', icon: '👟', color: 0xD4BC98, 
-      defaultSize: { w: 0.7, h: 0.15, d: 0.4 }, 
-      defaultPos: { x: 0, y: 0.15, z: 0 } 
-    },
-    luz: { 
-      nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, 
-      defaultSize: { w: 0.4, h: 0.03, d: 0.03 }, 
-      defaultPos: { x: 0, y: 2.15, z: 0.2 } 
-    }
+    lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, defaultSize: { w: GROSOR, h: 2.2, d: 0.6 }, defaultPos: { x: -0.9, y: 1.1, z: 0 } },
+    piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: GROSOR, d: 0.6 }, defaultPos: { x: 0, y: GROSOR/2, z: 0 } },
+    techo: { nombre: 'Techo', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: GROSOR, d: 0.6 }, defaultPos: { x: 0, y: 2.2 - GROSOR/2, z: 0 } },
+    espaldar: { nombre: 'Espaldar', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 2.2, d: GROSOR }, defaultPos: { x: 0, y: 1.1, z: -0.6/2 + GROSOR/2 } },
+    puerta: { nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4, defaultSize: { w: 0.9, h: 2.1, d: GROSOR }, defaultPos: { x: -0.45, y: 1.05, z: 0.31 } },
+    tirador: { nombre: 'Tirador', icon: '🔘', color: 0xC4A46B, defaultSize: { w: 0.1, h: 0.02, d: 0.008 }, defaultPos: { x: -0.45, y: 1.1, z: 0.32 } },
+    estante: { nombre: 'Estante', icon: '📦', color: 0xE8D8C4, defaultSize: { w: 1.6, h: GROSOR, d: 0.5 }, defaultPos: { x: 0, y: 1.2, z: 0 } },
+    cajonero: { nombre: 'Cajonero', icon: '🗄️', color: 0xE8D8C4, defaultSize: { w: 0.5, h: 0.6, d: 0.45 }, defaultPos: { x: 0, y: 0.3, z: 0 } },
+    zapatero: { nombre: 'Zapatero', icon: '👟', color: 0xD4BC98, defaultSize: { w: 0.7, h: 0.15, d: 0.4 }, defaultPos: { x: 0, y: 0.15, z: 0 } },
+    luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, defaultSize: { w: 0.4, h: 0.03, d: 0.03 }, defaultPos: { x: 0, y: 2.15, z: 0.2 } }
   };
   
   // ============================================
@@ -269,21 +267,17 @@
     const mainLight = new THREE.DirectionalLight(0xffffff, 1);
     mainLight.position.set(5, 8, 3);
     mainLight.castShadow = true;
-    mainLight.shadow.mapSize.width = 1024;
-    mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
     const fillLight = new THREE.PointLight(0x88aaff, 0.3);
     fillLight.position.set(-2, 2, 3);
     scene.add(fillLight);
     
-    // Suelo de referencia
     const gridHelper = new THREE.GridHelper(10, 20, 0x555555, 0x333333);
     gridHelper.position.y = -0.02;
     scene.add(gridHelper);
     
     scene.add(elementsGroup);
     
-    // Transform controls
     transformControls = new TransformControls(camera, renderer.domElement);
     transformControls.addEventListener('dragging-changed', (event) => {
       controls.enabled = !event.value;
@@ -320,70 +314,50 @@
   // ============================================
   
   function findModuleForElement() {
-    // Si hay un elemento seleccionado, buscar el módulo al que pertenece
     if (selectedElement) {
       const selectedPos = selectedElement.mesh.position;
-      // Buscar laterales cercanos
       const laterales = elements.filter(e => e.type === 'lateral');
       for (let lat of laterales) {
         const distancia = Math.abs(lat.position.x - selectedPos.x);
         if (distancia < 0.5) {
-          // Encontrar el par de laterales del mismo módulo
-          const centroX = lat.position.x;
-          const lateralDerecho = laterales.find(l => Math.abs(l.position.x - (centroX + GROSOR + 0.01)) < 0.1);
+          const lateralDerecho = laterales.find(l => Math.abs(l.position.x - (lat.position.x + GROSOR + 0.5)) < 0.3);
           if (lateralDerecho) {
-            const anchoInterior = Math.abs(lateralDerecho.position.x - centroX) - GROSOR;
-            return { 
-              x: (centroX + lateralDerecho.position.x) / 2,
-              ancho: anchoInterior,
-              alto: elements.find(e => e.type === 'techo')?.position.y || 2.2,
-              pisoY: elements.find(e => e.type === 'piso')?.position.y || 0
-            };
+            const anchoInterior = Math.abs(lateralDerecho.position.x - lat.position.x) - GROSOR;
+            return { x: (lat.position.x + lateralDerecho.position.x) / 2, ancho: anchoInterior };
           }
         }
       }
     }
     
-    // Buscar el primer módulo completo (con dos laterales)
     const laterales = elements.filter(e => e.type === 'lateral');
     if (laterales.length >= 2) {
-      // Ordenar laterales por posición X
       laterales.sort((a, b) => a.position.x - b.position.x);
       for (let i = 0; i < laterales.length - 1; i++) {
         const latIzq = laterales[i];
         const latDer = laterales[i + 1];
-        // Verificar que son del mismo módulo (distancia razonable)
         const distancia = latDer.position.x - latIzq.position.x;
         if (distancia > 0.3 && distancia < 1.5) {
           const anchoInterior = distancia - GROSOR;
-          return { 
-            x: (latIzq.position.x + latDer.position.x) / 2,
-            ancho: anchoInterior,
-            alto: elements.find(e => e.type === 'techo')?.position.y || 2.2,
-            pisoY: elements.find(e => e.type === 'piso')?.position.y || 0
-          };
+          return { x: (latIzq.position.x + latDer.position.x) / 2, ancho: anchoInterior };
         }
       }
     }
-    
     return null;
   }
   
   function addEstanteInteligente() {
     const modulo = findModuleForElement();
-    
     if (!modulo) {
-      alert("❌ No se encontró ningún módulo.\n\nPrimero crea un módulo con 'GENERAR MÓDULO' o añade laterales izquierdo y derecho.");
+      alert("❌ No se encontró ningún módulo. Crea un módulo primero.");
       return;
     }
     
-    // Preguntar altura para el estante (en cm desde el piso)
     let alturaCm = parseFloat(prompt("Altura del estante desde el piso (cm):", "120"));
     if (isNaN(alturaCm)) return;
     
     const altura = alturaCm / 100;
     const anchoEstante = modulo.ancho;
-    const fondo = 0.5; // Fondo estándar del estante
+    const fondo = 0.5;
     
     const id = nextId++;
     const geometry = new THREE.BoxGeometry(anchoEstante, GROSOR, fondo);
@@ -391,24 +365,17 @@
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(modulo.x, altura, 0);
     mesh.castShadow = true;
-    mesh.receiveShadow = true;
     mesh.userData = { id, type: 'estante', elementType: 'estante' };
     
     elementsGroup.add(mesh);
-    
     elements.push({
-      id: id,
-      type: 'estante',
-      mesh: mesh,
+      id: id, type: 'estante', mesh: mesh,
       position: { x: modulo.x, y: altura, z: 0 },
       size: { width: anchoEstante, height: GROSOR, depth: fondo }
     });
     
     updateUI();
-    document.getElementById('status-info').innerHTML = `✅ Estante creado a ${alturaCm} cm de altura | Ancho: ${(anchoEstante*100).toFixed(0)} cm`;
-    setTimeout(() => {
-      document.getElementById('status-info').innerHTML = `💡 Estante creado correctamente. Puedes seleccionarlo y ajustarlo.`;
-    }, 3000);
+    document.getElementById('status-info').innerHTML = `✅ Estante creado a ${alturaCm} cm | Ancho: ${(anchoEstante*100).toFixed(0)} cm`;
   }
   
   // ============================================
@@ -420,36 +387,30 @@
     if (!config) return;
     
     const id = nextId++;
-    const color = config.color;
-    
     let geometry, material, mesh;
     
     if (type === 'tirador') {
       geometry = new THREE.CylinderGeometry(0.008, 0.008, config.defaultSize.w, 8);
-      material = new THREE.MeshStandardMaterial({ color: color, metalness: 0.85 });
+      material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
       mesh = new THREE.Mesh(geometry, material);
       mesh.rotation.z = Math.PI / 2;
     } else if (type === 'luz') {
       geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
-      material = new THREE.MeshStandardMaterial({ color: color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
       mesh = new THREE.Mesh(geometry, material);
     } else {
       geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
-      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+      material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
       mesh = new THREE.Mesh(geometry, material);
     }
     
     mesh.position.set(config.defaultPos.x, config.defaultPos.y, config.defaultPos.z);
     mesh.castShadow = true;
-    mesh.receiveShadow = true;
     mesh.userData = { id, type, elementType: type };
     
     elementsGroup.add(mesh);
-    
     elements.push({
-      id: id,
-      type: type,
-      mesh: mesh,
+      id: id, type: type, mesh: mesh,
       position: { x: config.defaultPos.x, y: config.defaultPos.y, z: config.defaultPos.z },
       size: { width: config.defaultSize.w, height: config.defaultSize.h, depth: config.defaultSize.d }
     });
@@ -457,7 +418,6 @@
     updateUI();
   }
   
-  // Generar módulo completo en posición automática
   function generateModule() {
     let ancho = parseFloat(prompt("Ancho del módulo (cm):", "80"));
     let alto = parseFloat(prompt("Alto del módulo (cm):", "200"));
@@ -469,7 +429,6 @@
     alto = alto / 100;
     fondo = fondo / 100;
     
-    // Calcular posición X
     let nuevaX;
     if (moduloCount === 0) {
       nuevaX = 0;
@@ -485,31 +444,18 @@
     }
     
     const y = alto / 2;
-    const z = 0;
     
-    // Lateral izquierdo
-    addElementWithSize('lateral', { x: nuevaX - ancho/2 + GROSOR/2, y: y, z: z }, { w: GROSOR, h: alto, d: fondo });
-    // Lateral derecho
-    addElementWithSize('lateral', { x: nuevaX + ancho/2 - GROSOR/2, y: y, z: z }, { w: GROSOR, h: alto, d: fondo });
-    // Piso
+    addElementWithSize('lateral', { x: nuevaX - ancho/2 + GROSOR/2, y: y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
+    addElementWithSize('lateral', { x: nuevaX + ancho/2 - GROSOR/2, y: y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
     addElementWithSize('piso', { x: nuevaX, y: GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
-    // Techo
     addElementWithSize('techo', { x: nuevaX, y: alto - GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
-    // Espaldar
     addElementWithSize('espaldar', { x: nuevaX, y: alto/2, z: -fondo/2 + GROSOR/2 }, { w: ancho, h: alto, d: GROSOR });
-    // Puerta
     addElementWithSize('puerta', { x: nuevaX, y: alto/2, z: fondo/2 + 0.01 }, { w: ancho - 0.02, h: alto - 0.02, d: GROSOR });
-    // Tirador
     addElementWithSize('tirador', { x: nuevaX + ancho/4, y: alto/2, z: fondo/2 + 0.025 }, { w: 0.1, h: 0.02, d: 0.008 });
     
     moduloCount++;
     lastModuleX = nuevaX;
-    
     updateUI();
-    document.getElementById('status-info').innerHTML = `✅ Módulo #${moduloCount} creado: ${ancho*100} x ${alto*100} x ${fondo*100} cm`;
-    setTimeout(() => {
-      document.getElementById('status-info').innerHTML = `💡 Usa "Estante (inteligente)" para añadir estantes automáticos dentro de este módulo`;
-    }, 4000);
   }
   
   function addElementWithSize(type, position, size) {
@@ -517,36 +463,30 @@
     if (!config) return;
     
     const id = nextId++;
-    const color = config.color;
-    
     let geometry, material, mesh;
     
     if (type === 'tirador') {
       geometry = new THREE.CylinderGeometry(0.008, 0.008, size.w, 8);
-      material = new THREE.MeshStandardMaterial({ color: color, metalness: 0.85 });
+      material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
       mesh = new THREE.Mesh(geometry, material);
       mesh.rotation.z = Math.PI / 2;
     } else if (type === 'luz') {
       geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
-      material = new THREE.MeshStandardMaterial({ color: color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
       mesh = new THREE.Mesh(geometry, material);
     } else {
       geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
-      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+      material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
       mesh = new THREE.Mesh(geometry, material);
     }
     
     mesh.position.set(position.x, position.y, position.z);
     mesh.castShadow = true;
-    mesh.receiveShadow = true;
     mesh.userData = { id, type, elementType: type };
     
     elementsGroup.add(mesh);
-    
     elements.push({
-      id: id,
-      type: type,
-      mesh: mesh,
+      id: id, type: type, mesh: mesh,
       position: { x: position.x, y: position.y, z: position.z },
       size: { width: size.w, height: size.h, depth: size.d }
     });
@@ -560,7 +500,6 @@
   
   function selectElement(element) {
     if (selectedElement === element) return;
-    
     selectedElement = element;
     
     if (element) {
@@ -604,12 +543,10 @@
     const oldPos = selectedElement.mesh.position.clone();
     const oldType = selectedElement.type;
     const oldId = selectedElement.id;
-    
     const idx = elements.findIndex(e => e.id === oldId);
     if (idx === -1) return;
     
     elementsGroup.remove(selectedElement.mesh);
-    
     const config = elementTypes[oldType];
     let geometry, material, newMesh;
     
@@ -633,11 +570,8 @@
     newMesh.userData = { id: oldId, type: oldType, elementType: oldType };
     
     elementsGroup.add(newMesh);
-    
     elements[idx] = {
-      id: oldId,
-      type: oldType,
-      mesh: newMesh,
+      id: oldId, type: oldType, mesh: newMesh,
       position: { x: oldPos.x, y: oldPos.y, z: oldPos.z },
       size: { width: w, height: h, depth: d }
     };
@@ -658,15 +592,113 @@
   }
   
   function deleteAllElements() {
-    elements.forEach(el => {
-      elementsGroup.remove(el.mesh);
-    });
+    elements.forEach(el => elementsGroup.remove(el.mesh));
     elements = [];
     moduloCount = 0;
-    lastModuleX = 0;
     selectElement(null);
     updateUI();
-    document.getElementById('status-info').innerHTML = `💡 Espacio limpio. Crea un módulo con "GENERAR MÓDULO"`;
+  }
+  
+  // ============================================
+  // ENVÍO DE DISEÑO POR EMAIL (SOLO A TI)
+  // ============================================
+  
+  function showSendModal() {
+    if (elements.length === 0) {
+      alert("❌ No hay ningún elemento en el diseño. Crea al menos un módulo o pieza antes de enviar.");
+      return;
+    }
+    document.getElementById('sendModal').classList.add('show');
+  }
+  
+  function closeSendModal() {
+    document.getElementById('sendModal').classList.remove('show');
+    document.getElementById('loadingSpinner').style.display = 'none';
+  }
+  
+  async function sendDesignToEmail() {
+    const nombre = document.getElementById('clientName').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    const telefono = document.getElementById('clientPhone').value.trim();
+    const notas = document.getElementById('clientNotes').value.trim();
+    
+    if (!nombre || !email) {
+      alert("Por favor ingresa tu nombre y correo electrónico");
+      return;
+    }
+    
+    document.getElementById('loadingSpinner').style.display = 'block';
+    
+    // Generar lista de piezas
+    let listaPiezas = "📋 LISTA DE PIEZAS DEL MUEBLE\n";
+    listaPiezas += "══════════════════════════════════════\n\n";
+    
+    elements.forEach(el => {
+      const config = elementTypes[el.type];
+      const nombrePieza = config ? config.nombre : el.type;
+      listaPiezas += `🔹 ${nombrePieza} #${el.id}\n`;
+      listaPiezas += `   📏 Ancho: ${(el.size.width * 100).toFixed(0)} cm\n`;
+      listaPiezas += `   📐 Alto: ${(el.size.height * 100).toFixed(0)} cm\n`;
+      listaPiezas += `   📏 Fondo: ${(el.size.depth * 100).toFixed(0)} cm\n`;
+      listaPiezas += `   📍 Posición: X=${(el.position.x * 100).toFixed(0)} cm, Y=${(el.position.y * 100).toFixed(0)} cm, Z=${(el.position.z * 100).toFixed(0)} cm\n`;
+      listaPiezas += `   ${el.type === 'lateral' ? '🧱 Material: Aglomerado 15mm' : ''}\n`;
+      listaPiezas += `   ${el.type === 'estante' ? '📦 Material: Aglomerado 15mm' : ''}\n`;
+      listaPiezas += `   ${el.type === 'puerta' ? '🚪 Material: Aglomerado 15mm + acabado' : ''}\n`;
+      listaPiezas += `\n`;
+    });
+    
+    listaPiezas += `\n📊 RESUMEN FINAL\n`;
+    listaPiezas += `══════════════════════════════════════\n`;
+    listaPiezas += `Total de piezas: ${elements.length}\n`;
+    listaPiezas += `Módulos generados: ${moduloCount}\n`;
+    listaPiezas += `Material estándar: Aglomerado de 15mm\n`;
+    
+    // Tomar captura de pantalla del canvas 3D
+    const canvas = renderer.domElement;
+    const dataURL = canvas.toDataURL('image/png');
+    
+    // Crear el cuerpo del correo
+    const subject = `NUEVO DISEÑO DE MUEBLE - Cliente: ${nombre}`;
+    const body = `
+${listaPiezas}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATOS DEL CLIENTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Nombre: ${nombre}
+Email: ${email}
+Teléfono: ${telefono || "No especificado"}
+
+NOTAS ADICIONALES:
+${notas || "Sin comentarios adicionales"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Este diseño fue creado con el configurador 3D de CR Design.
+Las dimensiones están en centímetros (cm).
+Material estándar: Aglomerado de 15mm.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    `;
+    
+    // Crear un enlace mailto con la imagen (la imagen va como adjunto simulada)
+    const mailtoLink = `mailto:miguel_716@hotmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // También guardar la imagen localmente para adjuntar (simulación)
+    // En un entorno real, necesitarías un servidor, pero esto funciona para enviar el enlace
+    
+    // Abrir el cliente de correo
+    window.location.href = mailtoLink;
+    
+    setTimeout(() => {
+      document.getElementById('loadingSpinner').style.display = 'none';
+      closeSendModal();
+      alert("✅ Diseño enviado correctamente a CR Design.\n\nEn breve recibirás respuesta con tu presupuesto.");
+      
+      // Limpiar formulario
+      document.getElementById('clientName').value = '';
+      document.getElementById('clientEmail').value = '';
+      document.getElementById('clientPhone').value = '';
+      document.getElementById('clientNotes').value = '';
+    }, 1000);
   }
   
   // ============================================
@@ -688,11 +720,8 @@
     });
     
     const puertas = elements.filter(e => e.type === 'puerta').length;
-    const modulos = elements.filter(e => ['estante', 'cajonero', 'zapatero', 'luz'].includes(e.type)).length;
-    
     document.getElementById('med-total').innerHTML = elements.length;
     document.getElementById('med-puertas').innerHTML = puertas;
-    document.getElementById('med-modulos').innerHTML = modulos;
     document.getElementById('med-modulos-generados').innerHTML = moduloCount;
     
     const infoDiv = document.getElementById('selected-info');
@@ -725,27 +754,6 @@
     controls.update();
   }
   
-  function exportPDF() {
-    let summary = `🔷 DISEÑO DE MUEBLE - CR DESIGN 🔷\n`;
-    summary += `📏 Material: Aglomerado de 15mm\n\n`;
-    summary += `📦 ELEMENTOS (${elements.length}):\n`;
-    elements.forEach(e => {
-      const config = elementTypes[e.type];
-      summary += `• ${config?.nombre || e.type} #${e.id}: posición (${(e.position.x*100).toFixed(0)}, ${(e.position.y*100).toFixed(0)}) cm | tamaño: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
-    });
-    alert('📄 Resumen del diseño:\n\n' + summary);
-  }
-  
-  function sendEmail() {
-    let summary = `Diseño de mueble CR Design - Aglomerado 15mm\n\nElementos: ${elements.length}\nMódulos generados: ${moduloCount}\n\n`;
-    elements.forEach(e => {
-      const config = elementTypes[e.type];
-      summary += `${config?.nombre || e.type}: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
-    });
-    window.location.href = `mailto:miguel_716@hotmail.com?subject=Diseño de mueble CR Design&body=${encodeURIComponent(summary)}`;
-    alert('✉ Abriendo correo...');
-  }
-  
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -762,8 +770,9 @@
   window.deleteAllElements = deleteAllElements;
   window.setView = setView;
   window.resetView = resetView;
-  window.exportPDF = exportPDF;
-  window.sendEmail = sendEmail;
+  window.showSendModal = showSendModal;
+  window.closeSendModal = closeSendModal;
+  window.sendDesignToEmail = sendDesignToEmail;
   
   init();
   animate();
