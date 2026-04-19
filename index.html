@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CR Muebles y Decoración</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>CR Muebles y Decoración — Diseño 3D de Armarios a Medida</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
@@ -31,6 +31,33 @@
   .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; transition: color 0.3s; }
   .nav-links a:hover { color: var(--gold); }
   
+  /* Menu hamburguesa para móvil */
+  .menu-icon { display: none; font-size: 1.8rem; color: var(--gold); cursor: pointer; }
+  @media (max-width: 900px) {
+    nav { padding: 15px 25px; }
+    .menu-icon { display: block; }
+    .nav-links { 
+      display: none; 
+      position: absolute; 
+      top: 70px; 
+      left: 0; 
+      width: 100%; 
+      background: rgba(26,26,26,0.98);
+      flex-direction: column;
+      padding: 20px;
+      gap: 15px;
+      text-align: center;
+    }
+    .nav-links.active { display: flex; }
+    section { padding: 60px 22px; }
+    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 25px; }
+    .about-img-badge { right: 0; }
+    footer { flex-direction: column; text-align: center; }
+    .stats { padding: 50px 22px; }
+  }
+
   /* HERO */
   .hero {
     height: 100vh; position: relative; display: flex; align-items: center;
@@ -58,17 +85,16 @@
   .btn-gold {
     background: var(--gold); color: var(--dark); padding: 14px 35px;
     text-decoration: none; font-weight: 700; font-size: .85rem;
-    letter-spacing: 2px; text-transform: uppercase; transition: all .3s;
+    letter-spacing: 2px; text-transform: uppercase; transition: all .3s; display: inline-block;
   }
   .btn-gold:hover { background: #b8915a; transform: translateY(-2px); }
   .btn-outline {
     border: 1px solid var(--gold); color: var(--gold); padding: 14px 35px;
     text-decoration: none; font-size: .85rem; letter-spacing: 2px;
-    text-transform: uppercase; transition: all .3s;
+    text-transform: uppercase; transition: all .3s; display: inline-block;
   }
   .btn-outline:hover { background: rgba(201,169,110,.1); }
   
-  /* Scroll Indicator */
   .scroll-indicator {
     position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
     color: var(--gold); display: flex; flex-direction: column;
@@ -82,7 +108,6 @@
   }
   @keyframes scrollAnim { 0%,100%{opacity:1} 50%{opacity:.2} }
 
-  /* General Sections */
   section { padding: 90px 60px; }
   .section-label {
     color: var(--gold); font-size: .75rem; letter-spacing: 4px;
@@ -135,58 +160,40 @@
   .service-card h3 { font-family: 'Playfair Display', serif; color: var(--light); font-size: 1.3rem; margin-bottom: 15px; }
   .service-card p { color: #888; font-size: 0.9rem; line-height: 1.7; }
 
-  /* Design Section */
-  .design-full { width: 100%; height: 100vh; margin: 0; padding: 0; }
-  .design-iframe { width: 100%; height: 100%; border: none; display: block; }
-
-  /* Gallery */
-  .gallery { background: var(--light); }
-  .gallery-header {
-    max-width: 1100px; margin: 0 auto 50px;
-    display: flex; justify-content: space-between; align-items: flex-end;
-    flex-wrap: wrap; gap: 20px;
+  /* Configurador 3D */
+  .configurator-section {
+    background: var(--cream);
+    padding: 0;
+    margin: 0;
   }
-  .gallery-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-    max-width: 1100px; margin: 0 auto;
+  .config-header {
+    text-align: center;
+    padding: 60px 20px 30px;
+    background: var(--dark);
   }
-  .gallery-item {
-    overflow: hidden; position: relative; cursor: pointer;
-    background: #eee; aspect-ratio: 4/3;
+  .config-header .section-label { color: var(--gold); }
+  .config-header .section-title { color: var(--light); }
+  .config-header p { color: #aaa; max-width: 600px; margin: 20px auto 0; font-size: 0.9rem; }
+  .config-wrapper {
+    background: var(--cream);
+    padding: 0;
   }
-  .gallery-item.tall { grid-row: span 2; aspect-ratio: auto; }
-  .gallery-item img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform .5s ease; display: block;
+  .config-wrapper iframe {
+    width: 100%;
+    height: 85vh;
+    min-height: 600px;
+    border: none;
+    display: block;
   }
-  .gallery-item.tall img { min-height: 530px; }
-  .gallery-item:hover img { transform: scale(1.06); }
-  .gallery-overlay {
-    position: absolute; inset: 0; background: rgba(26,26,26,0);
-    display: flex; align-items: center; justify-content: center;
-    transition: background .3s;
+  @media (max-width: 768px) {
+    .config-wrapper iframe {
+      height: 70vh;
+      min-height: 500px;
+    }
+    .config-header {
+      padding: 40px 20px 20px;
+    }
   }
-  .gallery-item:hover .gallery-overlay { background: rgba(26,26,26,0.35); }
-  .overlay-icon {
-    color: white; font-size: 1.8rem; opacity: 0; transition: opacity .3s;
-    background: var(--gold); width: 50px; height: 50px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .gallery-item:hover .overlay-icon { opacity: 1; }
-
-  /* Lightbox */
-  .lightbox {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.92); z-index: 9999;
-    align-items: center; justify-content: center;
-  }
-  .lightbox.active { display: flex; }
-  .lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
-  .lightbox-close {
-    position: absolute; top: 20px; right: 30px;
-    color: white; font-size: 2.5rem; cursor: pointer; line-height: 1;
-  }
-  .lightbox-close:hover { color: var(--gold); }
 
   /* Stats */
   .stats { background: var(--gold); padding: 60px; }
@@ -247,15 +254,20 @@
   }
   .btn-send:hover { background: #b8915a; }
 
-  /* WhatsApp Float Button */
+  /* WhatsApp Float */
   .whatsapp-float {
     position: fixed; bottom: 20px; right: 20px;
-    background: #25D366; color: white; padding: 15px 25px;
+    background: #25D366; color: white; padding: 14px 22px;
     border-radius: 50px; text-decoration: none; font-weight: bold;
     z-index: 9999; display: flex; align-items: center; gap: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: transform 0.3s;
+    font-size: 0.9rem;
   }
   .whatsapp-float:hover { transform: scale(1.05); background: #20b859; }
+  @media (max-width: 480px) {
+    .whatsapp-float { padding: 10px 16px; font-size: 0.8rem; }
+    .whatsapp-float i { font-size: 1rem; }
+  }
 
   /* Footer */
   footer {
@@ -266,28 +278,19 @@
   .footer-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.1rem; }
   footer p { color: #555; font-size: .78rem; }
 
-  /* Media Queries */
-  @media (max-width: 900px) {
-    nav { padding: 12px 20px; }
-    .nav-links { display: none; } /* Agregar menú hamburguesa si se desea */
-    section { padding: 60px 22px; }
-    .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
-    .services-grid { grid-template-columns: 1fr; }
-    .gallery-grid { grid-template-columns: 1fr 1fr; }
-    .gallery-item.tall { grid-row: span 1; }
-    .gallery-item.tall img { min-height: 260px; }
-    .stats-grid { grid-template-columns: 1fr 1fr; gap: 25px; }
-    .gallery-header { flex-direction: column; align-items: flex-start; }
-    .about-img-badge { right: 0; }
-    footer { flex-direction: column; text-align: center; }
-    .stats { padding: 50px 22px; }
-    .design-full { height: 70vh; }
+  /* Lightbox (por si se necesita) */
+  .lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.92); z-index: 9999;
+    align-items: center; justify-content: center;
   }
-
-  @media (max-width: 480px) {
-    .gallery-grid { grid-template-columns: 1fr; }
-    .hero-btns .btn-gold, .hero-btns .btn-outline { padding: 10px 20px; font-size: 0.75rem; }
+  .lightbox.active { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 30px;
+    color: white; font-size: 2.5rem; cursor: pointer; line-height: 1;
   }
+  .lightbox-close:hover { color: var(--gold); }
 </style>
 </head>
 <body>
@@ -301,12 +304,13 @@
 <!-- NAV -->
 <nav>
   <div class="logo">CR <span>Muebles <em style="font-style:italic;font-family:'Georgia',serif;">&</em> Decoración</span></div>
-  <ul class="nav-links">
-    <li><a href="#inicio">Inicio</a></li>
-    <li><a href="#nosotros">Nosotros</a></li>
-    <li><a href="#servicios">Servicios</a></li>
-    <li><a href="#galeria">Portafolio</a></li>
-    <li><a href="#contacto">Contacto</a></li>
+  <div class="menu-icon" onclick="toggleMenu()">☰</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#inicio" onclick="closeMenu()">Inicio</a></li>
+    <li><a href="#nosotros" onclick="closeMenu()">Nosotros</a></li>
+    <li><a href="#servicios" onclick="closeMenu()">Servicios</a></li>
+    <li><a href="#configurador" onclick="closeMenu()">Configurador 3D</a></li>
+    <li><a href="#contacto" onclick="closeMenu()">Contacto</a></li>
   </ul>
 </nav>
 
@@ -318,7 +322,7 @@
     <h1>Transformamos<br>espacios en <span>obras</span><br>de arte</h1>
     <p>Muebles a medida y decoración de interiores con materiales premium. Cada pieza, una historia de calidad y estilo único.</p>
     <div class="hero-btns">
-      <a href="#galeria" class="btn-gold">Ver Portafolio</a>
+      <a href="#configurador" class="btn-gold">Diseña tu armario 3D</a>
       <a href="#contacto" class="btn-outline">Contáctanos</a>
     </div>
   </div>
@@ -395,24 +399,21 @@
   </div>
 </section>
 
-<!-- DESIGN SECTION (opcional - comentado si no existe disenador.html) -->
-<!-- 
-<section class="design-full">
-  <iframe src="disenador.html" style="width:100%; height:100%; border:none;"></iframe>
-</section>
--->
-
-<!-- GALERÍA -->
-<section class="gallery" id="galeria">
-  <div class="gallery-header">
-    <div>
-      <div class="section-label">Nuestro trabajo</div>
-      <h2 class="section-title">Proyectos recientes</h2>
-      <div class="section-line"></div>
-    </div>
-    <a href="#contacto" class="btn-outline" style="display:inline-block;">Solicita el tuyo →</a>
+<!-- CONFIGURADOR 3D - Diseña tu armario -->
+<section class="configurator-section" id="configurador">
+  <div class="config-header">
+    <div class="section-label">✦ Tecnología 3D</div>
+    <h2 class="section-title">Diseña tu armario<br>en tiempo real</h2>
+    <div class="section-line" style="margin: 0 auto 0 auto;"></div>
+    <p>Personaliza medidas, colores y acabados. Visualiza tu mueble en 3D antes de fabricarlo.</p>
   </div>
-  <div class="gallery-grid" id="gallery-grid"></div>
+  <div class="config-wrapper">
+    <iframe 
+      src="configurador.html" 
+      title="Configurador 3D de Armarios - CR Muebles"
+      loading="lazy">
+    </iframe>
+  </div>
 </section>
 
 <!-- STATS -->
@@ -463,7 +464,6 @@
           <label>Cuéntanos tu proyecto</label>
           <textarea name="mensaje" required placeholder="¿Qué tipo de mueble necesitas? ¿Cuál es el espacio?"></textarea>
         </div>
-        <!-- Configuración FormSubmit -->
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_subject" value="Nuevo cliente desde tu página web 🔥">
@@ -473,8 +473,8 @@
   </div>
 </section>
 
-<!-- WHATSAPP FLOAT (solo uno, fuera del footer) -->
-<a href="https://wa.me/573117292805" target="_blank" class="whatsapp-float">
+<!-- WHATSAPP FLOTANTE -->
+<a href="https://wa.me/573146309609?text=Hola%20CR%20Muebles%2C%20me%20interesa%20informaci%C3%B3n%20sobre%20sus%20muebles%20a%20medida" target="_blank" class="whatsapp-float">
   <i class="fab fa-whatsapp"></i> Cotiza por WhatsApp
 </a>
 
@@ -485,48 +485,27 @@
 </footer>
 
 <script>
-// Lightbox functions
-function openLightbox(src) {
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox').classList.add('active');
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('active');
-}
-document.addEventListener('keydown', function(e) { 
-  if (e.key === 'Escape') closeLightbox(); 
-});
-
-// Gallery data with real image URLs
-const galleryData = [
-  { tall: true, img: "https://res.cloudinary.com/dnqzhisyj/image/upload/v1776467032/WhatsApp_Image_2026-03-18_at_4.36.38_PM_ypxfgm.jpg", alt: "Armario empotrado blanco" },
-  { tall: false, img: "https://res.cloudinary.com/dnqzhisyj/image/upload/v1776457868/WhatsApp_Image_2026-04-15_at_5.10.17_PM_1_qopmbx.jpg", alt: "Escritorio a medida" },
-  { tall: false, img: "https://res.cloudinary.com/dnqzhisyj/image/upload/v1776457446/0b343e7b-a5ae-444f-adf4-56cbf62794bc_bzzxjr.jpg", alt: "Armario a medida blanco" },
-  { tall: false, img: "https://res.cloudinary.com/dnqzhisyj/image/upload/v1776456744/53e51f30-74de-41e5-9075-376fe86ffb89_l5elzz.jpg", alt: "Armario a medida blanco" },
-  { tall: false, img: "https://res.cloudinary.com/dnqzhisyj/image/upload/v1776457061/e4543228-477b-47e5-a268-e2667f3ef684_elbiwi.jpg", alt: "Armario a medida blanco" }
-];
-
-const grid = document.getElementById('gallery-grid');
-if (grid) {
-  galleryData.forEach((item, index) => {
-    const div = document.createElement('div');
-    div.className = 'gallery-item' + (item.tall ? ' tall' : '');
-    
-    const img = document.createElement('img');
-    img.src = item.img;
-    img.alt = item.alt;
-    img.loading = 'lazy';
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'gallery-overlay';
-    overlay.innerHTML = '<div class="overlay-icon"><i class="fas fa-search-plus"></i></div>';
-    
-    div.appendChild(img);
-    div.appendChild(overlay);
-    div.onclick = () => openLightbox(item.img);
-    grid.appendChild(div);
+  // Lightbox functions
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+  }
+  document.addEventListener('keydown', function(e) { 
+    if (e.key === 'Escape') closeLightbox(); 
   });
-}
+
+  // Menú hamburguesa
+  function toggleMenu() {
+    const navLinks = document.getElementById('navLinks');
+    navLinks.classList.toggle('active');
+  }
+  function closeMenu() {
+    const navLinks = document.getElementById('navLinks');
+    navLinks.classList.remove('active');
+  }
 </script>
 </body>
 </html>
