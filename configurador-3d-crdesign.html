@@ -2,20 +2,15 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Configurador 3D — CR Design Muebles</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Configurador 3D Pro — CR Design Muebles</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --acc:#C4A46B;--acc-d:#9E7E48;--dark:#1E1C18;--bg:#16140F;
-  --panel:#1A1814;--panel2:#242018;--border:#2A2620;
-  --muted:#6B685F;--cream:#F7F4EE;--green:#25D366;
-}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--cream);overflow:hidden}
-
-/* ── HEADER ── */
+:root{--acc:#C4A46B;--acc-d:#9E7E48;--dark:#1E1C18;--bg:#16140F;--panel:#1A1814;--panel2:#242018;--border:#2A2620;--muted:#6B685F;--cream:#F7F4EE;--green:#25D366}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--cream);overflow:hidden;touch-action:pan-x pan-y}
 header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0}
 .logo{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);text-decoration:none}
 .logo span{color:var(--acc)}
@@ -25,162 +20,93 @@ header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);disp
 .hb-g:hover{color:var(--acc);border-color:var(--acc)}
 .hb-w{background:var(--green);color:#fff}
 .hb-a{background:var(--acc);color:var(--dark);font-weight:500}
-.hb-a:hover{background:var(--acc-d);color:var(--cream)}
-
-/* ── DESKTOP LAYOUT ── */
 .layout{display:flex;height:calc(100vh - 50px)}
-.lpanel{width:240px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
-.viewport{flex:1;position:relative;overflow:hidden;min-width:0}
-.rpanel{width:200px;background:var(--panel);border-left:1px solid var(--border);overflow-y:auto;flex-shrink:0}
-
-/* ── MOBILE LAYOUT ── */
+.lpanel{width:280px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0}
+.viewport{flex:1;position:relative;overflow:hidden}
+.rpanel{width:220px;background:var(--panel);border-left:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:12px}
+@media(max-width:800px){.lpanel{width:260px}.rpanel{width:200px}}
 @media(max-width:700px){
-  html,body{overflow:hidden}
-  .layout{flex-direction:column;height:calc(100vh - 50px)}
-  .lpanel{width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border);flex-shrink:0;overflow-y:visible}
-  .viewport{flex:1;min-height:220px}
+  .layout{flex-direction:column}
+  .lpanel{width:100%;height:auto;max-height:40%;border-right:none;border-bottom:1px solid var(--border)}
   .rpanel{display:none}
   .hb-g{display:none}
-  header{padding:0 10px}
-  .logo{font-size:13px}
 }
-
-/* ── SCROLLBARS ── */
 .lpanel::-webkit-scrollbar,.rpanel::-webkit-scrollbar{width:3px}
-.lpanel::-webkit-scrollbar-thumb,.rpanel::-webkit-scrollbar-thumb{background:#3A3630;border-radius:2px}
-
-/* ── TABS ── */
-.tab-bar{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:#100E0A}
-.tab{flex:1;padding:9px 4px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.lpanel::-webkit-scrollbar-thumb,.rpanel::-webkit-scrollbar-thumb{background:#3A3630}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);background:#100E0A}
+.tab{flex:1;padding:9px 4px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent}
 .tab.active{color:var(--acc);border-bottom-color:var(--acc)}
 .pane{display:none;padding:12px}
 .pane.active{display:block}
-
-/* Mobile: horizontal scroll tabs content */
-@media(max-width:700px){
-  .pane{padding:10px}
-  .pane.active{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px}
-  .pane.active::-webkit-scrollbar{height:2px}
-  .pane.active::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-  .sec{flex-shrink:0;min-width:160px;margin-bottom:0}
-  .sec:last-child{padding-right:10px}
-}
-
-/* ── SECTIONS ── */
 .sec{margin-bottom:16px}
 .shd{font-size:9px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:#3A3630;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--border)}
-
-/* ── DIM INPUTS ── */
 .dim-row{display:flex;align-items:center;gap:7px;margin-bottom:7px}
 .dim-row label{font-size:10px;color:var(--muted);min-width:46px}
 .diw{flex:1;position:relative}
-.di{width:100%;padding:6px 26px 6px 8px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--panel2);border:1px solid #3A3630;border-radius:3px;color:var(--cream);outline:none}
+.di{width:100%;padding:6px 26px 6px 8px;font-size:12px;background:var(--panel2);border:1px solid #3A3630;border-radius:3px;color:var(--cream);outline:none}
 .di:focus{border-color:var(--acc)}
-.du{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#4A4740;pointer-events:none}
+.du{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#4A4740}
 .dn{font-size:9px;color:#3A3630;margin-top:-4px;margin-bottom:7px;padding-left:53px}
-
-/* ── COLUMNS ── */
 .col-list{display:flex;flex-direction:column;gap:4px;margin-bottom:7px}
-.ci{background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:7px 8px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:border-color .15s}
-.ci:hover,.ci.sel{border-color:var(--acc);background:rgba(196,164,107,0.07)}
-.ci.drag-over{border-style:dashed;border-color:var(--acc)}
-.cdot2{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.clbl{font-size:10px;color:var(--cream);flex:1;min-width:0}
-.cwi{width:46px;padding:3px 4px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--panel);border:1px solid #3A3630;border-radius:2px;color:var(--acc);outline:none;text-align:center}
-.cwi:focus{border-color:var(--acc)}
-.cu{font-size:8px;color:var(--muted)}
-.cdel{width:17px;height:17px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:#4A3030;font-size:13px;cursor:pointer;border-radius:2px;line-height:1;transition:all .15s;flex-shrink:0}
-.cdel:hover{background:#3A1A1A;color:#E74C3C}
-.add-btn{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px;border:1px dashed #3A3630;border-radius:3px;font-size:10px;color:var(--muted);cursor:pointer;transition:all .15s;background:transparent;width:100%;font-family:'DM Sans',sans-serif}
+.ci{background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:7px 8px;display:flex;align-items:center;gap:5px;cursor:pointer}
+.ci.sel{border-color:var(--acc);background:rgba(196,164,107,0.07)}
+.clbl{font-size:10px;color:var(--cream);flex:1}
+.cwi{width:46px;padding:3px 4px;font-size:11px;background:var(--panel);border:1px solid #3A3630;border-radius:2px;color:var(--acc);text-align:center}
+.cdel{width:17px;height:17px;background:transparent;color:#4A3030;font-size:13px;cursor:pointer;border:none}
+.cdel:hover{color:#E74C3C}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px;border:1px dashed #3A3630;border-radius:3px;font-size:10px;color:var(--muted);cursor:pointer;background:transparent;width:100%}
 .add-btn:hover{border-color:var(--acc);color:var(--acc)}
-
-/* ── MODULES ── */
-.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.mc{background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:7px 5px;cursor:pointer;transition:all .15s;text-align:center}
-.mc:hover{border-color:var(--acc)}
-.mc.on{border-color:var(--acc);background:rgba(196,164,107,0.1)}
-.mi{font-size:16px;margin-bottom:2px}
-.mn{font-size:8px;color:var(--muted);line-height:1.3}
-.mc.on .mn{color:var(--acc)}
-
-/* ── COLORS ── */
+.mod-item{background:var(--panel2);border:1px solid var(--border);border-radius:3px;margin-bottom:6px;padding:8px;cursor:grab}
+.mod-item.dragging{opacity:0.5}
+.mod-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mod-name{font-size:11px;font-weight:500;color:var(--acc)}
+.mod-del{background:transparent;border:none;color:#4A3030;cursor:pointer;font-size:14px}
+.mod-controls{display:flex;gap:6px;margin-top:5px}
+.mod-controls select{flex:1;background:var(--panel);border:1px solid #3A3630;border-radius:2px;color:var(--cream);padding:3px 5px;font-size:9px}
+.mod-controls button{background:var(--acc);border:none;border-radius:2px;padding:3px 6px;font-size:9px;cursor:pointer;color:var(--dark)}
+.modules-list{min-height:100px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.fb{padding:6px 4px;font-size:9px;border:1px solid var(--border);border-radius:3px;background:var(--panel2);color:var(--muted);cursor:pointer;text-align:center}
+.fb.active{background:rgba(196,164,107,0.12);color:var(--acc);border-color:var(--acc)}
 .cgrid{display:flex;flex-wrap:wrap;gap:5px}
-.sw{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;outline:2px solid transparent;outline-offset:2px;transition:all .15s;flex-shrink:0}
-.sw:hover{transform:scale(1.1)}
+.sw{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;outline:2px solid transparent}
 .sw.active{outline-color:var(--acc)}
 .swl{font-size:9px;color:var(--muted);margin-top:4px}
-
-/* ── FINISH BTNs ── */
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.fb{padding:6px 4px;font-size:9px;font-family:'DM Sans',sans-serif;border:1px solid var(--border);border-radius:3px;background:var(--panel2);color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
-.fb:hover{border-color:var(--acc);color:var(--cream)}
-.fb.active{background:rgba(196,164,107,0.12);color:var(--acc);border-color:var(--acc)}
-
-/* ── VIEWPORT ── */
 #c3{display:block;width:100%;height:100%}
-.vctrl{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(16,14,10,0.9);border:1px solid var(--border);border-radius:4px;padding:3px}
-.vc{padding:4px 9px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.07em;text-transform:uppercase;background:transparent;color:var(--muted);border:none;border-radius:2px;cursor:pointer;transition:all .15s}
-.vc:hover{color:var(--cream)}
+.vctrl{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(16,14,10,0.9);border:1px solid var(--border);border-radius:4px;padding:3px;z-index:10}
+.vc{padding:4px 9px;font-size:9px;background:transparent;color:var(--muted);border:none;border-radius:2px;cursor:pointer}
 .vc.active{background:rgba(196,164,107,0.18);color:var(--acc)}
-.wm{position:absolute;top:10px;left:10px;font-family:'Playfair Display',serif;font-size:10px;color:rgba(255,255,255,0.1);pointer-events:none;letter-spacing:0.06em}
-.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,0.15);letter-spacing:0.08em;text-transform:uppercase;pointer-events:none;white-space:nowrap}
-.selbox{position:absolute;top:8px;right:8px;background:rgba(16,14,10,0.92);border:1px solid var(--acc);border-radius:3px;padding:8px 11px;font-size:9px;display:none;min-width:130px}
-.selbox.show{display:block}
-.sbt{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--acc);margin-bottom:5px}
-.sbr{display:flex;justify-content:space-between;gap:12px;color:var(--muted);margin-bottom:2px}
-.sbr span{color:var(--cream);font-weight:500}
-
-/* Mobile: bottom action bar */
+.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,0.15);white-space:nowrap;z-index:10}
 .mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#100E0A;border-top:1px solid var(--border);padding:8px 12px;gap:6px;z-index:50}
-@media(max-width:700px){
-  .mob-bar{display:flex}
-  .hint{display:none}
-}
-.mb-wa{flex:1;padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;background:var(--green);color:#fff;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
-.mb-em{flex:1;padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;background:var(--acc);color:var(--dark);border:none;border-radius:3px;cursor:pointer}
-
-/* ── RIGHT PANEL ── */
-.rpanel{padding:12px}
+@media(max-width:700px){.mob-bar{display:flex}.hint{display:none}}
+.mb-wa{flex:1;padding:10px;font-size:10px;font-weight:500;background:var(--green);color:#fff;border:none;border-radius:3px}
+.mb-em{flex:1;padding:10px;font-size:10px;font-weight:500;background:var(--acc);color:var(--dark);border:none;border-radius:3px}
+.mb-pdf{flex:1;padding:10px;font-size:10px;font-weight:500;background:var(--panel2);color:var(--cream);border:1px solid var(--border);border-radius:3px}
 .sblock{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:10px;margin-bottom:11px}
 .stitle{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
-.sr{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);font-size:10px}
-.sr:last-child{border-bottom:none}
+.sr{display:flex;justify-content:space-between;padding:3px 0;font-size:10px;border-bottom:1px solid var(--border)}
 .sk{color:var(--muted)}.sv{font-weight:500;color:var(--cream)}
-.csums{margin-bottom:11px}
-.csi{display:flex;align-items:center;gap:4px;padding:4px 6px;background:#100E0A;border:1px solid var(--border);border-radius:3px;margin-bottom:3px;font-size:9px;cursor:pointer;transition:border-color .15s}
-.csi:hover,.csi.active{border-color:var(--acc)}
-.csidot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.csin{flex:1;color:var(--muted)}.csiw{color:var(--cream);font-weight:500}
-.ctag{font-size:7px;padding:1px 4px;background:#2A2620;border-radius:2px;color:var(--muted)}
 .ctas{display:flex;flex-direction:column;gap:5px}
-.bwa{padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--green);color:#fff;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
-.bwa:hover{background:#1ebe5d}
-.bem{padding:9px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--acc);color:var(--dark);border:none;border-radius:3px;cursor:pointer}
-.bem:hover{background:var(--acc-d);color:var(--cream)}
-.bwb{padding:8px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:3px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .15s}
-.bwb:hover{border-color:var(--muted);color:var(--cream)}
-
-/* ── MODAL ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center;padding:12px}
+.bwa,.bem,.bpdf{padding:10px;font-size:10px;font-weight:500;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer}
+.bwa{background:var(--green);color:#fff}
+.bem{background:var(--acc);color:var(--dark)}
+.bpdf{background:var(--panel2);color:var(--cream);border:1px solid var(--border)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:#1E1C18;border:1px solid #3A3630;width:100%;max-width:360px;border-radius:4px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.7)}
-.mhd{background:#100E0A;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
-.mhd h2{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);font-weight:400}
-.mc2{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
-.mc2:hover{color:var(--cream)}
+.modal{background:#1E1C18;border:1px solid #3A3630;width:100%;max-width:380px;border-radius:4px;overflow:hidden}
+.mhd{background:#100E0A;padding:14px 18px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
+.mhd h2{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream)}
+.mc2{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
 .mbdy{padding:16px}
-.mcfg{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:8px;font-size:9px;color:var(--muted);margin-bottom:12px;line-height:1.8;white-space:pre-wrap;max-height:90px;overflow-y:auto}
+.mcfg{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:8px;font-size:9px;color:var(--muted);margin-bottom:12px;white-space:pre-wrap;max-height:90px;overflow-y:auto}
 .fld{margin-bottom:9px}
-.fld label{display:block;font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.fld input,.fld textarea{width:100%;padding:7px 9px;font-size:13px;font-family:'DM Sans',sans-serif;background:#100E0A;border:1px solid var(--border);border-radius:3px;color:var(--cream);outline:none;transition:border-color .15s}
-.fld input:focus,.fld textarea:focus{border-color:var(--acc)}
-.fld textarea{resize:none}
+.fld label{display:block;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.fld input,.fld textarea{width:100%;padding:7px 9px;font-size:13px;background:#100E0A;border:1px solid var(--border);border-radius:3px;color:var(--cream)}
 .mact{display:flex;gap:6px;margin-top:4px}
-.mact button{flex:1;padding:10px;font-size:11px;font-family:'DM Sans',sans-serif;border-radius:3px;cursor:pointer;font-weight:500}
+.mact button{flex:1;padding:10px;font-size:11px;border-radius:3px;cursor:pointer}
 .mbc{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .mbs{background:var(--acc);color:var(--dark);border:none}
-.mbs:hover{background:var(--acc-d);color:var(--cream)}
-.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:#100E0A;border:1px solid var(--acc);color:var(--cream);padding:9px 16px;border-radius:3px;font-size:11px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:#100E0A;border:1px solid var(--acc);color:var(--cream);padding:9px 16px;border-radius:3px;font-size:11px;opacity:0;transition:all .3s;z-index:999}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(min-width:701px){.toast{bottom:22px}}
 </style>
@@ -188,151 +114,278 @@ header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);disp
 <body>
 
 <header>
-  <a class="logo" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">CR <span>Design</span> Muebles</a>
+  <a class="logo" href="index.html">CR <span>Design</span> Muebles</a>
   <div class="hbtns">
-    <a class="hb hb-g" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">← Web</a>
+    <a class="hb hb-g" href="index.html">← Volver</a>
     <button class="hb hb-w" onclick="openWA()">WhatsApp</button>
     <button class="hb hb-a" onclick="openModal()">✉ Cita</button>
   </div>
 </header>
 
 <div class="layout">
-
-  <!-- LEFT PANEL -->
   <div class="lpanel">
     <div class="tab-bar">
       <div class="tab active" onclick="switchTab('dims',this)">Medidas</div>
       <div class="tab" onclick="switchTab('cols',this)">Columnas</div>
+      <div class="tab" onclick="switchTab('mods',this)">Módulos</div>
       <div class="tab" onclick="switchTab('mats',this)">Material</div>
     </div>
 
-    <!-- MEDIDAS -->
     <div class="pane active" id="pane-dims">
       <div class="sec">
         <div class="shd">Dimensiones</div>
         <div class="dim-row"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300"><span class="du">cm</span></div></div>
-        <div class="dn">150–300 cm</div>
         <div class="dim-row"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80"><span class="du">cm</span></div></div>
-        <div class="dn">30–80 cm</div>
-        <div class="dim-row"><label>Ancho</label><div class="diw"><input class="di" type="number" id="inW" value="200" readonly style="color:var(--muted)"><span class="du">cm</span></div></div>
-        <div class="dn">Suma de columnas</div>
+        <div class="dim-row"><label>Ancho</label><div class="diw"><input class="di" type="text" id="inW" readonly><span class="du">cm</span></div></div>
       </div>
       <div class="sec">
-        <div class="shd">Tipo de puerta</div>
+        <div class="shd">Puertas</div>
         <div class="fgrid" id="dtypes">
           <button class="fb active" data-v="correderas">Correderas</button>
           <button class="fb" data-v="abatibles">Abatibles</button>
-          <button class="fb" data-v="sin">Sin puerta</button>
-          <button class="fb" data-v="mixto">Mixto</button>
-        </div>
-      </div>
-      <div class="sec">
-        <div class="shd">Acabado de puerta</div>
-        <div class="fgrid" id="dfinish">
-          <button class="fb active" data-v="liso">Liso</button>
           <button class="fb" data-v="espejo">Espejo</button>
           <button class="fb" data-v="cristal">Cristal</button>
-          <button class="fb" data-v="madera">Madera</button>
+          <button class="fb" data-v="sin">Sin puerta</button>
         </div>
       </div>
     </div>
 
-    <!-- COLUMNAS -->
     <div class="pane" id="pane-cols">
       <div class="sec">
         <div class="shd">Columnas</div>
         <div class="col-list" id="colList"></div>
         <button class="add-btn" onclick="addCol()">+ Añadir columna</button>
       </div>
+    </div>
+
+    <div class="pane" id="pane-mods">
       <div class="sec">
-        <div class="shd">Módulos — <span id="colSelHint" style="color:var(--acc);font-style:normal">Col A</span></div>
-        <div class="mod-grid" id="modGrid">
-          <div class="mc on" data-mod="barra" onclick="toggleMod('barra')"><div class="mi">🎽</div><div class="mn">Barra colgador</div></div>
-          <div class="mc" data-mod="cajones" onclick="toggleMod('cajones')"><div class="mi">🗂</div><div class="mn">Cajones x3</div></div>
-          <div class="mc on" data-mod="estantes" onclick="toggleMod('estantes')"><div class="mi">📦</div><div class="mn">Estantes</div></div>
-          <div class="mc" data-mod="zapatero" onclick="toggleMod('zapatero')"><div class="mi">👟</div><div class="mn">Zapatero</div></div>
-          <div class="mc" data-mod="luz" onclick="toggleMod('luz')"><div class="mi">💡</div><div class="mn">LED interior</div></div>
-          <div class="mc" data-mod="espejo_int" onclick="toggleMod('espejo_int')"><div class="mi">🪞</div><div class="mn">Espejo int.</div></div>
-          <div class="mc" data-mod="joyero" onclick="toggleMod('joyero')"><div class="mi">💍</div><div class="mn">Joyero</div></div>
-          <div class="mc" data-mod="pantalonero" onclick="toggleMod('pantalonero')"><div class="mi">👖</div><div class="mn">Pantalonero</div></div>
-        </div>
+        <div class="shd">Módulos — <span id="colSelHint" style="color:var(--acc)">Col A</span></div>
+        <div class="modules-list" id="modulesList"></div>
+        <select id="addModuleSelect" style="width:100%;padding:6px;margin-top:6px;background:var(--panel2);border:1px solid var(--border);color:var(--cream);border-radius:3px">
+          <option value="barra">🎽 Barra colgador</option>
+          <option value="barra_larga">👗 Barra vestidos largos</option>
+          <option value="estantes">📦 Estantes</option>
+          <option value="cajones">🗂 Cajones x3</option>
+          <option value="zapatero">👟 Zapatero</option>
+          <option value="pantalonero">👖 Pantalonero</option>
+          <option value="espejo_int">🪞 Espejo interior</option>
+          <option value="joyero">💍 Joyero</option>
+          <option value="luz">💡 Luz LED</option>
+        </select>
+        <button class="add-btn" onclick="addModuleToCurrentCol()" style="margin-top:6px">+ Añadir módulo</button>
       </div>
     </div>
 
-    <!-- MATERIAL -->
     <div class="pane" id="pane-mats">
       <div class="sec">
         <div class="shd">Color cuerpo</div>
         <div class="cgrid" id="cpicker">
-          <div class="sw active" data-c="#F5F0E8" data-n="Blanco roble" style="background:#F5F0E8;border:1px solid #ccc"></div>
+          <div class="sw active" data-c="#F5F0E8" data-n="Blanco roble" style="background:#F5F0E8"></div>
           <div class="sw" data-c="#E8D8C4" data-n="Roble natural" style="background:#E8D8C4"></div>
           <div class="sw" data-c="#C4A882" data-n="Nogal" style="background:#C4A882"></div>
           <div class="sw" data-c="#8B7355" data-n="Wengué" style="background:#8B7355"></div>
           <div class="sw" data-c="#4A4A4A" data-n="Grafito" style="background:#4A4A4A"></div>
-          <div class="sw" data-c="#F0F0F0" data-n="Blanco mate" style="background:#F0F0F0;border:1px solid #ddd"></div>
           <div class="sw" data-c="#1E1C18" data-n="Negro" style="background:#1E1C18"></div>
-          <div class="sw" data-c="#6B8E6B" data-n="Verde salvia" style="background:#6B8E6B"></div>
-          <div class="sw" data-c="#8B6B8B" data-n="Lavanda" style="background:#8B6B8B"></div>
-          <div class="sw" data-c="#5B7A8B" data-n="Azul pizarra" style="background:#5B7A8B"></div>
         </div>
         <div class="swl" id="clbl">Blanco roble</div>
       </div>
       <div class="sec">
-        <div class="shd">Color interior</div>
-        <div class="cgrid" id="ipicker">
-          <div class="sw active" data-c="#EDE8DE" data-n="Natural" style="background:#EDE8DE;border:1px solid #ccc"></div>
-          <div class="sw" data-c="#F5F0E8" data-n="Blanco" style="background:#F5F0E8;border:1px solid #ddd"></div>
-          <div class="sw" data-c="#2A2622" data-n="Oscuro" style="background:#2A2622"></div>
-          <div class="sw" data-c="#D8C8A8" data-n="Miel" style="background:#D8C8A8"></div>
-        </div>
-        <div class="swl" id="ilbl">Natural</div>
-      </div>
-      <div class="sec">
         <div class="shd">Tiradores</div>
         <div class="fgrid" id="handles">
-          <button class="fb active" data-v="barra_oro">Dorado</button>
-          <button class="fb" data-v="barra_plata">Plateado</button>
-          <button class="fb" data-v="boton">Botón negro</button>
-          <button class="fb" data-v="sin_tirador">Sin tirador</button>
+          <button class="fb active" data-v="dorado">Dorado</button>
+          <button class="fb" data-v="plateado">Plateado</button>
+          <button class="fb" data-v="negro">Negro mate</button>
+          <button class="fb" data-v="sin">Sin tirador</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- VIEWPORT -->
   <div class="viewport" id="vp">
     <canvas id="c3"></canvas>
-    <div class="wm">CR Design</div>
     <div class="vctrl">
       <button class="vc" onclick="setView('front',this)">Frontal</button>
       <button class="vc active" onclick="setView('corner',this)">Esquina</button>
-      <button class="vc" onclick="setView('inside',this)">Interior</button>
       <button class="vc" onclick="setView('top',this)">Planta</button>
     </div>
-    <div class="selbox" id="selbox">
-      <div class="sbt">Columna seleccionada</div>
-      <div class="sbr">Nombre: <span id="siN">—</span></div>
-      <div class="sbr">Ancho: <span id="siW">—</span></div>
-      <div class="sbr">Módulos: <span id="siM">—</span></div>
-    </div>
-    <div class="hint">Arrastra · Scroll zoom · Toca columna para seleccionar</div>
+    <div class="hint">🖱️ Arrastra para rotar | Rueda zoom | Toca columna para seleccionar</div>
   </div>
 
-  <!-- RIGHT PANEL (desktop only) -->
   <div class="rpanel">
-    <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#3A3630;margin-bottom:8px">Resumen</div>
     <div class="sblock">
-      <div class="stitle">Dimensiones</div>
-      <div class="sr"><span class="sk">Ancho</span><span class="sv" id="rW">200 cm</span></div>
+      <div class="stitle">Resumen</div>
+      <div class="sr"><span class="sk">Ancho</span><span class="sv" id="rW">0 cm</span></div>
       <div class="sr"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
       <div class="sr"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
       <div class="sr"><span class="sk">Puertas</span><span class="sv" id="rDoor">Correderas</span></div>
-      <div class="sr"><span class="sk">Acabado</span><span class="sv" id="rFin">Liso</span></div>
-      <div class="sr"><span class="sk">Color</span><span class="sv" id="rCol">Blanco roble</span></div>
       <div class="sr"><span class="sk">Columnas</span><span class="sv" id="rCols">3</span></div>
     </div>
-    <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#3A3630;margin-bottom:6px">Columnas</div>
-    <div class="csums" id="csums"></div>
     <div class="ctas">
-      <button class="bwa" onclick="openWA()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 
+      <button class="bwa" onclick="openWA()">📱 WhatsApp</button>
+      <button class="bem" onclick="openModal()">✉ Enviar por email</button>
+      <button class="bpdf" onclick="downloadPDF()">📄 Descargar PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="mob-bar">
+  <button class="mb-wa" onclick="openWA()">WhatsApp</button>
+  <button class="mb-em" onclick="openModal()">Email</button>
+  <button class="mb-pdf" onclick="downloadPDF()">PDF</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="mhd"><h2>Enviar diseño</h2><button class="mc2" onclick="closeModal()">×</button></div>
+    <div class="mbdy">
+      <div class="mcfg" id="mconf"></div>
+      <div class="fld"><label>Tu nombre</label><input type="text" id="cName" placeholder="Nombre completo"></div>
+      <div class="fld"><label>Tu email</label><input type="email" id="cEmail" placeholder="correo@ejemplo.com"></div>
+      <div class="fld"><label>Teléfono</label><input type="tel" id="cPhone" placeholder="Opcional"></div>
+      <div class="fld"><label>Notas</label><textarea id="cNotes" rows="2" placeholder="Comentarios adicionales..."></textarea></div>
+      <div class="mact"><button class="mbc" onclick="closeModal()">Cancelar</button><button class="mbs" onclick="sendEmail()">Enviar diseño</button></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast">✓ Enviado</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ============================================
+// CONFIGURADOR 3D COMPLETO CON TODAS LAS FUNCIONALIDADES
+// ============================================
+
+let S = {
+  H: 2.2, D: 0.6, door: 'correderas',
+  bc: '#F5F0E8', bcn: 'Blanco roble', handle: 'dorado',
+  sel: 0,
+  cols: [
+    { id: 1, w: 0.65, lbl: 'Col A', mods: [] },
+    { id: 2, w: 0.70, lbl: 'Col B', mods: [] },
+    { id: 3, w: 0.65, lbl: 'Col C', mods: [] }
+  ]
+};
+let nextId = 4;
+
+// Módulos disponibles con sus propiedades
+const moduleTypes = {
+  barra: { nombre: 'Barra estándar', icon: '🎽', altura: 0.12, posY: 'top' },
+  barra_larga: { nombre: 'Barra vestidos largos', icon: '👗', altura: 0.25, posY: 'top' },
+  estantes: { nombre: 'Estantes', icon: '📦', altura: 0.02, posY: 'middle' },
+  cajones: { nombre: 'Cajones x3', icon: '🗂', altura: 0.25, posY: 'bottom' },
+  zapatero: { nombre: 'Zapatero', icon: '👟', altura: 0.15, posY: 'bottom' },
+  pantalonero: { nombre: 'Pantalonero', icon: '👖', altura: 0.12, posY: 'middle' },
+  espejo_int: { nombre: 'Espejo interior', icon: '🪞', altura: 0.02, posY: 'full' },
+  joyero: { nombre: 'Joyero', icon: '💍', altura: 0.12, posY: 'top' },
+  luz: { nombre: 'Luz LED', icon: '💡', altura: 0.02, posY: 'top' }
+};
+
+// Inicializar módulos por defecto
+S.cols[0].mods = [{ type: 'barra', id: 'm1' }, { type: 'estantes', id: 'm2' }];
+S.cols[1].mods = [{ type: 'estantes', id: 'm3' }, { type: 'estantes', id: 'm4' }];
+S.cols[2].mods = [{ type: 'cajones', id: 'm5' }, { type: 'zapatero', id: 'm6' }];
+
+// THREE.JS
+const cv = document.getElementById('c3');
+const ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+ren.shadowMap.enabled = true;
+const sc = new THREE.Scene();
+sc.background = new THREE.Color(0x16140F);
+sc.fog = new THREE.Fog(0x16140F, 12, 30);
+const cam = new THREE.PerspectiveCamera(42, 1, 0.05, 60);
+sc.add(new THREE.AmbientLight(0xFFF5E0, 0.55));
+const kl = new THREE.DirectionalLight(0xFFF5E0, 1.1);
+kl.position.set(4, 7, 5);
+kl.castShadow = true;
+sc.add(kl);
+sc.add(new THREE.DirectionalLight(0xD0E8FF, 0.32).position.set(-4, 3, 3));
+const flr = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.MeshLambertMaterial({ color: 0x100E0A }));
+flr.rotation.x = -Math.PI / 2;
+flr.receiveShadow = true;
+sc.add(flr);
+const wg = new THREE.Group();
+sc.add(wg);
+let hitMeshes = [];
+
+function h3(hex) { return new THREE.Color(parseInt(hex.replace('#', ''), 16)); }
+function bx(w, h, d, col, x, y, z, op = {}) {
+  const m = new THREE.MeshStandardMaterial({ color: h3(col), metalness: op.mt || 0, roughness: op.rg !== undefined ? op.rg : 0.65 });
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+function anchoTotal() { return S.cols.reduce((s, c) => s + c.w, 0); }
+
+function build() {
+  while (wg.children.length > 0) wg.remove(wg.children[0]);
+  hitMeshes = [];
+  const H = S.H, D = S.D, T = 0.018, TW = anchoTotal();
+  const mat = new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.6 });
+
+  // Carcasa
+  wg.add(bx(TW, T, D, S.bc, 0, H - T / 2, 0));
+  wg.add(bx(TW, T, D, S.bc, 0, T / 2, 0));
+  wg.add(bx(T, H, D, S.bc, -TW / 2 + T / 2, H / 2, 0));
+  wg.add(bx(T, H, D, S.bc, TW / 2 - T / 2, H / 2, 0));
+  wg.add(bx(TW - 2 * T, H, T * 0.4, S.bc, 0, H / 2, -D / 2 + T * 0.2));
+
+  let xc = -TW / 2 + T;
+  S.cols.forEach((col, idx) => {
+    const cw = col.w, cx = xc + cw / 2;
+    if (idx < S.cols.length - 1) wg.add(bx(T, H - 2 * T, D - T * 2, '#3A3630', xc + cw, H / 2, 0));
+
+    // Hitbox
+    const hm = new THREE.Mesh(new THREE.BoxGeometry(cw - T, H - T, D - T), new THREE.MeshBasicMaterial({ visible: false }));
+    hm.position.set(cx, H / 2, 0);
+    hm.userData = { ci: idx };
+    wg.add(hm);
+    hitMeshes.push(hm);
+
+    // Highlight selección
+    if (idx === S.sel) {
+      const hl = new THREE.Mesh(new THREE.BoxGeometry(cw - T, H - 2 * T, D - 2 * T), new THREE.MeshBasicMaterial({ color: 0xC4A46B, wireframe: true, transparent: true, opacity: 0.3 }));
+      hl.position.set(cx, H / 2, 0);
+      wg.add(hl);
+    }
+
+    // Dibujar módulos
+    const mods = col.mods;
+    const totalAlturaMods = mods.reduce((sum, m) => sum + (moduleTypes[m.type]?.altura || 0.15), 0);
+    let yOffset = T;
+    for (let mi = 0; mi < mods.length; mi++) {
+      const mod = mods[mi];
+      const mt = moduleTypes[mod.type] || { nombre: 'Módulo', altura: 0.15 };
+      const altura = mt.altura;
+      const cy = yOffset + altura / 2;
+
+      if (mod.type === 'barra' || mod.type === 'barra_larga') {
+        const barraMat = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.85, roughness: 0.15 });
+        const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, cw - 0.08, 12), barraMat);
+        rod.rotation.z = Math.PI / 2;
+        rod.position.set(cx, cy + altura * 0.4, D * 0.15);
+        wg.add(rod);
+      } else if (mod.type === 'estantes') {
+        const est = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 2, 0.015, D - T * 2.5), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.7 }));
+        est.position.set(cx, cy, 0);
+        wg.add(est);
+      } else if (mod.type === 'cajones') {
+        for (let i = 0; i < 3; i++) {
+          const caj = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 3, altura * 0.25, D * 0.85), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.6 }));
+          caj.position.set(cx, cy - altura * 0.3 + i * altura * 0.33, T * 0.5);
+          wg.add(caj);
+        }
+      } else if (mod.type === 'zapatero') {
+        for (let i = 0; i < 2; i++) {
+          const zap = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 2, 0.02, D * 0.45), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.8 }));
+          zap.rotation.x = 0.15;
+          zap.position.set(cx, cy - altura * 0.2 + i * altura * 0.4, -D * 0.1);
+          wg.add(zap);
+        }
+      } else if (mod.type === 'pantalonero') {
+        const barMat = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.7 });
+        
