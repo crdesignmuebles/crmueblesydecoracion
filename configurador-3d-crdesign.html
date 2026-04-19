@@ -5,383 +5,1008 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Configurador 3D — CR Design Muebles</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script type="importmap">
-    {
-        "imports": {
-            "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
-        }
-    }
-</script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:#13110E;color:#E8E0D0;overflow:hidden}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-/* ── HEADER ── */
-header{height:50px;background:#0D0B08;border-bottom:1px solid #252018;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0}
-.logo{font-family:'Playfair Display',serif;font-size:15px;color:#E8E0D0;text-decoration:none;letter-spacing:0.04em}
-.logo em{color:#C4A46B;font-style:normal}
-.hbtns{display:flex;gap:6px}
-.hb{padding:5px 12px;font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.07em;text-transform:uppercase;border-radius:2px;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:5px;text-decoration:none}
-.hbg{background:transparent;color:#5A5650;border:1px solid #252018}.hbg:hover{border-color:#C4A46B;color:#C4A46B}
-.hbw{background:#25D366;color:#fff}.hbw:hover{background:#1ebe5d}
-.hba{background:#C4A46B;color:#1A1510;font-weight:500}.hba:hover{background:#9E7E48;color:#fff}
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #13110E;
+    color: #E8E0D0;
+    overflow: hidden;
+    height: 100vh;
+  }
 
-/* ── LAYOUT ── */
-.layout{display:flex;height:calc(100vh - 50px)}
+  /* HEADER */
+  header {
+    height: 50px;
+    background: #0D0B08;
+    border-bottom: 1px solid #252018;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    flex-shrink: 0;
+  }
 
-/* ── LEFT PANEL ── */
-.lp{width:280px;background:#181510;border-right:1px solid #252018;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
-.lp::-webkit-scrollbar{width:3px}.lp::-webkit-scrollbar-thumb{background:#302820;border-radius:2px}
-.tabbar{display:flex;border-bottom:1px solid #252018;flex-shrink:0}
-.tab{flex:1;padding:9px 2px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#3A3628;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tab.on{color:#C4A46B;border-bottom-color:#C4A46B}
-.pane{padding:12px;display:none}.pane.on{display:block}
-.sh{font-size:9px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:#302820;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid #252018}
-.sec{margin-bottom:16px}
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: #E8E0D0;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+  }
 
-/* dim inputs */
-.dr{display:flex;align-items:center;gap:7px;margin-bottom:7px}
-.dr label{font-size:11px;color:#6B6050;min-width:50px}
-.diw{flex:1;position:relative}
-.di{width:100%;padding:5px 26px 5px 8px;font-size:12px;font-family:'DM Sans',sans-serif;background:#201C14;border:1px solid #302820;border-radius:2px;color:#E8E0D0;outline:none;transition:border-color .15s}
-.di:focus{border-color:#C4A46B}
-.du{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#3A3628;pointer-events:none}
-.dn{font-size:9px;color:#302820;margin-top:-4px;margin-bottom:7px;padding-left:57px}
+  .logo em {
+    color: #C4A46B;
+    font-style: normal;
+  }
 
-/* option buttons */
-.og{display:flex;flex-wrap:wrap;gap:4px}
-.ob{padding:5px 9px;font-size:10px;font-family:'DM Sans',sans-serif;border:1px solid #252018;border-radius:2px;background:#201C14;color:#6B6050;cursor:pointer;transition:all .15s}
-.ob:hover{border-color:#C4A46B;color:#E8E0D0}
-.ob.on{background:rgba(196,164,107,0.14);color:#C4A46B;border-color:#C4A46B}
+  .hbtns {
+    display: flex;
+    gap: 6px;
+  }
 
-/* ── MELAMINE COLORS ── */
-.mel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:6px}
-.mel{width:100%;aspect-ratio:1;border-radius:3px;cursor:pointer;border:2px solid transparent;outline:2px solid transparent;outline-offset:2px;transition:all .15s;position:relative}
-.mel:hover{transform:scale(1.08)}
-.mel.on{outline-color:#C4A46B}
-.mel-name{font-size:9px;color:#6B6050;margin-top:4px;text-align:center;line-height:1.2}
+  .hb {
+    padding: 5px 12px;
+    font-size: 10px;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all .15s;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+  }
 
-/* ── HANDLES CATALOG ── */
-.hcat{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.hcard{background:#201C14;border:1px solid #252018;border-radius:3px;padding:8px 6px;cursor:pointer;transition:all .15s;text-align:center}
-.hcard:hover{border-color:#C4A46B}
-.hcard.on{border-color:#C4A46B;background:rgba(196,164,107,0.1)}
-.hicon{font-size:20px;margin-bottom:3px}
-.hname{font-size:9px;color:#6B6050;line-height:1.3}
-.hcard.on .hname{color:#C4A46B}
+  .hbg {
+    background: transparent;
+    color: #5A5650;
+    border: 1px solid #252018;
+  }
 
-/* ── COLUMN LIST ── */
-.clist{display:flex;flex-direction:column;gap:4px;margin-bottom:7px}
-.ci{background:#201C14;border:1px solid #252018;border-radius:2px;padding:6px 8px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:border-color .15s;user-select:none}
-.ci:hover{border-color:#302820}
-.ci.sel{border-color:#C4A46B;background:rgba(196,164,107,0.07)}
-.ci.dov{border-color:#C4A46B;border-style:dashed}
-.cdg{font-size:11px;color:#302820;cursor:grab;flex-shrink:0}
-.clb{font-size:11px;color:#E8E0D0;flex:1;min-width:0}
-.cwi{width:46px;padding:2px 4px;font-size:11px;font-family:'DM Sans',sans-serif;background:#181510;border:1px solid #302820;border-radius:2px;color:#C4A46B;outline:none;text-align:center}
-.cwi:focus{border-color:#C4A46B}
-.cdu{font-size:9px;color:#3A3628}
-.cdel{width:17px;height:17px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:#3A2828;font-size:13px;cursor:pointer;border-radius:2px;line-height:1;transition:all .15s;flex-shrink:0}
-.cdel:hover{background:#3A1A1A;color:#E74C3C}
-.addbtn{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px;border:1px dashed #302820;border-radius:2px;font-size:10px;color:#3A3628;cursor:pointer;transition:all .15s;background:transparent;width:100%;font-family:'DM Sans',sans-serif}
-.addbtn:hover{border-color:#C4A46B;color:#C4A46B}
+  .hbg:hover {
+    border-color: #C4A46B;
+    color: #C4A46B;
+  }
 
-/* Zone-based module editor */
-.zone-editor{background:#201C14;border:1px solid #252018;border-radius:3px;padding:10px;margin-bottom:8px}
-.ze-title{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#C4A46B;margin-bottom:8px}
-.ze-col-lbl{font-size:10px;color:#6B6050;margin-bottom:6px}
-.zone-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:5px 7px;background:#181510;border:1px solid #252018;border-radius:2px}
-.zone-num{font-size:10px;color:#3A3628;min-width:14px;font-weight:500}
-.zone-sel{flex:1;padding:3px 5px;font-size:10px;font-family:'DM Sans',sans-serif;background:#201C14;border:1px solid #302820;border-radius:2px;color:#E8E0D0;outline:none;cursor:pointer}
-.zone-sel:focus{border-color:#C4A46B}
-.zone-move{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
-.zmv{padding:1px 4px;font-size:9px;background:#252018;border:none;color:#6B6050;cursor:pointer;border-radius:1px;line-height:1.4;transition:all .12s}
-.zmv:hover{background:#302820;color:#E8E0D0}
-.zone-del{padding:2px 5px;font-size:10px;background:transparent;border:none;color:#3A2828;cursor:pointer;transition:all .12s}
-.zone-del:hover{color:#E74C3C}
-.add-zone{display:flex;align-items:center;justify-content:center;gap:4px;padding:5px;border:1px dashed #252018;border-radius:2px;font-size:9px;color:#3A3628;cursor:pointer;transition:all .15s;background:transparent;width:100%;font-family:'DM Sans',sans-serif;margin-top:4px}
-.add-zone:hover{border-color:#C4A46B;color:#C4A46B}
-.no-col-msg{font-size:10px;color:#3A3628;text-align:center;padding:12px 0}
+  .hbw {
+    background: #25D366;
+    color: #fff;
+  }
 
-/* ── VIEWPORT ── */
-.vp{flex:1;position:relative;background:#13110E;overflow:hidden}
-#c3{display:block;width:100%;height:100%}
-.vctrl{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(13,11,8,.9);border:1px solid #252018;border-radius:3px;padding:3px;z-index:10}
-.vc{padding:4px 10px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.08em;text-transform:uppercase;background:transparent;color:#5A5650;border:none;border-radius:2px;cursor:pointer;transition:all .15s}
-.vc:hover{color:#E8E0D0}
-.vc.on{background:rgba(196,164,107,0.18);color:#C4A46B}
-.wm{position:absolute;top:10px;left:10px;font-family:'Playfair Display',serif;font-size:11px;color:rgba(255,255,255,0.08);letter-spacing:0.06em;pointer-events:none;z-index:10}
-.selbox{position:absolute;top:10px;right:10px;background:rgba(13,11,8,.94);border:1px solid #C4A46B;border-radius:3px;padding:9px 12px;font-size:10px;display:none;min-width:155px;z-index:10}
-.selbox.show{display:block}
-.sbt{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#C4A46B;margin-bottom:6px}
-.sbr{display:flex;justify-content:space-between;gap:14px;color:#6B6050;margin-bottom:2px}
-.sbr span{color:#E8E0D0;font-weight:500}
-.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,0.15);letter-spacing:0.1em;text-transform:uppercase;pointer-events:none;white-space:nowrap;z-index:10}
+  .hbw:hover {
+    background: #1ebe5d;
+  }
 
-/* ── RIGHT PANEL ── */
-.rp{width:220px;background:#181510;border-left:1px solid #252018;overflow-y:auto;flex-shrink:0;padding:12px}
-.rp::-webkit-scrollbar{width:3px}.rp::-webkit-scrollbar-thumb{background:#302820;border-radius:2px}
-.rsh{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#302820;margin-bottom:8px}
-.sblk{background:#0D0B08;border:1px solid #252018;border-radius:2px;padding:10px;margin-bottom:11px}
-.stit{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#C4A46B;margin-bottom:8px}
-.sr2{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #181510;font-size:10px}
-.sr2:last-child{border-bottom:none}
-.sk{color:#6B6050}.sv{font-weight:500;color:#E8E0D0}
-.csums{margin-bottom:11px}
-.csi{display:flex;align-items:center;gap:4px;padding:4px 6px;background:#0D0B08;border:1px solid #252018;border-radius:2px;margin-bottom:3px;font-size:10px;cursor:pointer;transition:border-color .15s}
-.csi:hover,.csi.on{border-color:#C4A46B}
-.csdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.csn{flex:1;color:#6B6050}.csw{color:#E8E0D0;font-weight:500}
-.ctag{font-size:8px;padding:1px 4px;background:#252018;border-radius:1px;color:#6B6050;margin-right:2px}
-.ctas{display:flex;flex-direction:column;gap:5px}
-.bwa2{padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:#25D366;color:#fff;border:none;border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .15s}
-.bwa2:hover{background:#1ebe5d}
-.bem2{padding:9px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:#C4A46B;color:#1A1510;border:none;border-radius:2px;cursor:pointer;transition:all .15s}
-.bem2:hover{background:#9E7E48;color:#fff}
-.bwb2{padding:7px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;background:transparent;color:#5A5650;border:1px solid #252018;border-radius:2px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .15s}
-.bwb2:hover{border-color:#5A5650;color:#E8E0D0}
+  .hba {
+    background: #C4A46B;
+    color: #1A1510;
+    font-weight: 500;
+  }
 
-/* ── MODAL ── */
-.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center}
-.ovl.open{display:flex}
-.mdl{background:#181510;border:1px solid #302820;width:360px;max-width:95vw;border-radius:3px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.7)}
-.mhd{background:#0D0B08;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252018}
-.mhd h2{font-family:'Playfair Display',serif;font-size:15px;color:#E8E0D0;font-weight:400}
-.mcls{background:none;border:none;color:#3A3628;font-size:19px;cursor:pointer;line-height:1;transition:color .15s}
-.mcls:hover{color:#E8E0D0}
-.mbdy{padding:16px}
-.mcfg{background:#0D0B08;border:1px solid #252018;border-radius:2px;padding:8px;font-size:9px;color:#6B6050;margin-bottom:12px;line-height:1.9;white-space:pre-wrap;max-height:90px;overflow-y:auto}
-.fld{margin-bottom:10px}
-.fld label{display:block;font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#6B6050;margin-bottom:3px}
-.fld input,.fld textarea{width:100%;padding:7px 9px;font-size:12px;font-family:'DM Sans',sans-serif;background:#0D0B08;border:1px solid #252018;border-radius:2px;color:#E8E0D0;outline:none;transition:border-color .15s}
-.fld input:focus,.fld textarea:focus{border-color:#C4A46B}
-.fld textarea{resize:none}
-.mact{display:flex;gap:5px;margin-top:4px}
-.mact button{flex:1;padding:9px;font-size:10px;font-family:'DM Sans',sans-serif;border-radius:2px;cursor:pointer;font-weight:500;letter-spacing:0.04em}
-.mbc{background:transparent;border:1px solid #252018;color:#6B6050}
-.mbs{background:#C4A46B;color:#1A1510;border:none}
-.mbs:hover{background:#9E7E48;color:#fff}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:#0D0B08;border:1px solid #C4A46B;color:#E8E0D0;padding:9px 17px;border-radius:2px;font-size:11px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .hba:hover {
+    background: #9E7E48;
+    color: #fff;
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: flex;
+    height: calc(100vh - 50px);
+  }
+
+  /* LEFT PANEL */
+  .lp {
+    width: 260px;
+    background: #181510;
+    border-right: 1px solid #252018;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lp::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .lp::-webkit-scrollbar-thumb {
+    background: #302820;
+    border-radius: 2px;
+  }
+
+  .tabbar {
+    display: flex;
+    border-bottom: 1px solid #252018;
+    flex-shrink: 0;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 9px 2px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3A3628;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .15s;
+  }
+
+  .tab.on {
+    color: #C4A46B;
+    border-bottom-color: #C4A46B;
+  }
+
+  .pane {
+    padding: 12px;
+    display: none;
+  }
+
+  .pane.on {
+    display: block;
+  }
+
+  .sh {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: #302820;
+    margin-bottom: 9px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #252018;
+  }
+
+  .sec {
+    margin-bottom: 16px;
+  }
+
+  .dr {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .dr label {
+    font-size: 11px;
+    color: #6B6050;
+    min-width: 50px;
+  }
+
+  .diw {
+    flex: 1;
+    position: relative;
+  }
+
+  .di {
+    width: 100%;
+    padding: 5px 26px 5px 8px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    background: #201C14;
+    border: 1px solid #302820;
+    border-radius: 2px;
+    color: #E8E0D0;
+    outline: none;
+    transition: border-color .15s;
+  }
+
+  .di:focus {
+    border-color: #C4A46B;
+  }
+
+  .du {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 9px;
+    color: #3A3628;
+    pointer-events: none;
+  }
+
+  .dn {
+    font-size: 9px;
+    color: #302820;
+    margin-top: -4px;
+    margin-bottom: 7px;
+    padding-left: 57px;
+  }
+
+  .og {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .ob {
+    padding: 5px 9px;
+    font-size: 10px;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid #252018;
+    border-radius: 2px;
+    background: #201C14;
+    color: #6B6050;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .ob:hover {
+    border-color: #C4A46B;
+    color: #E8E0D0;
+  }
+
+  .ob.on {
+    background: rgba(196, 164, 107, 0.14);
+    color: #C4A46B;
+    border-color: #C4A46B;
+  }
+
+  .mel-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 6px;
+  }
+
+  .mel {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    transition: all .15s;
+  }
+
+  .mel:hover {
+    transform: scale(1.08);
+  }
+
+  .mel.on {
+    outline-color: #C4A46B;
+  }
+
+  .clist {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 7px;
+  }
+
+  .ci {
+    background: #201C14;
+    border: 1px solid #252018;
+    border-radius: 2px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+
+  .ci.sel {
+    border-color: #C4A46B;
+    background: rgba(196, 164, 107, 0.07);
+  }
+
+  .clb {
+    font-size: 11px;
+    color: #E8E0D0;
+    flex: 1;
+  }
+
+  .cwi {
+    width: 46px;
+    padding: 2px 4px;
+    font-size: 11px;
+    background: #181510;
+    border: 1px solid #302820;
+    border-radius: 2px;
+    color: #C4A46B;
+    text-align: center;
+  }
+
+  .cdel {
+    width: 17px;
+    height: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #3A2828;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+  }
+
+  .cdel:hover {
+    color: #E74C3C;
+  }
+
+  .addbtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px;
+    border: 1px dashed #302820;
+    border-radius: 2px;
+    font-size: 10px;
+    color: #3A3628;
+    cursor: pointer;
+    background: transparent;
+    width: 100%;
+  }
+
+  .addbtn:hover {
+    border-color: #C4A46B;
+    color: #C4A46B;
+  }
+
+  /* VIEWPORT */
+  .vp {
+    flex: 1;
+    position: relative;
+    background: #13110E;
+    overflow: hidden;
+  }
+
+  #c3 {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .vctrl {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 3px;
+    background: rgba(13, 11, 8, .9);
+    border: 1px solid #252018;
+    border-radius: 3px;
+    padding: 3px;
+    z-index: 10;
+  }
+
+  .vc {
+    padding: 4px 10px;
+    font-size: 9px;
+    background: transparent;
+    color: #5A5650;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  .vc:hover {
+    color: #E8E0D0;
+  }
+
+  .vc.on {
+    background: rgba(196, 164, 107, 0.18);
+    color: #C4A46B;
+  }
+
+  .hint {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: rgba(255, 255, 255, 0.15);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  /* RIGHT PANEL */
+  .rp {
+    width: 200px;
+    background: #181510;
+    border-left: 1px solid #252018;
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 12px;
+  }
+
+  .rsh {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #302820;
+    margin-bottom: 8px;
+  }
+
+  .sblk {
+    background: #0D0B08;
+    border: 1px solid #252018;
+    border-radius: 2px;
+    padding: 10px;
+    margin-bottom: 11px;
+  }
+
+  .stit {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #C4A46B;
+    margin-bottom: 8px;
+  }
+
+  .sr2 {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-size: 10px;
+  }
+
+  .sk {
+    color: #6B6050;
+  }
+
+  .sv {
+    font-weight: 500;
+    color: #E8E0D0;
+  }
+
+  .ctas {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .bwa2 {
+    padding: 10px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .bem2 {
+    padding: 9px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    background: #C4A46B;
+    color: #1A1510;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #0D0B08;
+    border: 1px solid #C4A46B;
+    color: #E8E0D0;
+    padding: 9px 17px;
+    border-radius: 2px;
+    font-size: 11px;
+    opacity: 0;
+    transition: all .3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <a class="logo" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">CR <em>Design</em> Muebles</a>
+  <a class="logo" href="index.html" target="_blank">CR <em>Design</em> Muebles</a>
   <div class="hbtns">
-    <a class="hb hbg" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">← Web</a>
-    <button class="hb hbw" id="whatsappBtn">📱 WhatsApp</button>
+    <a class="hb hbg" href="index.html">← Volver</a>
+    <button class="hb hbw" id="whatsappBtn">WhatsApp</button>
     <button class="hb hba" id="citaBtn">✉ Solicitar cita</button>
   </div>
 </header>
 
 <div class="layout">
 
-<!-- LEFT PANEL -->
-<div class="lp">
-  <div class="tabbar">
-    <div class="tab on" data-tab="dims">Medidas</div>
-    <div class="tab" data-tab="cols">Columnas</div>
-    <div class="tab" data-tab="mat">Material</div>
-    <div class="tab" data-tab="tir">Tiradores</div>
-  </div>
-
-  <!-- MEDIDAS -->
-  <div class="pane on" id="pane-dims">
-    <div class="sec">
-      <div class="sh">Dimensiones generales</div>
-      <div class="dr"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300" step="1"><span class="du">cm</span></div></div>
-      <div class="dn">Min 150 · Max 300 cm</div>
-      <div class="dr"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80" step="1"><span class="du">cm</span></div></div>
-      <div class="dn">Min 30 · Max 80 cm</div>
-      <div class="dr"><label>Ancho total</label><div class="diw"><input class="di" type="number" id="inW" value="200" readonly style="color:#3A3628;cursor:default"><span class="du">cm</span></div></div>
-      <div class="dn">Suma de columnas</div>
+  <!-- LEFT PANEL -->
+  <div class="lp">
+    <div class="tabbar">
+      <div class="tab on" data-tab="dims">Medidas</div>
+      <div class="tab" data-tab="cols">Columnas</div>
+      <div class="tab" data-tab="mat">Material</div>
     </div>
-    <div class="sec">
-      <div class="sh">Tipo de puerta</div>
-      <div class="og" id="dtypes">
-        <button class="ob on" data-v="correderas">Correderas</button>
-        <button class="ob" data-v="abatibles">Abatibles</button>
-        <button class="ob" data-v="sin">Sin puerta</button>
-        <button class="ob" data-v="mixto">Mixto</button>
+
+    <div class="pane on" id="pane-dims">
+      <div class="sec">
+        <div class="sh">Dimensiones generales</div>
+        <div class="dr"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300"><span class="du">cm</span></div></div>
+        <div class="dn">Min 150 · Max 300 cm</div>
+        <div class="dr"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80"><span class="du">cm</span></div></div>
+        <div class="dn">Min 30 · Max 80 cm</div>
+        <div class="dr"><label>Ancho total</label><div class="diw"><input class="di" type="number" id="inW" value="200" readonly><span class="du">cm</span></div></div>
       </div>
     </div>
-    <div class="sec">
-      <div class="sh">Acabado de puerta</div>
-      <div class="og" id="dfinish">
-        <button class="ob on" data-v="liso">Liso</button>
-        <button class="ob" data-v="espejo">Espejo</button>
-        <button class="ob" data-v="cristal">Cristal</button>
-        <button class="ob" data-v="madera">Madera</button>
-        <button class="ob" data-v="lacado">Lacado mate</button>
-        <button class="ob" data-v="ranurado">Ranurado</button>
+
+    <div class="pane" id="pane-cols">
+      <div class="sec">
+        <div class="sh">Columnas</div>
+        <div class="clist" id="colList"></div>
+        <button class="addbtn" id="addColBtn">+ Añadir columna</button>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-mat">
+      <div class="sec">
+        <div class="sh">Color del cuerpo</div>
+        <div class="mel-grid" id="mpicker"></div>
       </div>
     </div>
   </div>
 
-  <!-- COLUMNAS -->
-  <div class="pane" id="pane-cols">
-    <div class="sec">
-      <div class="sh">Columnas — arrastra para reordenar</div>
-      <div class="clist" id="colList"></div>
-      <button class="addbtn" id="addColBtn">+ Añadir columna</button>
+  <!-- VIEWPORT -->
+  <div class="vp" id="vpEl">
+    <canvas id="c3"></canvas>
+    <div class="vctrl">
+      <button class="vc" data-view="front">Frontal</button>
+      <button class="vc on" data-view="corner">Esquina</button>
+      <button class="vc" data-view="top">Planta</button>
     </div>
-    <div class="sec">
-      <div class="sh">Distribución interior</div>
-      <div id="zoneEditorWrap"></div>
-    </div>
+    <div class="hint">🖱️ Arrastra para rotar | Rueda para zoom</div>
   </div>
 
-  <!-- MATERIAL -->
-  <div class="pane" id="pane-mat">
-    <div class="sec">
-      <div class="sh">Melamina — cuerpo</div>
-      <div class="mel-grid" id="mpicker"></div>
-      <div style="font-size:9px;color:#6B6050;margin-top:2px" id="mlbl">Blanco Ártico</div>
+  <!-- RIGHT PANEL -->
+  <div class="rp">
+    <div class="rsh">Resumen del diseño</div>
+    <div class="sblk">
+      <div class="stit">Dimensiones</div>
+      <div class="sr2"><span class="sk">Ancho</span><span class="sv" id="rW">200 cm</span></div>
+      <div class="sr2"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
+      <div class="sr2"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
     </div>
-    <div class="sec">
-      <div class="sh">Melamina — interior</div>
-      <div class="mel-grid" id="ipicker"></div>
-      <div style="font-size:9px;color:#6B6050;margin-top:2px" id="ilbl">Blanco Ártico</div>
-    </div>
-    <div class="sec">
-      <div class="sh">Melamina — puertas</div>
-      <div class="og" id="dsame">
-        <button class="ob on" data-v="1">Igual al cuerpo</button>
-        <button class="ob" data-v="0">Color distinto</button>
-      </div>
-      <div id="dpicker-wrap" style="display:none;margin-top:8px">
-        <div class="mel-grid" id="dpicker"></div>
-        <div style="font-size:9px;color:#6B6050;margin-top:2px" id="dlbl">Blanco Ártico</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TIRADORES -->
-  <div class="pane" id="pane-tir">
-    <div class="sec">
-      <div class="sh">Tipo de tirador</div>
-      <div class="hcat" id="hcat"></div>
-    </div>
-    <div class="sec">
-      <div class="sh">Acabado del tirador</div>
-      <div id="hfinish-wrap">
-        <div class="og" id="hfinish">
-          <button class="ob on" data-v="oro">Dorado</button>
-          <button class="ob" data-v="negro">Negro mate</button>
-          <button class="ob" data-v="plata">Plateado</button>
-          <button class="ob" data-v="cromo">Cromado</button>
-          <button class="ob" data-v="bronce">Bronce</button>
-          <button class="ob" data-v="cobre">Cobre</button>
-        </div>
-      </div>
+    <div class="ctas">
+      <button class="bwa2" id="whatsappBtn2">📱 WhatsApp</button>
+      <button class="bem2" id="citaBtn2">✉ Solicitar cita</button>
     </div>
   </div>
 </div>
 
-<!-- VIEWPORT -->
-<div class="vp" id="vpEl">
-  <canvas id="c3"></canvas>
-  <div class="wm">CR Design</div>
-  <div class="vctrl">
-    <button class="vc" data-view="front">Frontal</button>
-    <button class="vc on" data-view="corner">Esquina</button>
-    <button class="vc" data-view="inside">Interior</button>
-    <button class="vc" data-view="top">Planta</button>
-  </div>
-  <div class="selbox" id="selbox">
-    <div class="sbt">Columna seleccionada</div>
-    <div class="sbr">Nombre: <span id="siN">—</span></div>
-    <div class="sbr">Ancho: <span id="siW">—</span></div>
-    <div class="sbr">Zonas: <span id="siZ">—</span></div>
-  </div>
-  <div class="hint">Arrastra · Zoom · Clic en columna para seleccionar</div>
-</div>
+<div class="toast" id="toast">✓ Abriendo WhatsApp...</div>
 
-<!-- RIGHT PANEL -->
-<div class="rp">
-  <div class="rsh">Resumen del diseño</div>
-  <div class="sblk">
-    <div class="stit">Dimensiones</div>
-    <div class="sr2"><span class="sk">Ancho</span><span class="sv" id="rW">200 cm</span></div>
-    <div class="sr2"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
-    <div class="sr2"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
-    <div class="sr2"><span class="sk">Puertas</span><span class="sv" id="rDoor">Correderas</span></div>
-    <div class="sr2"><span class="sk">Acabado</span><span class="sv" id="rFin">Liso</span></div>
-    <div class="sr2"><span class="sk">Melamina</span><span class="sv" id="rMel">Blanco Ártico</span></div>
-    <div class="sr2"><span class="sk">Tirador</span><span class="sv" id="rHandle">—</span></div>
-  </div>
-  <div class="rsh">Columnas</div>
-  <div class="csums" id="csums"></div>
-  <div class="ctas">
-    <button class="bwa2" id="whatsappBtn2">📱 WhatsApp</button>
-    <button class="bem2" id="citaBtn2">✉ Solicitar cita por email</button>
-    <a class="bwb2" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">Visitar CR Design →</a>
-  </div>
-</div>
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  // ============================================
+  // CONFIGURADOR 3D - VERSIÓN REPARADA
+  // ============================================
 
-<!-- MODAL -->
-<div class="ovl" id="ovl">
-  <div class="mdl">
-    <div class="mhd"><h2>Solicitar cita</h2><button class="mcls" id="closeModalBtn">×</button></div>
-    <div class="mbdy">
-      <div class="mcfg" id="mconf"></div>
-      <div class="fld"><label>Nombre *</label><input type="text" id="cName" placeholder="Ej: Ana García"></div>
-      <div class="fld"><label>Email *</label><input type="email" id="cEmail" placeholder="tucorreo@ejemplo.com"></div>
-      <div class="fld"><label>Teléfono</label><input type="tel" id="cPhone" placeholder="+57 300 000 0000"></div>
-      <div class="fld"><label>Notas</label><textarea id="cNotes" rows="2" placeholder="Habitación, fecha, dudas..."></textarea></div>
-      <div class="mact">
-        <button class="mbc" id="cancelModalBtn">Cancelar</button>
-        <button class="mbs" id="sendEmailBtn">Enviar solicitud</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="toast" id="toast">✓ Abriendo cliente de correo...</div>
+  // Estado de la aplicación
+  let estado = {
+    H: 2.2,      // alto en metros
+    D: 0.6,      // fondo en metros
+    colorCuerpo: 0xF4F1EB,
+    columnas: [
+      { id: 1, ancho: 0.65, label: 'Col A' },
+      { id: 2, ancho: 0.70, label: 'Col B' },
+      { id: 3, ancho: 0.65, label: 'Col C' }
+    ],
+    columnaSeleccionada: 0
+  };
 
-<script type="module">
-import * as THREE from 'three';
+  let siguienteId = 4;
+  let scene, camera, renderer, grupoMueble;
+  let rotando = false;
+  let ultimaX = 0, ultimaY = 0;
+  let rotX = 0.3, rotY = 0.5;
+  let distancia = 3.5;
+  let hitObjects = [];
 
-// ══════════════════════════════════════════
-// DATA: MELAMINAS REALES
-// ══════════════════════════════════════════
-const MELS = [
-  {n:'Blanco Ártico',    c:'#F4F1EB', t:'light'},
-  {n:'Blanco Nieve',     c:'#FAFAF8', t:'light'},
-  {n:'Blanco Roto',      c:'#EDE8DC', t:'light'},
-  {n:'Crema Suave',      c:'#F0E8D4', t:'light'},
-  {n:'Aluminio',         c:'#C8CAC8', t:'light'},
-  {n:'Roble Nórdico',    c:'#D4BC98', t:'light'},
-  {n:'Roble Natural',    c:'#C8A87A', t:'light'},
-  {n:'Roble Arena',      c:'#DCCA9E', t:'light'},
-  {n:'Pino Silvestre',   c:'#D8B880', t:'light'},
-  {n:'Haya Natural',     c:'#D0B888', t:'light'},
-  {n:'Nogal Europeo',    c:'#A8845C', t:'light'},
-  {n:'Cerezo Oscuro',    c:'#984C38', t:'dark'},
-  {n:'Castaño Medio',    c:'#8C6840', t:'dark'},
-  {n:'Teca Natural',     c:'#B07840', t:'light'},
-  {n:'Bambú',            c:'#C8A858', t:'light'},
-  {n:'Wengué',           c:'#3C2A1A', t:'dark'},
-  {n:'Ébano',            c:'#1C1410', t:'dark'},
-  {n:'Nogal Americano',  c:'#5A3820', t:'dark'},
-  {n:'Palisandro',       c:'#4A2C18', t:'dark'},
-  {n:'Caoba',            c:'#6A2818', t:'dark'},
-  {n:'Gris Cemento',     c:'#9A9890', t:'dark'},
-  {n:'Gris Platino',     c:'#C0BEB8', t:'light'},
-  {n:'Gris Antracita',   c:'#484844', t:'dark'},
-  {n:'Gris Grafito',     c:'#5A5A58', t:'dark'},
-  {n:'Gris Perla',       c:'#D4D2CC', t:'light'},
-  {n:'Negro Azabache',   c:'#1A1814', t:'dark'},
-  {n:'Verde Salvia',     c:'#7A9878', t:'dark'},
-  {n:'Verde Bosque',     c:'#3C5A38', t:'dark'},
-  {n:'Azul Pizarra',     c:'#4A6878', t:'dark'},
-  {n:'Azul Noche',       c:'#2A3850', t:'dark'},
-];
+  // Colores disponibles
+  const coloresDisponibles = [
+    { nombre: 'Blanco Ártico', hex: 0xF4F1EB },
+    { nombre: 'Roble Nórdico', hex: 0xD4BC98 },
+    { nombre: 'Roble Natural', hex: 0xC8A87A },
+    { nombre: 'Nogal Europeo', hex: 0xA8845C },
+    { nombre: 'Wengué', hex: 0x3C2A1A },
+    { nombre: 'Ébano', hex: 0x1C1410 },
+    { nombre: 'Gris Cemento', hex: 0x9A9890 },
+    { nombre: 'Verde Salvia', hex: 0x7A9878 }
+  ];
 
-// ══════════════════════════════════════════
-// DATA: TIRADORES
-// ══════════════════════════════════════════
-const HANDLES = [
-  {id:'barra_c',  icon:'▬', name:'Barra centrada', desc:'Horizontal centro'},
+  // Calcular ancho total
+  function anchoTotal() {
+    return estado.columnas.reduce((sum, col) => sum + col.ancho, 0);
+  }
+
+  // Inicializar Three.js
+  function initThree() {
+    const canvas = document.getElementById('c3');
+    const container = document.getElementById('vpEl');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x13110E);
+    scene.fog = new THREE.Fog(0x13110E, 8, 20);
+
+    camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 50);
+    camera.position.set(2.5, 1.5, 3.5);
+    camera.lookAt(0, 1, 0);
+
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+
+    // Luces
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+    scene.add(ambientLight);
+
+    const mainLight = new THREE.DirectionalLight(0xFFF5E0, 1);
+    mainLight.position.set(3, 5, 2);
+    mainLight.castShadow = true;
+    mainLight.receiveShadow = true;
+    scene.add(mainLight);
+
+    const fillLight = new THREE.DirectionalLight(0x88AACC, 0.4);
+    fillLight.position.set(-2, 2, 3);
+    scene.add(fillLight);
+
+    const backLight = new THREE.PointLight(0xFFAA66, 0.3);
+    backLight.position.set(0, 1.5, -1.5);
+    scene.add(backLight);
+
+    // Suelo
+    const gridHelper = new THREE.GridHelper(8, 20, 0x3A3628, 0x252018);
+    gridHelper.position.y = -0.01;
+    scene.add(gridHelper);
+
+    grupoMueble = new THREE.Group();
+    scene.add(grupoMueble);
+
+    // Controles de cámara
+    canvas.addEventListener('mousedown', (e) => {
+      rotando = true;
+      ultimaX = e.clientX;
+      ultimaY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => {
+      rotando = false;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!rotando) return;
+      const dx = e.clientX - ultimaX;
+      const dy = e.clientY - ultimaY;
+      rotY += dx * 0.008;
+      rotX += dy * 0.008;
+      rotX = Math.max(0.1, Math.min(1.2, rotX));
+      ultimaX = e.clientX;
+      ultimaY = e.clientY;
+      actualizarCamara();
+    });
+
+    canvas.addEventListener('wheel', (e) => {
+      distancia += e.deltaY * 0.005;
+      distancia = Math.max(1.2, Math.min(6, distancia));
+      actualizarCamara();
+    });
+
+    window.addEventListener('resize', onWindowResize, false);
+    onWindowResize();
+
+    // Click para seleccionar columna
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouse = new THREE.Vector2();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(hitObjects);
+
+      if (intersects.length > 0) {
+        const idx = intersects[0].object.userData.columnaIdx;
+        if (idx !== undefined) {
+          estado.columnaSeleccionada = idx;
+          construirMueble();
+          actualizarUI();
+        }
+      }
+    });
+
+    construirMueble();
+    actualizarCamara();
+    animar();
+  }
+
+  function actualizarCamara() {
+    const x = Math.sin(rotY) * distancia * Math.cos(rotX);
+    const z = Math.cos(rotY) * distancia * Math.cos(rotX);
+    const y = Math.sin(rotX) * distancia + estado.H / 2;
+    camera.position.set(x, y, z);
+    camera.lookAt(0, estado.H / 2, 0);
+  }
+
+  function onWindowResize() {
+    const container = document.getElementById('vpEl');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+
+  function construirMueble() {
+    while (grupoMueble.children.length > 0) {
+      grupoMueble.remove(grupoMueble.children[0]);
+    }
+    hitObjects = [];
+
+    const anchoTotalM = anchoTotal();
+    const alto = estado.H;
+    const fondo = estado.D;
+    const grosor = 0.018;
+    const colorMat = new THREE.MeshStandardMaterial({ color: estado.colorCuerpo, roughness: 0.6, metalness: 0.1 });
+
+    // Panel trasero
+    const backPanel = new THREE.Mesh(new THREE.BoxGeometry(anchoTotalM, alto, grosor), colorMat);
+    backPanel.position.set(0, alto / 2, -fondo / 2 + grosor / 2);
+    backPanel.castShadow = true;
+    backPanel.receiveShadow = true;
+    grupoMueble.add(backPanel);
+
+    // Techo y piso
+    const topPanel = new THREE.Mesh(new THREE.BoxGeometry(anchoTotalM, grosor, fondo), colorMat);
+    topPanel.position.set(0, alto - grosor / 2, 0);
+    topPanel.castShadow = true;
+    grupoMueble.add(topPanel);
+
+    const bottomPanel = new THREE.Mesh(new THREE.BoxGeometry(anchoTotalM, grosor, fondo), colorMat);
+    bottomPanel.position.set(0, grosor / 2, 0);
+    bottomPanel.castShadow = true;
+    grupoMueble.add(bottomPanel);
+
+    // Laterales
+    const leftPanel = new THREE.Mesh(new THREE.BoxGeometry(grosor, alto, fondo), colorMat);
+    leftPanel.position.set(-anchoTotalM / 2 + grosor / 2, alto / 2, 0);
+    leftPanel.castShadow = true;
+    grupoMueble.add(leftPanel);
+
+    const rightPanel = new THREE.Mesh(new THREE.BoxGeometry(grosor, alto, fondo), colorMat);
+    rightPanel.position.set(anchoTotalM / 2 - grosor / 2, alto / 2, 0);
+    rightPanel.castShadow = true;
+    grupoMueble.add(rightPanel);
+
+    // Columnas y divisiones
+    let xActual = -anchoTotalM / 2 + grosor;
+    
+    estado.columnas.forEach((col, idx) => {
+      const anchoCol = col.ancho;
+      const centroX = xActual + anchoCol / 2;
+
+      // División vertical
+      if (idx < estado.columnas.length - 1) {
+        const divider = new THREE.Mesh(new THREE.BoxGeometry(grosor, alto - grosor * 2, fondo - grosor * 2), colorMat);
+        divider.position.set(xActual + anchoCol, alto / 2, 0);
+        divider.castShadow = true;
+        grupoMueble.add(divider);
+      }
+
+      // Hitbox para selección
+      const hitbox = new THREE.Mesh(
+        new THREE.BoxGeometry(anchoCol - grosor, alto - grosor * 2, fondo - grosor * 2),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      hitbox.position.set(centroX, alto / 2, 0);
+      hitbox.userData = { columnaIdx: idx };
+      grupoMueble.add(hitbox);
+      hitObjects.push(hitbox);
+
+      // Resaltado de columna seleccionada
+      if (idx === estado.columnaSeleccionada) {
+        const highlightMat = new THREE.MeshBasicMaterial({ color: 0xC4A46B, wireframe: true, transparent: true, opacity: 0.3 });
+        const highlight = new THREE.Mesh(new THREE.BoxGeometry(anchoCol - grosor, alto - grosor * 2, fondo - grosor * 2), highlightMat);
+        highlight.position.set(centroX, alto / 2, 0);
+        grupoMueble.add(highlight);
+      }
+
+      // Estantes internos (simplificado)
+      const estanteMat = new THREE.MeshStandardMaterial({ color: estado.colorCuerpo, roughness: 0.7 });
+      for (let i = 1; i <= 2; i++) {
+        const estante = new THREE.Mesh(new THREE.BoxGeometry(anchoCol - grosor * 2, 0.015, fondo - grosor * 2), estanteMat);
+        estante.position.set(centroX, i * (alto / 3), 0);
+        estante.castShadow = true;
+        grupoMueble.add(estante);
+      }
+
+      xActual += anchoCol;
+    });
+  }
+
+  function actualizarUI() {
+    const anchoCm = (anchoTotal() * 100).toFixed(0);
+    document.getElementById('inW').value = anchoCm;
+    document.getElementById('rW').textContent = anchoCm + ' cm';
+    document.getElementById('rH').textContent = estado.H * 100 + ' cm';
+    document.getElementById('rD').textContent = estado.D * 100 + ' cm';
+
+    // Renderizar lista de columnas
+    const container = document.getElementById('colList');
+    if (container) {
+      container.innerHTML = '';
+      estado.columnas.forEach((col, i) => {
+        const div = document.createElement('div');
+        div.className = 'ci' + (i === estado.columnaSeleccionada ? ' sel' : '');
+        div.innerHTML = `
+          <span class="clb">${col.label}</span>
+          <input class="cwi" type="number" value="${(col.ancho * 100).toFixed(0)}" min="30" max="250" step="5">
+          ${estado.columnas.length > 1 ? '<button class="cdel">×</button>' : ''}
+        `;
+        
+        const input = div.querySelector('.cwi');
+        input.addEventListener('change', (e) => {
+          const nuevoAncho = parseFloat(e.target.value) / 100;
+          if (nuevoAncho >= 0.3 && nuevoAncho <= 2.5) {
+            estado.columnas[i].ancho = nuevoAncho;
+            construirMueble();
+            actualizarUI();
+          } else {
+            e.target.value = (estado.columnas[i].ancho * 100).toFixed(0);
+          }
+        });
+
+        const delBtn = div.querySelector('.cdel');
+        if (delBtn) {
+          delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (estado.columnas.length > 1) {
+              estado.columnas.splice(i, 1);
+              if (estado.columnaSeleccionada >= estado.columnas.length) {
+                estado.columnaSeleccionada = estado.columnas.length - 1;
+              }
+              construirMueble();
+              actualizarUI();
+            }
+          });
+        }
+
+        div.addEventListener('click', () => {
+          estado.columnaSeleccionada = i;
+          construirMueble();
+          actualizarUI();
+        });
+
+        container.appendChild(div);
+      });
+    }
+
+    // Renderizar colores
+    const colorContainer = document.getElementById('mpicker');
+    if (colorContainer && colorContainer.children.length === 0) {
+      coloresDisponibles.forEach((color) => {
+        const div = document.createElement('div');
+        div.className = 'mel' + (color.hex === estado.colorCuerpo ? ' on' : '');
+        div.style.backgroundColor = '#' + color.hex.toString(16).padStart(6, '0');
+        div.style.border = '1px solid rgba(255,255,255,0.1)';
+        div.onclick = () => {
+          document.querySelectorAll('#mpicker .mel').forEach(c => c.classList.remove('on'));
+          div.classList.add('on');
+          estado.colorCuerpo = color.hex;
+          construirMueble();
+        };
+        colorContainer.appendChild(div);
+      });
+    }
+  }
+
+  function animar() {
+    requestAnimationFrame(animar);
+    if (renderer && scene && camera) {
+      renderer.render(scene, camera);
+    }
+  }
+
+  // Controles de vista
+  function setView(view) {
+    const centerY = estado.H / 2;
+    switch(view) {
+      case 'front':
+        rotY = 0;
+        rotX = 0.1;
+        distancia = 3;
+        break;
+      case 'corner':
+        rotY = 0.65;
+        rotX = 0.25;
+        distancia = 3.5;
+        break;
+      case 'top':
+        rotY = 0.1;
+        rotX = 1.2;
+        distancia = 3;
+        break;
+    }
+    actualizarCamara();
+  }
+
+  // Eventos
+  document.getElementById('inH').addEventListener('change', (e) => {
+    estado.H = parseInt(e.target.value) / 100;
+    construirMueble();
+    actualizarUI();
+    actualizarCamara();
+  });
+
+  document.getElementById('inD').addEventListener('change', (e) => {
+    estado.D = parseInt(e.target.value) / 100;
+    construirMueble();
+    actualizarUI();
+  });
+
+  document.getElementById('addColBtn').addEventListener('click', () => {
+    const letras = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const nuevaLabel = `Col ${letras[estado.columnas.length % letras.length]}`;
+    estado.columnas.push({
+      id: siguienteId++,
+      ancho: 0.60,
+      label: nuevaLabel
+    });
+    construirMueble();
+    actualizarUI();
+  });
+
+  document.querySelectorAll('.vc').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.vc').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      setView(btn.dataset.view);
+    });
+  });
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabId = tab.dataset.tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById(`pane-${tabId}`).classList.add('on');
+    });
+  });
+
+  // WhatsApp
+  function cotizarWhatsApp() {
+    const anchoCm = (anchoTotal() * 100).toFixed(0);
+    const mensaje = `Hola CR Design Muebles! Me interesa este armario:\n\n📐 Dimensiones:\n- Ancho: ${anchoCm} cm\n- Alto: ${estado.H * 100} cm\n- Fondo: ${estado.D * 100} cm\n\n📦 Columnas: ${estado.columnas.length}\
