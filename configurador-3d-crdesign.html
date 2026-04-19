@@ -2,113 +2,94 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Configurador 3D Pro — CR Design Muebles</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Configurador 3D — CR Design Muebles</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--acc:#C4A46B;--acc-d:#9E7E48;--dark:#1E1C18;--bg:#16140F;--panel:#1A1814;--panel2:#242018;--border:#2A2620;--muted:#6B685F;--cream:#F7F4EE;--green:#25D366}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--cream);overflow:hidden;touch-action:pan-x pan-y}
-header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--acc:#C4A46B;--bg:#16140F;--panel:#1A1814;--border:#2A2620;--muted:#6B685F;--cream:#F7F4EE;--green:#25D366}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--cream);overflow:hidden;height:100vh}
+header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px}
 .logo{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);text-decoration:none}
 .logo span{color:var(--acc)}
-.hbtns{display:flex;gap:6px}
-.hb{padding:6px 11px;font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.hb{padding:6px 11px;font-size:10px;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
 .hb-g{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.hb-g:hover{color:var(--acc);border-color:var(--acc)}
 .hb-w{background:var(--green);color:#fff}
-.hb-a{background:var(--acc);color:var(--dark);font-weight:500}
+.hb-a{background:var(--acc);color:#1E1C18}
 .layout{display:flex;height:calc(100vh - 50px)}
-.lpanel{width:280px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0}
-.viewport{flex:1;position:relative;overflow:hidden}
-.rpanel{width:220px;background:var(--panel);border-left:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:12px}
-@media(max-width:800px){.lpanel{width:260px}.rpanel{width:200px}}
-@media(max-width:700px){
-  .layout{flex-direction:column}
-  .lpanel{width:100%;height:auto;max-height:40%;border-right:none;border-bottom:1px solid var(--border)}
-  .rpanel{display:none}
-  .hb-g{display:none}
-}
-.lpanel::-webkit-scrollbar,.rpanel::-webkit-scrollbar{width:3px}
-.lpanel::-webkit-scrollbar-thumb,.rpanel::-webkit-scrollbar-thumb{background:#3A3630}
-.tab-bar{display:flex;border-bottom:1px solid var(--border);background:#100E0A}
-.tab{flex:1;padding:9px 4px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent}
-.tab.active{color:var(--acc);border-bottom-color:var(--acc)}
-.pane{display:none;padding:12px}
+.lpanel{width:280px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.viewport{flex:1;position:relative}
+.rpanel{width:220px;background:var(--panel);border-left:1px solid var(--border);overflow-y:auto;padding:12px}
+@media(max-width:700px){.lpanel{width:100%;max-height:40%}.rpanel{display:none}}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:12px}
+.tab{flex:1;padding:8px;font-size:9px;text-align:center;color:var(--muted);cursor:pointer}
+.tab.active{color:var(--acc);border-bottom:2px solid var(--acc)}
+.pane{display:none}
 .pane.active{display:block}
 .sec{margin-bottom:16px}
-.shd{font-size:9px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:#3A3630;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--border)}
-.dim-row{display:flex;align-items:center;gap:7px;margin-bottom:7px}
-.dim-row label{font-size:10px;color:var(--muted);min-width:46px}
+.shd{font-size:9px;color:#3A3630;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px}
+.dim-row{display:flex;gap:7px;margin-bottom:7px;align-items:center}
+.dim-row label{font-size:10px;color:var(--muted);width:46px}
 .diw{flex:1;position:relative}
-.di{width:100%;padding:6px 26px 6px 8px;font-size:12px;background:var(--panel2);border:1px solid #3A3630;border-radius:3px;color:var(--cream);outline:none}
-.di:focus{border-color:var(--acc)}
+.di{width:100%;padding:6px 26px 6px 8px;background:#242018;border:1px solid #3A3630;border-radius:3px;color:var(--cream)}
 .du{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#4A4740}
-.dn{font-size:9px;color:#3A3630;margin-top:-4px;margin-bottom:7px;padding-left:53px}
-.col-list{display:flex;flex-direction:column;gap:4px;margin-bottom:7px}
-.ci{background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:7px 8px;display:flex;align-items:center;gap:5px;cursor:pointer}
-.ci.sel{border-color:var(--acc);background:rgba(196,164,107,0.07)}
-.clbl{font-size:10px;color:var(--cream);flex:1}
-.cwi{width:46px;padding:3px 4px;font-size:11px;background:var(--panel);border:1px solid #3A3630;border-radius:2px;color:var(--acc);text-align:center}
-.cdel{width:17px;height:17px;background:transparent;color:#4A3030;font-size:13px;cursor:pointer;border:none}
-.cdel:hover{color:#E74C3C}
-.add-btn{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px;border:1px dashed #3A3630;border-radius:3px;font-size:10px;color:var(--muted);cursor:pointer;background:transparent;width:100%}
-.add-btn:hover{border-color:var(--acc);color:var(--acc)}
-.mod-item{background:var(--panel2);border:1px solid var(--border);border-radius:3px;margin-bottom:6px;padding:8px;cursor:grab}
-.mod-item.dragging{opacity:0.5}
-.mod-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.mod-name{font-size:11px;font-weight:500;color:var(--acc)}
-.mod-del{background:transparent;border:none;color:#4A3030;cursor:pointer;font-size:14px}
-.mod-controls{display:flex;gap:6px;margin-top:5px}
-.mod-controls select{flex:1;background:var(--panel);border:1px solid #3A3630;border-radius:2px;color:var(--cream);padding:3px 5px;font-size:9px}
-.mod-controls button{background:var(--acc);border:none;border-radius:2px;padding:3px 6px;font-size:9px;cursor:pointer;color:var(--dark)}
-.modules-list{min-height:100px}
+.col-list{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.ci{background:#242018;border:1px solid var(--border);border-radius:3px;padding:7px;display:flex;gap:5px;align-items:center;cursor:pointer}
+.ci.sel{border-color:var(--acc)}
+.clbl{flex:1;font-size:10px}
+.cwi{width:50px;padding:3px;background:#1A1814;border:1px solid #3A3630;border-radius:2px;color:var(--acc);text-align:center}
+.cdel{background:transparent;border:none;color:#4A3030;cursor:pointer;font-size:14px}
+.add-btn{width:100%;padding:6px;background:transparent;border:1px dashed #3A3630;border-radius:3px;color:var(--muted);cursor:pointer}
+.mod-item{background:#242018;border:1px solid var(--border);border-radius:3px;margin-bottom:6px;padding:8px;cursor:grab}
+.mod-header{display:flex;justify-content:space-between;margin-bottom:5px}
+.mod-name{font-size:11px;color:var(--acc)}
+.mod-del{background:transparent;border:none;color:#4A3030;cursor:pointer}
+.mod-controls{display:flex;gap:5px;margin-top:5px}
+.mod-controls select{flex:1;background:#1A1814;border:1px solid #3A3630;color:var(--cream);padding:3px}
+.mod-controls button{background:var(--acc);border:none;border-radius:2px;padding:3px 6px;cursor:pointer}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.fb{padding:6px 4px;font-size:9px;border:1px solid var(--border);border-radius:3px;background:var(--panel2);color:var(--muted);cursor:pointer;text-align:center}
+.fb{padding:6px;background:#242018;border:1px solid var(--border);border-radius:3px;color:var(--muted);cursor:pointer;text-align:center}
 .fb.active{background:rgba(196,164,107,0.12);color:var(--acc);border-color:var(--acc)}
 .cgrid{display:flex;flex-wrap:wrap;gap:5px}
-.sw{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;outline:2px solid transparent}
-.sw.active{outline-color:var(--acc)}
-.swl{font-size:9px;color:var(--muted);margin-top:4px}
-#c3{display:block;width:100%;height:100%}
-.vctrl{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(16,14,10,0.9);border:1px solid var(--border);border-radius:4px;padding:3px;z-index:10}
-.vc{padding:4px 9px;font-size:9px;background:transparent;color:var(--muted);border:none;border-radius:2px;cursor:pointer}
-.vc.active{background:rgba(196,164,107,0.18);color:var(--acc)}
-.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,0.15);white-space:nowrap;z-index:10}
-.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#100E0A;border-top:1px solid var(--border);padding:8px 12px;gap:6px;z-index:50}
+.sw{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent}
+.sw.active{outline:2px solid var(--acc);outline-offset:1px}
+#c3{width:100%;height:100%;display:block}
+.vctrl{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(0,0,0,0.7);border-radius:4px;padding:3px}
+.vc{padding:4px 9px;font-size:9px;background:transparent;color:var(--muted);border:none;cursor:pointer}
+.vc.active{color:var(--acc)}
+.hint{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-size:7px;color:#3A3630;white-space:nowrap}
+.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#100E0A;padding:8px;gap:6px}
 @media(max-width:700px){.mob-bar{display:flex}.hint{display:none}}
-.mb-wa{flex:1;padding:10px;font-size:10px;font-weight:500;background:var(--green);color:#fff;border:none;border-radius:3px}
-.mb-em{flex:1;padding:10px;font-size:10px;font-weight:500;background:var(--acc);color:var(--dark);border:none;border-radius:3px}
-.mb-pdf{flex:1;padding:10px;font-size:10px;font-weight:500;background:var(--panel2);color:var(--cream);border:1px solid var(--border);border-radius:3px}
+.mob-bar button{flex:1;padding:10px;font-size:10px;border:none;border-radius:3px}
+.mb-wa{background:var(--green);color:#fff}
+.mb-em{background:var(--acc);color:#1E1C18}
+.mb-pdf{background:#242018;color:var(--cream);border:1px solid var(--border)}
 .sblock{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:10px;margin-bottom:11px}
-.stitle{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+.stitle{font-size:8px;color:var(--acc);margin-bottom:6px}
 .sr{display:flex;justify-content:space-between;padding:3px 0;font-size:10px;border-bottom:1px solid var(--border)}
-.sk{color:var(--muted)}.sv{font-weight:500;color:var(--cream)}
+.sk{color:var(--muted)}.sv{color:var(--cream)}
 .ctas{display:flex;flex-direction:column;gap:5px}
-.bwa,.bem,.bpdf{padding:10px;font-size:10px;font-weight:500;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer}
+.bwa,.bem,.bpdf{padding:10px;font-size:10px;border:none;border-radius:3px;cursor:pointer}
 .bwa{background:var(--green);color:#fff}
-.bem{background:var(--acc);color:var(--dark)}
-.bpdf{background:var(--panel2);color:var(--cream);border:1px solid var(--border)}
+.bem{background:var(--acc);color:#1E1C18}
+.bpdf{background:#242018;color:var(--cream);border:1px solid var(--border)}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:#1E1C18;border:1px solid #3A3630;width:100%;max-width:380px;border-radius:4px;overflow:hidden}
-.mhd{background:#100E0A;padding:14px 18px;display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
-.mhd h2{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream)}
-.mc2{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
-.mbdy{padding:16px}
-.mcfg{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:8px;font-size:9px;color:var(--muted);margin-bottom:12px;white-space:pre-wrap;max-height:90px;overflow-y:auto}
-.fld{margin-bottom:9px}
-.fld label{display:block;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.fld input,.fld textarea{width:100%;padding:7px 9px;font-size:13px;background:#100E0A;border:1px solid var(--border);border-radius:3px;color:var(--cream)}
-.mact{display:flex;gap:6px;margin-top:4px}
-.mact button{flex:1;padding:10px;font-size:11px;border-radius:3px;cursor:pointer}
+.modal{background:#1E1C18;border:1px solid #3A3630;width:90%;max-width:360px;border-radius:4px}
+.mhd{background:#100E0A;padding:12px;display:flex;justify-content:space-between}
+.mbdy{padding:12px}
+.mcfg{background:#100E0A;border:1px solid var(--border);padding:6px;font-size:9px;margin-bottom:10px;white-space:pre-wrap;max-height:80px;overflow:auto}
+.fld{margin-bottom:8px}
+.fld label{font-size:8px;color:var(--muted);display:block}
+.fld input,.fld textarea{width:100%;padding:6px;background:#100E0A;border:1px solid var(--border);color:var(--cream)}
+.mact{display:flex;gap:6px;margin-top:8px}
+.mact button{flex:1;padding:8px}
 .mbc{background:transparent;border:1px solid var(--border);color:var(--muted)}
-.mbs{background:var(--acc);color:var(--dark);border:none}
-.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:#100E0A;border:1px solid var(--acc);color:var(--cream);padding:9px 16px;border-radius:3px;font-size:11px;opacity:0;transition:all .3s;z-index:999}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(min-width:701px){.toast{bottom:22px}}
+.mbs{background:var(--acc);border:none;color:#1E1C18}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#100E0A;border:1px solid var(--acc);padding:8px 16px;border-radius:3px;font-size:11px;opacity:0;transition:0.3s;z-index:999}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -161,55 +142,52 @@ header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);disp
     <div class="pane" id="pane-mods">
       <div class="sec">
         <div class="shd">Módulos — <span id="colSelHint" style="color:var(--acc)">Col A</span></div>
-        <div class="modules-list" id="modulesList"></div>
-        <select id="addModuleSelect" style="width:100%;padding:6px;margin-top:6px;background:var(--panel2);border:1px solid var(--border);color:var(--cream);border-radius:3px">
+        <div id="modulesList"></div>
+        <select id="addModuleSelect" style="width:100%;padding:6px;margin:6px 0;background:#242018;border:1px solid var(--border);color:var(--cream)">
           <option value="barra">🎽 Barra colgador</option>
           <option value="barra_larga">👗 Barra vestidos largos</option>
           <option value="estantes">📦 Estantes</option>
           <option value="cajones">🗂 Cajones x3</option>
           <option value="zapatero">👟 Zapatero</option>
           <option value="pantalonero">👖 Pantalonero</option>
-          <option value="espejo_int">🪞 Espejo interior</option>
-          <option value="joyero">💍 Joyero</option>
           <option value="luz">💡 Luz LED</option>
         </select>
-        <button class="add-btn" onclick="addModuleToCurrentCol()" style="margin-top:6px">+ Añadir módulo</button>
+        <button class="add-btn" onclick="addModule()">+ Añadir módulo</button>
       </div>
     </div>
 
     <div class="pane" id="pane-mats">
       <div class="sec">
-        <div class="shd">Color cuerpo</div>
+        <div class="shd">Color</div>
         <div class="cgrid" id="cpicker">
-          <div class="sw active" data-c="#F5F0E8" data-n="Blanco roble" style="background:#F5F0E8"></div>
-          <div class="sw" data-c="#E8D8C4" data-n="Roble natural" style="background:#E8D8C4"></div>
+          <div class="sw active" data-c="#F5F0E8" data-n="Blanco" style="background:#F5F0E8"></div>
+          <div class="sw" data-c="#E8D8C4" data-n="Roble" style="background:#E8D8C4"></div>
           <div class="sw" data-c="#C4A882" data-n="Nogal" style="background:#C4A882"></div>
           <div class="sw" data-c="#8B7355" data-n="Wengué" style="background:#8B7355"></div>
           <div class="sw" data-c="#4A4A4A" data-n="Grafito" style="background:#4A4A4A"></div>
           <div class="sw" data-c="#1E1C18" data-n="Negro" style="background:#1E1C18"></div>
         </div>
-        <div class="swl" id="clbl">Blanco roble</div>
       </div>
       <div class="sec">
         <div class="shd">Tiradores</div>
         <div class="fgrid" id="handles">
           <button class="fb active" data-v="dorado">Dorado</button>
           <button class="fb" data-v="plateado">Plateado</button>
-          <button class="fb" data-v="negro">Negro mate</button>
-          <button class="fb" data-v="sin">Sin tirador</button>
+          <button class="fb" data-v="negro">Negro</button>
+          <button class="fb" data-v="sin">Sin</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="viewport" id="vp">
+  <div class="viewport">
     <canvas id="c3"></canvas>
     <div class="vctrl">
       <button class="vc" onclick="setView('front',this)">Frontal</button>
       <button class="vc active" onclick="setView('corner',this)">Esquina</button>
       <button class="vc" onclick="setView('top',this)">Planta</button>
     </div>
-    <div class="hint">🖱️ Arrastra para rotar | Rueda zoom | Toca columna para seleccionar</div>
+    <div class="hint">🖱️ Arrastra para rotar | Rueda zoom</div>
   </div>
 
   <div class="rpanel">
@@ -223,8 +201,8 @@ header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);disp
     </div>
     <div class="ctas">
       <button class="bwa" onclick="openWA()">📱 WhatsApp</button>
-      <button class="bem" onclick="openModal()">✉ Enviar por email</button>
-      <button class="bpdf" onclick="downloadPDF()">📄 Descargar PDF</button>
+      <button class="bem" onclick="openModal()">✉ Email</button>
+      <button class="bpdf" onclick="downloadPDF()">📄 PDF</button>
     </div>
   </div>
 </div>
@@ -237,453 +215,242 @@ header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);disp
 
 <div class="overlay" id="overlay">
   <div class="modal">
-    <div class="mhd"><h2>Enviar diseño</h2><button class="mc2" onclick="closeModal()">×</button></div>
+    <div class="mhd"><h2>Enviar diseño</h2><button onclick="closeModal()" style="background:none;border:none;color:#fff;font-size:20px">×</button></div>
     <div class="mbdy">
       <div class="mcfg" id="mconf"></div>
-      <div class="fld"><label>Tu nombre</label><input type="text" id="cName" placeholder="Nombre completo"></div>
-      <div class="fld"><label>Tu email</label><input type="email" id="cEmail" placeholder="correo@ejemplo.com"></div>
-      <div class="fld"><label>Teléfono</label><input type="tel" id="cPhone" placeholder="Opcional"></div>
-      <div class="fld"><label>Notas</label><textarea id="cNotes" rows="2" placeholder="Comentarios adicionales..."></textarea></div>
-      <div class="mact"><button class="mbc" onclick="closeModal()">Cancelar</button><button class="mbs" onclick="sendEmail()">Enviar diseño</button></div>
+      <div class="fld"><label>Nombre</label><input type="text" id="cName" placeholder="Tu nombre"></div>
+      <div class="fld"><label>Email</label><input type="email" id="cEmail" placeholder="correo@ejemplo.com"></div>
+      <div class="fld"><label>Teléfono</label><input type="tel" id="cPhone"></div>
+      <div class="mact"><button class="mbc" onclick="closeModal()">Cancelar</button><button class="mbs" onclick="sendEmail()">Enviar</button></div>
     </div>
   </div>
 </div>
 <div class="toast" id="toast">✓ Enviado</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ============================================
-// CONFIGURADOR 3D COMPLETO CON TODAS LAS FUNCIONALIDADES
-// ============================================
-
+// ESTADO
 let S = {
   H: 2.2, D: 0.6, door: 'correderas',
-  bc: '#F5F0E8', bcn: 'Blanco roble', handle: 'dorado',
-  sel: 0,
+  color: '#F5F0E8', handle: 'dorado', sel: 0,
   cols: [
-    { id: 1, w: 0.65, lbl: 'Col A', mods: [] },
-    { id: 2, w: 0.70, lbl: 'Col B', mods: [] },
-    { id: 3, w: 0.65, lbl: 'Col C', mods: [] }
+    { id: 1, w: 0.65, lbl: 'Col A', mods: [{type:'barra'},{type:'estantes'}] },
+    { id: 2, w: 0.70, lbl: 'Col B', mods: [{type:'estantes'},{type:'estantes'}] },
+    { id: 3, w: 0.65, lbl: 'Col C', mods: [{type:'cajones'},{type:'zapatero'}] }
   ]
 };
 let nextId = 4;
 
-// Módulos disponibles con sus propiedades
-const moduleTypes = {
-  barra: { nombre: 'Barra estándar', icon: '🎽', altura: 0.12, posY: 'top' },
-  barra_larga: { nombre: 'Barra vestidos largos', icon: '👗', altura: 0.25, posY: 'top' },
-  estantes: { nombre: 'Estantes', icon: '📦', altura: 0.02, posY: 'middle' },
-  cajones: { nombre: 'Cajones x3', icon: '🗂', altura: 0.25, posY: 'bottom' },
-  zapatero: { nombre: 'Zapatero', icon: '👟', altura: 0.15, posY: 'bottom' },
-  pantalonero: { nombre: 'Pantalonero', icon: '👖', altura: 0.12, posY: 'middle' },
-  espejo_int: { nombre: 'Espejo interior', icon: '🪞', altura: 0.02, posY: 'full' },
-  joyero: { nombre: 'Joyero', icon: '💍', altura: 0.12, posY: 'top' },
-  luz: { nombre: 'Luz LED', icon: '💡', altura: 0.02, posY: 'top' }
+const modTypes = {
+  barra: '🎽 Barra', barra_larga: '👗 Barra larga', estantes: '📦 Estantes',
+  cajones: '🗂 Cajones', zapatero: '👟 Zapatero', pantalonero: '👖 Pantalonero', luz: '💡 LED'
 };
 
-// Inicializar módulos por defecto
-S.cols[0].mods = [{ type: 'barra', id: 'm1' }, { type: 'estantes', id: 'm2' }];
-S.cols[1].mods = [{ type: 'estantes', id: 'm3' }, { type: 'estantes', id: 'm4' }];
-S.cols[2].mods = [{ type: 'cajones', id: 'm5' }, { type: 'zapatero', id: 'm6' }];
+function anchoTotal() { return S.cols.reduce((s,c)=>s+c.w,0); }
 
 // THREE.JS
 const cv = document.getElementById('c3');
 const ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
-ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+ren.setSize(cv.clientWidth, cv.clientHeight);
 ren.shadowMap.enabled = true;
 const sc = new THREE.Scene();
 sc.background = new THREE.Color(0x16140F);
-sc.fog = new THREE.Fog(0x16140F, 12, 30);
-const cam = new THREE.PerspectiveCamera(42, 1, 0.05, 60);
-sc.add(new THREE.AmbientLight(0xFFF5E0, 0.55));
-const kl = new THREE.DirectionalLight(0xFFF5E0, 1.1);
-kl.position.set(4, 7, 5);
-kl.castShadow = true;
-sc.add(kl);
-sc.add(new THREE.DirectionalLight(0xD0E8FF, 0.32).position.set(-4, 3, 3));
-const flr = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.MeshLambertMaterial({ color: 0x100E0A }));
-flr.rotation.x = -Math.PI / 2;
-flr.receiveShadow = true;
-sc.add(flr);
+const cam = new THREE.PerspectiveCamera(42, 1, 0.1, 50);
+sc.add(new THREE.AmbientLight(0xFFFFFF, 0.5));
+const luz = new THREE.DirectionalLight(0xFFF5E0, 1);
+luz.position.set(3, 5, 2);
+luz.castShadow = true;
+sc.add(luz);
 const wg = new THREE.Group();
 sc.add(wg);
-let hitMeshes = [];
+let hits = [];
 
-function h3(hex) { return new THREE.Color(parseInt(hex.replace('#', ''), 16)); }
-function bx(w, h, d, col, x, y, z, op = {}) {
-  const m = new THREE.MeshStandardMaterial({ color: h3(col), metalness: op.mt || 0, roughness: op.rg !== undefined ? op.rg : 0.65 });
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
-  mesh.position.set(x, y, z);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
-}
-
-function anchoTotal() { return S.cols.reduce((s, c) => s + c.w, 0); }
+function colorNum(hex) { return new THREE.Color(parseInt(hex.replace('#',''),16)); }
 
 function build() {
-  while (wg.children.length > 0) wg.remove(wg.children[0]);
-  hitMeshes = [];
+  while(wg.children.length) wg.remove(wg.children[0]);
+  hits = [];
   const H = S.H, D = S.D, T = 0.018, TW = anchoTotal();
-  const mat = new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.6 });
-
-  // Carcasa
-  wg.add(bx(TW, T, D, S.bc, 0, H - T / 2, 0));
-  wg.add(bx(TW, T, D, S.bc, 0, T / 2, 0));
-  wg.add(bx(T, H, D, S.bc, -TW / 2 + T / 2, H / 2, 0));
-  wg.add(bx(T, H, D, S.bc, TW / 2 - T / 2, H / 2, 0));
-  wg.add(bx(TW - 2 * T, H, T * 0.4, S.bc, 0, H / 2, -D / 2 + T * 0.2));
-
-  let xc = -TW / 2 + T;
+  const mat = new THREE.MeshStandardMaterial({ color: colorNum(S.color), roughness: 0.6 });
+  
+  // Caja exterior
+  const addBox = (w,h,d,x,y,z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat); m.position.set(x,y,z); m.castShadow=true; wg.add(m); };
+  addBox(TW, T, D, 0, H-T/2, 0);
+  addBox(TW, T, D, 0, T/2, 0);
+  addBox(T, H, D, -TW/2+T/2, H/2, 0);
+  addBox(T, H, D, TW/2-T/2, H/2, 0);
+  
+  let x = -TW/2 + T;
   S.cols.forEach((col, idx) => {
-    const cw = col.w, cx = xc + cw / 2;
-    if (idx < S.cols.length - 1) wg.add(bx(T, H - 2 * T, D - T * 2, '#3A3630', xc + cw, H / 2, 0));
-
+    const cw = col.w, cx = x + cw/2;
+    if(idx < S.cols.length-1) addBox(T, H-2*T, D-2*T, x+cw, H/2, 0);
+    
     // Hitbox
-    const hm = new THREE.Mesh(new THREE.BoxGeometry(cw - T, H - T, D - T), new THREE.MeshBasicMaterial({ visible: false }));
-    hm.position.set(cx, H / 2, 0);
-    hm.userData = { ci: idx };
-    wg.add(hm);
-    hitMeshes.push(hm);
-
-    // Highlight selección
-    if (idx === S.sel) {
-      const hl = new THREE.Mesh(new THREE.BoxGeometry(cw - T, H - 2 * T, D - 2 * T), new THREE.MeshBasicMaterial({ color: 0xC4A46B, wireframe: true, transparent: true, opacity: 0.3 }));
-      hl.position.set(cx, H / 2, 0);
+    const hb = new THREE.Mesh(new THREE.BoxGeometry(cw-T, H-T, D-T), new THREE.MeshBasicMaterial({visible:false}));
+    hb.position.set(cx, H/2, 0);
+    hb.userData = { idx };
+    wg.add(hb);
+    hits.push(hb);
+    
+    // Highlight
+    if(idx === S.sel){
+      const hl = new THREE.Mesh(new THREE.BoxGeometry(cw-T, H-2*T, D-2*T), new THREE.MeshBasicMaterial({color:0xC4A46B, wireframe:true, transparent:true, opacity:0.3}));
+      hl.position.set(cx, H/2, 0);
       wg.add(hl);
     }
-
-    // Dibujar módulos
-    const mods = col.mods;
-    const totalAlturaMods = mods.reduce((sum, m) => sum + (moduleTypes[m.type]?.altura || 0.15), 0);
-    let yOffset = T;
-    for (let mi = 0; mi < mods.length; mi++) {
-      const mod = mods[mi];
-      const mt = moduleTypes[mod.type] || { nombre: 'Módulo', altura: 0.15 };
-      const altura = mt.altura;
-      const cy = yOffset + altura / 2;
-
-      if (mod.type === 'barra' || mod.type === 'barra_larga') {
-        const barraMat = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.85, roughness: 0.15 });
-        const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, cw - 0.08, 12), barraMat);
-        rod.rotation.z = Math.PI / 2;
-        rod.position.set(cx, cy + altura * 0.4, D * 0.15);
-        wg.add(rod);
-      } else if (mod.type === 'estantes') {
-        const est = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 2, 0.015, D - T * 2.5), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.7 }));
+    
+    // Módulos
+    let yOff = T;
+    col.mods.forEach(mod => {
+      const alt = mod.type==='barra'?0.12 : mod.type==='barra_larga'?0.25 : mod.type==='estantes'?0.02 : mod.type==='cajones'?0.25 : mod.type==='zapatero'?0.15 : mod.type==='pantalonero'?0.12 : 0.05;
+      const cy = yOff + alt/2;
+      
+      if(mod.type==='barra' || mod.type==='barra_larga'){
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,cw-0.08,8), new THREE.MeshStandardMaterial({color:0xC4A46B, metalness:0.85}));
+        bar.rotation.z = Math.PI/2;
+        bar.position.set(cx, cy+alt*0.4, D*0.15);
+        wg.add(bar);
+      }
+      else if(mod.type==='estantes'){
+        const est = new THREE.Mesh(new THREE.BoxGeometry(cw-T*2, 0.015, D-T*2), new THREE.MeshStandardMaterial({color:colorNum(S.color)}));
         est.position.set(cx, cy, 0);
         wg.add(est);
-      } else if (mod.type === 'cajones') {
-        for (let i = 0; i < 3; i++) {
-          const caj = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 3, altura * 0.25, D * 0.85), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.6 }));
-          caj.position.set(cx, cy - altura * 0.3 + i * altura * 0.33, T * 0.5);
+      }
+      else if(mod.type==='cajones'){
+        for(let i=0;i<3;i++){
+          const caj = new THREE.Mesh(new THREE.BoxGeometry(cw-T*3, alt*0.25, D*0.85), mat);
+          caj.position.set(cx, cy-alt*0.3 + i*alt*0.33, T*0.5);
           wg.add(caj);
         }
-      } else if (mod.type === 'zapatero') {
-        for (let i = 0; i < 2; i++) {
-          const zap = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 2, 0.02, D * 0.45), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.8 }));
+      }
+      else if(mod.type==='zapatero'){
+        for(let i=0;i<2;i++){
+          const zap = new THREE.Mesh(new THREE.BoxGeometry(cw-T*2, 0.02, D*0.45), mat);
           zap.rotation.x = 0.15;
-          zap.position.set(cx, cy - altura * 0.2 + i * altura * 0.4, -D * 0.1);
+          zap.position.set(cx, cy-alt*0.2 + i*alt*0.4, -D*0.1);
           wg.add(zap);
         }
-      } else if (mod.type === 'pantalonero') {
-        const barMat = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.7 });
-        for (let i = 0; i < 3; i++) {
-          const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, cw - 0.1, 8), barMat);
-          bar.rotation.z = Math.PI / 2;
-          bar.position.set(cx, cy - altura * 0.3 + i * altura * 0.35, D * 0.08);
+      }
+      else if(mod.type==='pantalonero'){
+        for(let i=0;i<3;i++){
+          const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,cw-0.1,8), new THREE.MeshStandardMaterial({color:0xC4A46B, metalness:0.7}));
+          bar.rotation.z = Math.PI/2;
+          bar.position.set(cx, cy-alt*0.3 + i*alt*0.35, D*0.08);
           wg.add(bar);
         }
-      } else if (mod.type === 'espejo_int') {
-        const esp = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 3, altura * 0.9, 0.006), new THREE.MeshStandardMaterial({ color: 0xC8D8E8, metalness: 0.95, roughness: 0.05, transparent: true, opacity: 0.6 }));
-        esp.position.set(cx, cy, -D / 2 + T * 2);
-        wg.add(esp);
-      } else if (mod.type === 'joyero') {
-        const joy = new THREE.Mesh(new THREE.BoxGeometry(cw - T * 3, altura * 0.7, D * 0.75), new THREE.MeshStandardMaterial({ color: h3(S.bc), roughness: 0.5 }));
-        joy.position.set(cx, cy, 0);
-        wg.add(joy);
-      } else if (mod.type === 'luz') {
-        const ledMat = new THREE.MeshStandardMaterial({ color: 0xFFEEAA, emissive: 0xFFDD88, emissiveIntensity: 1.2 });
-        const led = new THREE.Mesh(new THREE.BoxGeometry(cw * 0.8, 0.006, 0.015), ledMat);
-        led.position.set(cx, cy + altura / 2, -D * 0.22);
+      }
+      else if(mod.type==='luz'){
+        const led = new THREE.Mesh(new THREE.BoxGeometry(cw*0.7, 0.005, 0.01), new THREE.MeshStandardMaterial({color:0xFFEEAA, emissive:0xFFAA66, emissiveIntensity:1}));
+        led.position.set(cx, cy+alt/2, -D*0.22);
         wg.add(led);
       }
-
-      yOffset += altura;
-    }
-
-    // Puertas
-    if (S.door !== 'sin') {
-      let dColor = S.bc, dmt = 0, drg = 0.6, dop = 1;
-      if (S.door === 'espejo') { dColor = '#C8D8E8'; dmt = 0.95; drg = 0.05; dop = 0.5; }
-      else if (S.door === 'cristal') { dColor = '#A8D8F0'; dmt = 0.1; drg = 0.05; dop = 0.28; }
-      const door = new THREE.Mesh(new THREE.BoxGeometry(cw - 0.005, H - 0.005, T * 1.2), new THREE.MeshStandardMaterial({ color: h3(dColor), metalness: dmt, roughness: drg, transparent: dop < 1, opacity: dop }));
-      door.position.set(cx, H / 2, D / 2 + T * 0.6);
-      door.castShadow = true;
+      yOff += alt;
+    });
+    
+    // Puerta
+    if(S.door !== 'sin'){
+      let dColor = S.color, mtal=0, rough=0.6;
+      if(S.door==='espejo'){ dColor='#C8D8E8'; mtal=0.95; rough=0.05; }
+      if(S.door==='cristal'){ dColor='#A8D8F0'; mtal=0.1; rough=0.05; }
+      const door = new THREE.Mesh(new THREE.BoxGeometry(cw-0.005, H-0.005, T*1.2), new THREE.MeshStandardMaterial({color:colorNum(dColor), metalness:mtal, roughness:rough}));
+      door.position.set(cx, H/2, D/2+T*0.6);
       wg.add(door);
-
-      if (S.handle !== 'sin') {
-        const hCol = S.handle === 'dorado' ? 0xC4A46B : S.handle === 'plateado' ? 0xC0C8D0 : 0x1A1814;
-        const hMat = new THREE.MeshStandardMaterial({ color: hCol, metalness: 0.85 });
-        const manija = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.09, 8), hMat);
-        manija.position.set(cx + (idx % 2 === 0 ? cw * 0.3 : -cw * 0.3), H / 2, D / 2 + T * 1.3);
-        wg.add(manija);
+      
+      if(S.handle !== 'sin'){
+        const hCol = S.handle==='dorado'?0xC4A46B : S.handle==='plateado'?0xC0C8D0 : 0x1A1814;
+        const man = new THREE.Mesh(new THREE.CylinderGeometry(0.006,0.006,0.08,8), new THREE.MeshStandardMaterial({color:hCol, metalness:0.85}));
+        man.position.set(cx + (idx%2===0?cw*0.3:-cw*0.3), H/2, D/2+T*1.2);
+        wg.add(man);
       }
     }
-    xc += cw;
+    x += cw;
   });
   syncUI();
-  renderColList();
-  renderModulesList();
+  renderCols();
+  renderMods();
 }
 
-// UI Functions
-function renderColList() {
+function renderCols(){
   const el = document.getElementById('colList');
-  if (!el) return;
+  if(!el) return;
   el.innerHTML = '';
-  S.cols.forEach((col, idx) => {
+  S.cols.forEach((c,i)=>{
     const d = document.createElement('div');
-    d.className = 'ci' + (idx === S.sel ? ' sel' : '');
-    d.innerHTML = `<span class="clbl">${col.lbl}</span><input class="cwi" type="number" value="${(col.w * 100).toFixed(0)}" min="30" max="200" step="5"><button class="cdel" onclick="delCol(${idx})">×</button>`;
-    d.querySelector('.cwi').addEventListener('change', (e) => {
-      let v = parseFloat(e.target.value);
-      if (v < 30) v = 30;
-      if (v > 200) v = 200;
-      S.cols[idx].w = v / 100;
-      e.target.value = v;
-      build();
-    });
-    d.addEventListener('click', () => { S.sel = idx; build(); renderModulesList(); });
+    d.className = 'ci'+(i===S.sel?' sel':'');
+    d.innerHTML = `<span class="clbl">${c.lbl}</span><input class="cwi" value="${(c.w*100).toFixed(0)}"><button class="cdel" onclick="delCol(${i})">×</button>`;
+    d.querySelector('.cwi').onchange = (e) => { let v=parseFloat(e.target.value); if(v<30)v=30; if(v>200)v=200; S.cols[i].w=v/100; build(); };
+    d.onclick = () => { S.sel=i; build(); };
     el.appendChild(d);
   });
-  document.getElementById('colSelHint').textContent = S.cols[S.sel]?.lbl || '—';
+  document.getElementById('colSelHint').innerHTML = S.cols[S.sel]?.lbl || '—';
 }
 
-function renderModulesList() {
+function renderMods(){
   const el = document.getElementById('modulesList');
-  if (!el) return;
+  if(!el) return;
   const col = S.cols[S.sel];
-  if (!col) { el.innerHTML = '<div style="color:#666;text-align:center">Selecciona una columna</div>'; return; }
+  if(!col){ el.innerHTML='<div style="color:#666">Selecciona una columna</div>'; return; }
   el.innerHTML = '';
   col.mods.forEach((mod, idx) => {
-    const mt = moduleTypes[mod.type] || { nombre: 'Módulo', icon: '📦' };
-    const div = document.createElement('div');
-    div.className = 'mod-item';
-    div.draggable = true;
-    div.ondragstart = (e) => { e.dataTransfer.setData('text/plain', idx); div.classList.add('dragging'); };
-    div.ondragend = () => div.classList.remove('dragging');
-    div.ondragover = (e) => e.preventDefault();
-    div.ondrop = (e) => {
+    const d = document.createElement('div');
+    d.className = 'mod-item';
+    d.draggable = true;
+    d.ondragstart = (e) => { e.dataTransfer.setData('idx', idx); };
+    d.ondragover = (e) => e.preventDefault();
+    d.ondrop = (e) => {
       e.preventDefault();
-      const from = parseInt(e.dataTransfer.getData('text/plain'));
-      if (from === idx) return;
-      const moved = col.mods.splice(from, 1)[0];
-      col.mods.splice(idx, 0, moved);
+      const from = parseInt(e.dataTransfer.getData('idx'));
+      if(from===idx) return;
+      const mov = col.mods.splice(from,1)[0];
+      col.mods.splice(idx,0,mov);
       build();
-      renderModulesList();
     };
-    div.innerHTML = `
-      <div class="mod-header"><span class="mod-name">${mt.icon} ${mt.nombre}</span><button class="mod-del" onclick="removeModule(${idx})">×</button></div>
-      <div class="mod-controls"><select onchange="changeModuleType(${idx}, this.value)"><option value="barra" ${mod.type==='barra'?'selected':''}>🎽 Barra estándar</option><option value="barra_larga" ${mod.type==='barra_larga'?'selected':''}>👗 Barra vestidos largos</option><option value="estantes" ${mod.type==='estantes'?'selected':''}>📦 Estantes</option><option value="cajones" ${mod.type==='cajones'?'selected':''}>🗂 Cajones x3</option><option value="zapatero" ${mod.type==='zapatero'?'selected':''}>👟 Zapatero</option><option value="pantalonero" ${mod.type==='pantalonero'?'selected':''}>👖 Pantalonero</option><option value="espejo_int" ${mod.type==='espejo_int'?'selected':''}>🪞 Espejo interior</option><option value="joyero" ${mod.type==='joyero'?'selected':''}>💍 Joyero</option><option value="luz" ${mod.type==='luz'?'selected':''}>💡 Luz LED</option></select><button onclick="moveModuleUp(${idx})">↑</button><button onclick="moveModuleDown(${idx})">↓</button></div>
+    d.innerHTML = `
+      <div class="mod-header"><span class="mod-name">${modTypes[mod.type]||mod.type}</span><button class="mod-del" onclick="delModule(${idx})">×</button></div>
+      <div class="mod-controls"><select onchange="changeModType(${idx},this.value)"><option value="barra" ${mod.type==='barra'?'selected':''}>🎽 Barra</option><option value="barra_larga" ${mod.type==='barra_larga'?'selected':''}>👗 Barra larga</option><option value="estantes" ${mod.type==='estantes'?'selected':''}>📦 Estantes</option><option value="cajones" ${mod.type==='cajones'?'selected':''}>🗂 Cajones</option><option value="zapatero" ${mod.type==='zapatero'?'selected':''}>👟 Zapatero</option><option value="pantalonero" ${mod.type==='pantalonero'?'selected':''}>👖 Pantalonero</option><option value="luz" ${mod.type==='luz'?'selected':''}>💡 LED</option></select><button onclick="moveMod(${idx},-1)">↑</button><button onclick="moveMod(${idx},1)">↓</button></div>
     `;
-    el.appendChild(div);
+    el.appendChild(d);
   });
 }
 
-function addModuleToCurrentCol() {
-  const col = S.cols[S.sel];
-  if (!col) return;
-  const type = document.getElementById('addModuleSelect').value;
-  col.mods.push({ type: type, id: 'm' + Date.now() + Math.random() });
-  build();
-  renderModulesList();
-}
-
-function removeModule(idx) {
-  const col = S.cols[S.sel];
-  if (col && col.mods[idx]) col.mods.splice(idx, 1);
-  build();
-  renderModulesList();
-}
-
-function changeModuleType(idx, newType) {
-  const col = S.cols[S.sel];
-  if (col && col.mods[idx]) col.mods[idx].type = newType;
-  build();
-  renderModulesList();
-}
-
-function moveModuleUp(idx) {
-  const col = S.cols[S.sel];
-  if (col && idx > 0) {
-    [col.mods[idx - 1], col.mods[idx]] = [col.mods[idx], col.mods[idx - 1]];
-    build();
-    renderModulesList();
-  }
-}
-
-function moveModuleDown(idx) {
-  const col = S.cols[S.sel];
-  if (col && idx < col.mods.length - 1) {
-    [col.mods[idx], col.mods[idx + 1]] = [col.mods[idx + 1], col.mods[idx]];
-    build();
-    renderModulesList();
-  }
-}
-
-function addCol() {
-  const letras = ['D', 'E', 'F', 'G', 'H'];
-  S.cols.push({ id: nextId++, w: 0.60, lbl: `Col ${letras[S.cols.length % letras.length]}`, mods: [] });
-  S.sel = S.cols.length - 1;
-  build();
-}
-
-function delCol(i) {
-  if (S.cols.length <= 1) return;
-  S.cols.splice(i, 1);
-  if (S.sel >= S.cols.length) S.sel = S.cols.length - 1;
-  build();
-}
-
-function syncUI() {
-  const tw = (anchoTotal() * 100).toFixed(0);
-  document.getElementById('inW').value = tw;
-  document.getElementById('rW').textContent = tw + ' cm';
-  document.getElementById('rH').textContent = (S.H * 100).toFixed(0) + ' cm';
-  document.getElementById('rD').textContent = (S.D * 100).toFixed(0) + ' cm';
-  document.getElementById('rDoor').textContent = S.door === 'correderas' ? 'Correderas' : S.door === 'abatibles' ? 'Abatibles' : S.door === 'espejo' ? 'Espejo' : S.door === 'cristal' ? 'Cristal' : 'Sin puerta';
-  document.getElementById('rCols').textContent = S.cols.length;
-}
-
-function getConfigText() {
-  let txt = `🔷 DISEÑO DE ARMARIO 🔷\n\n📏 MEDIDAS:\n• Ancho total: ${(anchoTotal() * 100).toFixed(0)} cm\n• Alto: ${(S.H * 100).toFixed(0)} cm\n• Fondo: ${(S.D * 100).toFixed(0)} cm\n• Puertas: ${S.door}\n• Color: ${S.bcn}\n• Tiradores: ${S.handle}\n\n📦 COLUMNAS:\n`;
-  S.cols.forEach((col, i) => {
-    txt += `\n${col.lbl} (${(col.w * 100).toFixed(0)} cm):\n`;
-    col.mods.forEach(mod => txt += `  • ${moduleTypes[mod.type]?.nombre || mod.type}\n`);
-  });
-  return txt;
-}
+function addModule(){ S.cols[S.sel]?.mods.push({type:document.getElementById('addModuleSelect').value}); build(); }
+function delModule(i){ S.cols[S.sel]?.mods.splice(i,1); build(); }
+function changeModType(i, t){ if(S.cols[S.sel]) S.cols[S.sel].mods[i].type = t; build(); }
+function moveMod(i, dir){ let m = S.cols[S.sel]?.mods; if(m && i+dir>=0 && i+dir<m.length){ [m[i], m[i+dir]] = [m[i+dir], m[i]]; build(); } }
+function addCol(){ S.cols.push({id:nextId++, w:0.6, lbl:'Col '+String.fromCharCode(65+S.cols.length), mods:[]}); S.sel=S.cols.length-1; build(); }
+function delCol(i){ if(S.cols.length>1){ S.cols.splice(i,1); if(S.sel>=S.cols.length) S.sel=S.cols.length-1; build(); } }
+function syncUI(){ let tw=(anchoTotal()*100).toFixed(0); document.getElementById('inW').value=tw; document.getElementById('rW').innerHTML=tw+' cm'; document.getElementById('rH').innerHTML=(S.H*100).toFixed(0)+' cm'; document.getElementById('rD').innerHTML=(S.D*100).toFixed(0)+' cm'; document.getElementById('rCols').innerHTML=S.cols.length; }
+function getConfig(){ let txt=`📏 MEDIDAS:\n• Ancho: ${(anchoTotal()*100).toFixed(0)} cm\n• Alto: ${(S.H*100).toFixed(0)} cm\n• Fondo: ${(S.D*100).toFixed(0)} cm\n• Puertas: ${S.door}\n• Color: ${S.color}\n\n📦 COLUMNAS:\n`; S.cols.forEach(c=>{ txt+=`\n${c.lbl} (${(c.w*100).toFixed(0)} cm):\n`; c.mods.forEach(m=>txt+=`  • ${modTypes[m.type]||m.type}\n`); }); return txt; }
 
 // Cámara
-let ry = 0.65, rx = 0.25, cdist = 1, isDrag = false, lmx = 0, lmy = 0;
-function posCam() {
-  const H = S.H, tgt = new THREE.Vector3(0, H * 0.5, 0);
-  cam.position.x = Math.sin(ry) * cdist * Math.cos(rx);
-  cam.position.z = Math.cos(ry) * cdist * Math.cos(rx);
-  cam.position.y = H * 0.5 + cdist * Math.sin(rx);
-  cam.lookAt(tgt);
-}
-function setView(v, btn) {
-  document.querySelectorAll('.vc').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const H = S.H, W = anchoTotal();
-  cdist = Math.max(H, W) * 1.5 + 1.5;
-  if (v === 'front') { ry = 0; rx = 0.1; }
-  else if (v === 'corner') { ry = 0.65; rx = 0.25; }
-  else if (v === 'top') { ry = 0.1; rx = 1.2; }
-  posCam();
-}
-cv.addEventListener('mousedown', e => { isDrag = true; lmx = e.clientX; lmy = e.clientY; });
-window.addEventListener('mouseup', () => isDrag = false);
-window.addEventListener('mousemove', e => {
-  if (!isDrag) return;
-  ry += (e.clientX - lmx) * 0.007;
-  rx += (e.clientY - lmy) * 0.004;
-  rx = Math.max(-0.5, Math.min(1.4, rx));
-  lmx = e.clientX; lmy = e.clientY;
-  posCam();
-});
-cv.addEventListener('wheel', e => { cdist = Math.max(0.8, Math.min(20, cdist * (1 + e.deltaY * 0.001))); posCam(); });
-cv.addEventListener('click', e => {
-  const r = cv.getBoundingClientRect();
-  const m2 = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-  const ray = new THREE.Raycaster();
-  ray.setFromCamera(m2, cam);
-  const hits = ray.intersectObjects(hitMeshes);
-  if (hits.length) { S.sel = hits[0].object.userData.ci; build(); renderModulesList(); }
-});
-function resize() { const w = cv.parentElement.clientWidth, h = cv.parentElement.clientHeight; ren.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
-window.addEventListener('resize', resize);
+let ry=0.65, rx=0.25, dist=3, dragging=false, lx=0, ly=0;
+function posCam(){ let H=S.H; cam.position.x=Math.sin(ry)*dist*Math.cos(rx); cam.position.z=Math.cos(ry)*dist*Math.cos(rx); cam.position.y=H*0.5+dist*Math.sin(rx); cam.lookAt(0,H*0.5,0); }
+function setView(v,btn){ document.querySelectorAll('.vc').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(v==='front'){ry=0;rx=0.1;} if(v==='corner'){ry=0.65;rx=0.25;} if(v==='top'){ry=0.1;rx=1.2;} posCam(); }
+cv.onmousedown = e => { dragging=true; lx=e.clientX; ly=e.clientY; };
+window.onmouseup = () => dragging=false;
+window.onmousemove = e => { if(!dragging) return; ry+=(e.clientX-lx)*0.007; rx+=(e.clientY-ly)*0.005; rx=Math.max(-0.3,Math.min(1.3,rx)); lx=e.clientX; ly=e.clientY; posCam(); };
+cv.onwheel = e => { dist=Math.max(1.2,Math.min(6,dist*(1+e.deltaY*0.002))); posCam(); };
+cv.onclick = e => { const r=cv.getBoundingClientRect(); const m2=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1); const ray=new THREE.Raycaster(); ray.setFromCamera(m2,cam); const ints=ray.intersectObjects(hits); if(ints.length){ S.sel=ints[0].object.userData.idx; build(); } };
+function resize(){ const w=cv.parentElement.clientWidth, h=cv.parentElement.clientHeight; ren.setSize(w,h); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+window.onresize = resize;
 resize();
-function animate() { requestAnimationFrame(animate); ren.render(sc, cam); }
+function animate(){ requestAnimationFrame(animate); ren.render(sc,cam); }
 animate();
 
-// Eventos inputs
-document.getElementById('inH').addEventListener('change', e => { S.H = parseInt(e.target.value) / 100; build(); posCam(); });
-document.getElementById('inD').addEventListener('change', e => { S.D = parseInt(e.target.value) / 100; build(); });
-document.getElementById('dtypes').addEventListener('click', e => {
-  const b = e.target.closest('.fb');
-  if (!b) return;
-  document.querySelectorAll('#dtypes .fb').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  S.door = b.dataset.v;
-  build();
-});
-document.getElementById('handles').addEventListener('click', e => {
-  const b = e.target.closest('.fb');
-  if (!b) return;
-  document.querySelectorAll('#handles .fb').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  S.handle = b.dataset.v;
-  build();
-});
-document.getElementById('cpicker').addEventListener('click', e => {
-  const d = e.target.closest('.sw');
-  if (!d) return;
-  document.querySelectorAll('#cpicker .sw').forEach(x => x.classList.remove('active'));
-  d.classList.add('active');
-  S.bc = d.dataset.c;
-  S.bcn = d.dataset.n;
-  document.getElementById('clbl').textContent = d.dataset.n;
-  build();
-});
+// Eventos
+document.getElementById('inH').onchange = e => { S.H = parseInt(e.target.value)/100; build(); posCam(); };
+document.getElementById('inD').onchange = e => { S.D = parseInt(e.target.value)/100; build(); };
+document.getElementById('dtypes').onclick = e => { let b=e.target.closest('.fb'); if(b){ document.querySelectorAll('#dtypes .fb').forEach(x=>x.classList.remove('active')); b.classList.add('active'); S.door=b.dataset.v; build(); } };
+document.getElementById('handles').onclick = e => { let b=e.target.closest('.fb'); if(b){ document.querySelectorAll('#handles .fb').forEach(x=>x.classList.remove('active')); b.classList.add('active'); S.handle=b.dataset.v; build(); } };
+document.getElementById('cpicker').onclick = e => { let d=e.target.closest('.sw'); if(d){ document.querySelectorAll('#cpicker .sw').forEach(x=>x.classList.remove('active')); d.classList.add('active'); S.color=d.dataset.c; build(); } };
+function switchTab(id,el){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active')); if(el)el.classList.add('active'); document.getElementById('pane-'+id).classList.add('active'); }
 
-function switchTab(id, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-  if (el) el.classList.add('active');
-  document.getElementById('pane-' + id).classList.add('active');
-}
+function downloadPDF(){ html2pdf().set({margin:1, filename:`armario_${Date.now()}.pdf`}).from(`<html><head><meta charset="UTF-8"></head><body><pre>${getConfig()}</pre></body></html>`).save(); showToast('📄 PDF listo'); }
+function openWA(){ window.open(`https://wa.me/573146309609?text=${encodeURIComponent('Hola! Me interesa este diseño:\n\n'+getConfig())}`,'_blank'); }
+function openModal(){ document.getElementById('mconf').innerText = getConfig(); document.getElementById('overlay').classList.add('open'); }
+function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
+function sendEmail(){ let n=document.getElementById('cName').value, e=document.getElementById('cEmail').value; if(!n||!e){ alert('Completa nombre y email'); return; } window.location.href=`mailto:miguel_716@hotmail.com?subject=Diseño armario&body=${encodeURIComponent(getConfig()+'\n\nNombre: '+n+'\nEmail: '+e)}`; closeModal(); showToast('✓ Enviado'); }
+function showToast(m){ let t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 
-// Funciones de exportación
-function downloadPDF() {
-  const configText = getConfigText();
-  const htmlContent = `
-    <html><head><meta charset="UTF-8"><title>Diseño Armario CR Design</title>
-    <style>body{font-family:sans-serif;padding:20px;background:white}pre{white-space:pre-wrap}</style></head>
-    <body><h1 style="color:#C4A46B">CR Design Muebles</h1><h2>Diseño de armario a medida</h2><pre>${configText}</pre><p style="margin-top:30px;font-size:12px;color:#666">Documento generado desde el configurador 3D CR Design</p></body></html>
-  `;
-  const opt = { margin: 1, filename: `armario_CRDesign_${Date.now()}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-  html2pdf().set(opt).from(htmlContent).save();
-  showToast('📄 PDF descargado');
-}
-
-function openWA() {
-  const msg = `Hola CR Design! Me interesa este diseño:\n\n${getConfigText()}\n\n¿Podrían darme información y presupuesto?`;
-  window.open(`https://wa.me/573146309609?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-function openModal() {
-  document.getElementById('mconf').textContent = getConfigText();
-  document.getElementById('overlay').classList.add('open');
-}
-function closeModal() { document.getElementById('overlay').classList.remove('open'); }
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-
-function sendEmail() {
-  const name = document.getElementById('cName').value.trim();
-  const email = document.getElementById('cEmail').value.trim();
-  if (!name || !email) { alert('Por favor ingresa tu nombre y email'); return; }
-  const phone = document.getElementById('cPhone').value.trim();
-  const notes = document.getElementById('cNotes').value.trim();
-  const body = `Hola CR Design Muebles,\n\n${name} solicita información sobre el siguiente diseño:\n\n${getConfigText()}\n\n━━━━━━━━━━━━━━━━━━━━\nDATOS DE CONTACTO\n━━━━━━━━━━━━━━━━━━━━\nNombre: ${name}\nEmail: ${email}\nTeléfono: ${phone || 'No indicado'}\n\nNotas: ${notes || '—'}`;
-  window.location.href = `mailto:miguel_716@hotmail.com?subject=${encodeURIComponent('Diseño de armario desde configurador 3D')}&body=${encodeURIComponent(body)}`;
-  closeModal();
-  showToast('✓ Diseño enviado por email');
-}
-
-// Inicializar
 build();
 posCam();
 </script>
