@@ -8,297 +8,327 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--cream:#F7F4EE;--warm:#FDFCF9;--dark:#1E1C18;--mid:#4A4740;--muted:#8C897F;--border:#E0DBCF;--accent:#C4A46B;--accent-d:#9E7E48;--panel:#F2EEE6}
-html,body{height:100%;font-family:'DM Sans',sans-serif;background:#16140F;color:var(--cream);overflow:hidden}
-header{height:52px;background:#100E0A;border-bottom:1px solid #2A2620;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;z-index:100}
-.logo{font-family:'Playfair Display',serif;font-size:16px;color:var(--cream);text-decoration:none;letter-spacing:0.04em}
-.logo span{color:var(--accent)}
-.hbtns{display:flex;gap:7px;align-items:center}
-.hb{padding:6px 13px;font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.07em;text-transform:uppercase;border-radius:2px;cursor:pointer;transition:all .15s;text-decoration:none;border:none;display:inline-flex;align-items:center;gap:5px}
-.hb-g{background:transparent;color:#6B685F;border:1px solid #2A2620}
-.hb-g:hover{border-color:var(--accent);color:var(--accent)}
-.hb-w{background:#25D366;color:#fff}
-.hb-w:hover{background:#1ebe5d}
-.hb-a{background:var(--accent);color:var(--dark);font-weight:500}
-.hb-a:hover{background:var(--accent-d);color:var(--cream)}
-.layout{display:flex;height:calc(100vh - 52px)}
-.lpanel{width:250px;background:#1A1814;border-right:1px solid #2A2620;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
-.lpanel::-webkit-scrollbar{width:3px}
-.lpanel::-webkit-scrollbar-thumb{background:#3A3630;border-radius:2px}
-.tab-bar{display:flex;border-bottom:1px solid #2A2620;flex-shrink:0}
-.tab{flex:1;padding:10px 4px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#4A4740;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.pane{padding:14px;display:none}
-.pane.active{display:block}
-.sec{margin-bottom:18px}
-.shd{font-size:9px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:#3A3630;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #2A2620}
-.dim-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.dim-row label{font-size:11px;color:var(--muted);min-width:50px}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:#13110E;color:#E8E0D0;overflow:hidden}
+
+/* ── HEADER ── */
+header{height:50px;background:#0D0B08;border-bottom:1px solid #252018;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0}
+.logo{font-family:'Playfair Display',serif;font-size:15px;color:#E8E0D0;text-decoration:none;letter-spacing:0.04em}
+.logo em{color:#C4A46B;font-style:normal}
+.hbtns{display:flex;gap:6px}
+.hb{padding:5px 12px;font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.07em;text-transform:uppercase;border-radius:2px;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:5px;text-decoration:none}
+.hbg{background:transparent;color:#5A5650;border:1px solid #252018}.hbg:hover{border-color:#C4A46B;color:#C4A46B}
+.hbw{background:#25D366;color:#fff}.hbw:hover{background:#1ebe5d}
+.hba{background:#C4A46B;color:#1A1510;font-weight:500}.hba:hover{background:#9E7E48;color:#fff}
+
+/* ── LAYOUT ── */
+.layout{display:flex;height:calc(100vh - 50px)}
+
+/* ── LEFT PANEL ── */
+.lp{width:258px;background:#181510;border-right:1px solid #252018;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.lp::-webkit-scrollbar{width:3px}.lp::-webkit-scrollbar-thumb{background:#302820;border-radius:2px}
+.tabbar{display:flex;border-bottom:1px solid #252018;flex-shrink:0}
+.tab{flex:1;padding:9px 2px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#3A3628;text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab.on{color:#C4A46B;border-bottom-color:#C4A46B}
+.pane{padding:12px;display:none}.pane.on{display:block}
+.sh{font-size:9px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:#302820;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid #252018}
+.sec{margin-bottom:16px}
+
+/* dim inputs */
+.dr{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.dr label{font-size:11px;color:#6B6050;min-width:50px}
 .diw{flex:1;position:relative}
-.di{width:100%;padding:6px 28px 6px 9px;font-size:12px;font-family:'DM Sans',sans-serif;background:#242018;border:1px solid #3A3630;border-radius:3px;color:var(--cream);outline:none;transition:border-color .15s}
-.di:focus{border-color:var(--accent)}
-.du{position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:9px;color:#4A4740;pointer-events:none}
-.dn{font-size:9px;color:#3A3630;margin-top:-4px;margin-bottom:8px;padding-left:58px}
-.col-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
-.col-item{background:#242018;border:1px solid #2A2620;border-radius:3px;padding:7px 9px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:border-color .15s;user-select:none}
-.col-item:hover{border-color:#3A3630}
-.col-item.sel{border-color:var(--accent);background:rgba(196,164,107,0.07)}
-.col-item.drag-over{border-color:var(--accent);border-style:dashed}
-.cdrag{font-size:11px;color:#3A3630;cursor:grab;flex-shrink:0}
-.clbl{font-size:11px;color:var(--cream);flex:1;min-width:0}
-.cwi{width:50px;padding:3px 5px;font-size:11px;font-family:'DM Sans',sans-serif;background:#1A1814;border:1px solid #3A3630;border-radius:2px;color:var(--accent);outline:none;text-align:center}
-.cwi:focus{border-color:var(--accent)}
-.cu{font-size:9px;color:#4A4740}
-.cdel{width:18px;height:18px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:#4A3030;font-size:14px;cursor:pointer;flex-shrink:0;border-radius:2px;line-height:1;transition:all .15s}
+.di{width:100%;padding:5px 26px 5px 8px;font-size:12px;font-family:'DM Sans',sans-serif;background:#201C14;border:1px solid #302820;border-radius:2px;color:#E8E0D0;outline:none;transition:border-color .15s}
+.di:focus{border-color:#C4A46B}
+.du{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#3A3628;pointer-events:none}
+.dn{font-size:9px;color:#302820;margin-top:-4px;margin-bottom:7px;padding-left:57px}
+
+/* option buttons */
+.og{display:flex;flex-wrap:wrap;gap:4px}
+.ob{padding:5px 9px;font-size:10px;font-family:'DM Sans',sans-serif;border:1px solid #252018;border-radius:2px;background:#201C14;color:#6B6050;cursor:pointer;transition:all .15s}
+.ob:hover{border-color:#C4A46B;color:#E8E0D0}
+.ob.on{background:rgba(196,164,107,0.14);color:#C4A46B;border-color:#C4A46B}
+
+/* ── MELAMINE COLORS ── */
+.mel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:6px}
+.mel{width:100%;aspect-ratio:1;border-radius:3px;cursor:pointer;border:2px solid transparent;outline:2px solid transparent;outline-offset:2px;transition:all .15s;position:relative}
+.mel:hover{transform:scale(1.08)}
+.mel.on{outline-color:#C4A46B}
+.mel-name{font-size:9px;color:#6B6050;margin-top:4px;text-align:center;line-height:1.2}
+
+/* ── HANDLES CATALOG ── */
+.hcat{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.hcard{background:#201C14;border:1px solid #252018;border-radius:3px;padding:8px 6px;cursor:pointer;transition:all .15s;text-align:center}
+.hcard:hover{border-color:#C4A46B}
+.hcard.on{border-color:#C4A46B;background:rgba(196,164,107,0.1)}
+.hicon{font-size:20px;margin-bottom:3px}
+.hname{font-size:9px;color:#6B6050;line-height:1.3}
+.hcard.on .hname{color:#C4A46B}
+.hmetal{display:flex;gap:4px;margin-top:6px;justify-content:center}
+.hm{width:16px;height:16px;border-radius:50%;cursor:pointer;border:1.5px solid transparent;outline:1.5px solid transparent;outline-offset:1px;transition:all .12s}
+.hm.on{outline-color:#C4A46B}
+
+/* ── COLUMN LIST ── */
+.clist{display:flex;flex-direction:column;gap:4px;margin-bottom:7px}
+.ci{background:#201C14;border:1px solid #252018;border-radius:2px;padding:6px 8px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:border-color .15s;user-select:none}
+.ci:hover{border-color:#302820}
+.ci.sel{border-color:#C4A46B;background:rgba(196,164,107,0.07)}
+.ci.dov{border-color:#C4A46B;border-style:dashed}
+.cdg{font-size:11px;color:#302820;cursor:grab;flex-shrink:0}
+.clb{font-size:11px;color:#E8E0D0;flex:1;min-width:0}
+.cwi{width:46px;padding:2px 4px;font-size:11px;font-family:'DM Sans',sans-serif;background:#181510;border:1px solid #302820;border-radius:2px;color:#C4A46B;outline:none;text-align:center}
+.cwi:focus{border-color:#C4A46B}
+.cdu{font-size:9px;color:#3A3628}
+.cdel{width:17px;height:17px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:#3A2828;font-size:13px;cursor:pointer;border-radius:2px;line-height:1;transition:all .15s;flex-shrink:0}
 .cdel:hover{background:#3A1A1A;color:#E74C3C}
-.add-btn{display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;border:1px dashed #3A3630;border-radius:3px;font-size:10px;color:#4A4740;cursor:pointer;transition:all .15s;background:transparent;width:100%;font-family:'DM Sans',sans-serif}
-.add-btn:hover{border-color:var(--accent);color:var(--accent)}
-.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.mc{background:#242018;border:1px solid #2A2620;border-radius:3px;padding:8px 5px;cursor:pointer;transition:all .15s;text-align:center}
-.mc:hover{border-color:var(--accent)}
-.mc.on{border-color:var(--accent);background:rgba(196,164,107,0.1)}
-.mi{font-size:17px;margin-bottom:2px}
-.mn{font-size:9px;color:#6B685F;line-height:1.3}
-.mc.on .mn{color:var(--accent)}
-.cgrid{display:flex;flex-wrap:wrap;gap:6px}
-.sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;outline:2px solid transparent;outline-offset:2px;transition:all .15s}
-.sw:hover{transform:scale(1.1)}
-.sw.active{outline-color:var(--accent)}
-.swl{font-size:10px;color:#6B685F;margin-top:5px}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.fb{padding:6px 4px;font-size:10px;font-family:'DM Sans',sans-serif;border:1px solid #2A2620;border-radius:3px;background:#242018;color:#6B685F;cursor:pointer;text-align:center;transition:all .15s}
-.fb:hover{border-color:var(--accent);color:var(--cream)}
-.fb.active{background:rgba(196,164,107,0.12);color:var(--accent);border-color:var(--accent)}
-.viewport{flex:1;position:relative;background:#16140F;overflow:hidden}
+.addbtn{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px;border:1px dashed #302820;border-radius:2px;font-size:10px;color:#3A3628;cursor:pointer;transition:all .15s;background:transparent;width:100%;font-family:'DM Sans',sans-serif}
+.addbtn:hover{border-color:#C4A46B;color:#C4A46B}
+
+/* Zone-based module editor */
+.zone-editor{background:#201C14;border:1px solid #252018;border-radius:3px;padding:10px;margin-bottom:8px}
+.ze-title{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#C4A46B;margin-bottom:8px}
+.ze-col-lbl{font-size:10px;color:#6B6050;margin-bottom:6px}
+.zone-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:5px 7px;background:#181510;border:1px solid #252018;border-radius:2px}
+.zone-num{font-size:10px;color:#3A3628;min-width:14px;font-weight:500}
+.zone-sel{flex:1;padding:3px 5px;font-size:10px;font-family:'DM Sans',sans-serif;background:#201C14;border:1px solid #302820;border-radius:2px;color:#E8E0D0;outline:none;cursor:pointer}
+.zone-sel:focus{border-color:#C4A46B}
+.zone-move{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
+.zmv{padding:1px 4px;font-size:9px;background:#252018;border:none;color:#6B6050;cursor:pointer;border-radius:1px;line-height:1.4;transition:all .12s}
+.zmv:hover{background:#302820;color:#E8E0D0}
+.zone-del{padding:2px 5px;font-size:10px;background:transparent;border:none;color:#3A2828;cursor:pointer;transition:all .12s}
+.zone-del:hover{color:#E74C3C}
+.add-zone{display:flex;align-items:center;justify-content:center;gap:4px;padding:5px;border:1px dashed #252018;border-radius:2px;font-size:9px;color:#3A3628;cursor:pointer;transition:all .15s;background:transparent;width:100%;font-family:'DM Sans',sans-serif;margin-top:4px}
+.add-zone:hover{border-color:#C4A46B;color:#C4A46B}
+.no-col-msg{font-size:10px;color:#3A3628;text-align:center;padding:12px 0}
+
+/* ── VIEWPORT ── */
+.vp{flex:1;position:relative;background:#13110E;overflow:hidden}
 #c3{display:block;width:100%;height:100%}
-.vctrl{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(16,14,10,0.88);border:1px solid #2A2620;border-radius:4px;padding:3px}
-.vc{padding:5px 11px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.08em;text-transform:uppercase;background:transparent;color:#6B685F;border:none;border-radius:2px;cursor:pointer;transition:all .15s}
-.vc:hover{color:var(--cream)}
-.vc.active{background:rgba(196,164,107,0.18);color:var(--accent)}
-.hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0.18);letter-spacing:0.1em;text-transform:uppercase;pointer-events:none;white-space:nowrap}
-.wm{position:absolute;top:12px;left:12px;font-family:'Playfair Display',serif;font-size:11px;color:rgba(255,255,255,0.1);letter-spacing:0.06em;pointer-events:none}
-.selbox{position:absolute;top:12px;right:12px;background:rgba(16,14,10,0.92);border:1px solid var(--accent);border-radius:3px;padding:10px 13px;font-size:10px;display:none;min-width:160px}
+.vctrl{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(13,11,8,.9);border:1px solid #252018;border-radius:3px;padding:3px}
+.vc{padding:4px 10px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.08em;text-transform:uppercase;background:transparent;color:#5A5650;border:none;border-radius:2px;cursor:pointer;transition:all .15s}
+.vc:hover{color:#E8E0D0}
+.vc.on{background:rgba(196,164,107,0.18);color:#C4A46B}
+.wm{position:absolute;top:10px;left:10px;font-family:'Playfair Display',serif;font-size:11px;color:rgba(255,255,255,0.08);letter-spacing:0.06em;pointer-events:none}
+.selbox{position:absolute;top:10px;right:10px;background:rgba(13,11,8,.94);border:1px solid #C4A46B;border-radius:3px;padding:9px 12px;font-size:10px;display:none;min-width:155px}
 .selbox.show{display:block}
-.sbt{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
-.sbr{display:flex;justify-content:space-between;gap:16px;color:#6B685F;margin-bottom:3px;font-size:10px}
-.sbr span{color:var(--cream);font-weight:500}
-.rpanel{width:210px;background:#1A1814;border-left:1px solid #2A2620;overflow-y:auto;flex-shrink:0;padding:13px}
-.rpanel::-webkit-scrollbar{width:3px}
-.rpanel::-webkit-scrollbar-thumb{background:#3A3630;border-radius:2px}
-.sblock{background:#100E0A;border:1px solid #2A2620;border-radius:3px;padding:11px;margin-bottom:12px}
-.stitle{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:9px}
-.sr{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #1A1814;font-size:10px}
-.sr:last-child{border-bottom:none}
-.sk{color:#6B685F}.sv{font-weight:500;color:var(--cream)}
-.csums{margin-bottom:12px}
-.csi{display:flex;align-items:center;gap:5px;padding:5px 7px;background:#100E0A;border:1px solid #2A2620;border-radius:3px;margin-bottom:3px;font-size:10px;cursor:pointer;transition:border-color .15s}
-.csi:hover,.csi.active{border-color:var(--accent)}
-.csidot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.csin{flex:1;color:#6B685F}.csiw{color:var(--cream);font-weight:500}
-.ctag{font-size:8px;padding:1px 4px;background:#2A2620;border-radius:2px;color:#6B685F;margin-right:2px}
-.ctas{display:flex;flex-direction:column;gap:6px}
-.bwa{padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:#25D366;color:#fff;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
-.bwa:hover{background:#1ebe5d}
-.bem{padding:9px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--accent);color:var(--dark);border:none;border-radius:3px;cursor:pointer;transition:all .15s}
-.bem:hover{background:var(--accent-d);color:var(--cream)}
-.bwb{padding:8px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;background:transparent;color:#6B685F;border:1px solid #2A2620;border-radius:3px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .15s}
-.bwb:hover{border-color:#6B685F;color:var(--cream)}
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:600;align-items:center;justify-content:center}
-.overlay.open{display:flex}
-.modal{background:#1E1C18;border:1px solid #3A3630;width:370px;max-width:95vw;border-radius:4px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.7)}
-.mhd{background:#100E0A;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2A2620}
-.mhd h2{font-family:'Playfair Display',serif;font-size:16px;color:var(--cream);font-weight:400}
-.mc2{background:none;border:none;color:#4A4740;font-size:20px;cursor:pointer;line-height:1;transition:color .15s}
-.mc2:hover{color:var(--cream)}
-.mbdy{padding:18px}
-.mcfg{background:#100E0A;border:1px solid #2A2620;border-radius:3px;padding:9px;font-size:10px;color:#6B685F;margin-bottom:13px;line-height:1.8;white-space:pre-wrap;max-height:100px;overflow-y:auto}
+.sbt{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#C4A46B;margin-bottom:6px}
+.sbr{display:flex;justify-content:space-between;gap:14px;color:#6B6050;margin-bottom:2px}
+.sbr span{color:#E8E0D0;font-weight:500}
+.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,0.15);letter-spacing:0.1em;text-transform:uppercase;pointer-events:none;white-space:nowrap}
+
+/* ── RIGHT PANEL ── */
+.rp{width:205px;background:#181510;border-left:1px solid #252018;overflow-y:auto;flex-shrink:0;padding:12px}
+.rp::-webkit-scrollbar{width:3px}.rp::-webkit-scrollbar-thumb{background:#302820;border-radius:2px}
+.rsh{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#302820;margin-bottom:8px}
+.sblk{background:#0D0B08;border:1px solid #252018;border-radius:2px;padding:10px;margin-bottom:11px}
+.stit{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#C4A46B;margin-bottom:8px}
+.sr2{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #181510;font-size:10px}
+.sr2:last-child{border-bottom:none}
+.sk{color:#6B6050}.sv{font-weight:500;color:#E8E0D0}
+.csums{margin-bottom:11px}
+.csi{display:flex;align-items:center;gap:4px;padding:4px 6px;background:#0D0B08;border:1px solid #252018;border-radius:2px;margin-bottom:3px;font-size:10px;cursor:pointer;transition:border-color .15s}
+.csi:hover,.csi.on{border-color:#C4A46B}
+.csdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.csn{flex:1;color:#6B6050}.csw{color:#E8E0D0;font-weight:500}
+.ctag{font-size:8px;padding:1px 4px;background:#252018;border-radius:1px;color:#6B6050;margin-right:2px}
+.ctas{display:flex;flex-direction:column;gap:5px}
+.bwa2{padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:#25D366;color:#fff;border:none;border-radius:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .15s}
+.bwa2:hover{background:#1ebe5d}
+.bem2{padding:9px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:#C4A46B;color:#1A1510;border:none;border-radius:2px;cursor:pointer;transition:all .15s}
+.bem2:hover{background:#9E7E48;color:#fff}
+.bwb2{padding:7px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;background:transparent;color:#5A5650;border:1px solid #252018;border-radius:2px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .15s}
+.bwb2:hover{border-color:#5A5650;color:#E8E0D0}
+
+/* ── MODAL ── */
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center}
+.ovl.open{display:flex}
+.mdl{background:#181510;border:1px solid #302820;width:360px;max-width:95vw;border-radius:3px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.7)}
+.mhd{background:#0D0B08;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #252018}
+.mhd h2{font-family:'Playfair Display',serif;font-size:15px;color:#E8E0D0;font-weight:400}
+.mcls{background:none;border:none;color:#3A3628;font-size:19px;cursor:pointer;line-height:1;transition:color .15s}
+.mcls:hover{color:#E8E0D0}
+.mbdy{padding:16px}
+.mcfg{background:#0D0B08;border:1px solid #252018;border-radius:2px;padding:8px;font-size:9px;color:#6B6050;margin-bottom:12px;line-height:1.9;white-space:pre-wrap;max-height:90px;overflow-y:auto}
 .fld{margin-bottom:10px}
-.fld label{display:block;font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#6B685F;margin-bottom:3px}
-.fld input,.fld textarea{width:100%;padding:7px 9px;font-size:12px;font-family:'DM Sans',sans-serif;background:#100E0A;border:1px solid #2A2620;border-radius:3px;color:var(--cream);outline:none;transition:border-color .15s}
-.fld input:focus,.fld textarea:focus{border-color:var(--accent)}
+.fld label{display:block;font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#6B6050;margin-bottom:3px}
+.fld input,.fld textarea{width:100%;padding:7px 9px;font-size:12px;font-family:'DM Sans',sans-serif;background:#0D0B08;border:1px solid #252018;border-radius:2px;color:#E8E0D0;outline:none;transition:border-color .15s}
+.fld input:focus,.fld textarea:focus{border-color:#C4A46B}
 .fld textarea{resize:none}
-.mact{display:flex;gap:6px;margin-top:4px}
-.mact button{flex:1;padding:9px;font-size:11px;font-family:'DM Sans',sans-serif;border-radius:3px;cursor:pointer;font-weight:500}
-.mbc{background:transparent;border:1px solid #2A2620;color:#6B685F}
-.mbs{background:var(--accent);color:var(--dark);border:none}
-.mbs:hover{background:var(--accent-d);color:var(--cream)}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(10px);background:#100E0A;border:1px solid var(--accent);color:var(--cream);padding:9px 18px;border-radius:3px;font-size:11px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.mact{display:flex;gap:5px;margin-top:4px}
+.mact button{flex:1;padding:9px;font-size:10px;font-family:'DM Sans',sans-serif;border-radius:2px;cursor:pointer;font-weight:500;letter-spacing:0.04em}
+.mbc{background:transparent;border:1px solid #252018;color:#6B6050}
+.mbs{background:#C4A46B;color:#1A1510;border:none}
+.mbs:hover{background:#9E7E48;color:#fff}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:#0D0B08;border:1px solid #C4A46B;color:#E8E0D0;padding:9px 17px;border-radius:2px;font-size:11px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
- 
+
 <header>
-  <a class="logo" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">CR <span>Design</span> Muebles</a>
+  <a class="logo" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">CR <em>Design</em> Muebles</a>
   <div class="hbtns">
-    <a class="hb hb-g" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">← Web</a>
-    <button class="hb hb-w" onclick="openWA()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      WhatsApp
-    </button>
-    <button class="hb hb-a" onclick="openModal()">✉ Solicitar cita</button>
+    <a class="hb hbg" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">← Web</a>
+    <button class="hb hbw" onclick="openWA()"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</button>
+    <button class="hb hba" onclick="openModal()">✉ Solicitar cita</button>
   </div>
 </header>
- 
+
 <div class="layout">
- 
+
 <!-- LEFT PANEL -->
-<div class="lpanel">
-  <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('dims',this)">Medidas</div>
-    <div class="tab" onclick="switchTab('cols',this)">Columnas</div>
-    <div class="tab" onclick="switchTab('mats',this)">Material</div>
+<div class="lp">
+  <div class="tabbar">
+    <div class="tab on" onclick="stab('dims',this)">Medidas</div>
+    <div class="tab" onclick="stab('cols',this)">Columnas</div>
+    <div class="tab" onclick="stab('mat',this)">Material</div>
+    <div class="tab" onclick="stab('tir',this)">Tiradores</div>
   </div>
- 
+
   <!-- MEDIDAS -->
-  <div class="pane active" id="pane-dims">
+  <div class="pane on" id="pane-dims">
     <div class="sec">
-      <div class="shd">Dimensiones del cuerpo</div>
-      <div class="dim-row"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300"><span class="du">cm</span></div></div>
-      <div class="dn">Min 150 · Max 300</div>
-      <div class="dim-row"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80"><span class="du">cm</span></div></div>
-      <div class="dn">Min 30 · Max 80</div>
-      <div class="dim-row"><label>Ancho total</label><div class="diw"><input class="di" type="number" id="inW" value="200" readonly style="color:#6B685F;cursor:default"><span class="du">cm</span></div></div>
+      <div class="sh">Dimensiones generales</div>
+      <div class="dr"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300"><span class="du">cm</span></div></div>
+      <div class="dn">Min 150 · Max 300 cm</div>
+      <div class="dr"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80"><span class="du">cm</span></div></div>
+      <div class="dn">Min 30 · Max 80 cm</div>
+      <div class="dr"><label>Ancho total</label><div class="diw"><input class="di" type="number" id="inW" value="200" readonly style="color:#3A3628;cursor:default"><span class="du">cm</span></div></div>
       <div class="dn">Suma de columnas</div>
     </div>
     <div class="sec">
-      <div class="shd">Tipo de puerta</div>
-      <div class="fgrid" id="dtypes">
-        <button class="fb active" data-v="correderas">Correderas</button>
-        <button class="fb" data-v="abatibles">Abatibles</button>
-        <button class="fb" data-v="sin">Sin puerta</button>
-        <button class="fb" data-v="mixto">Mixto</button>
+      <div class="sh">Tipo de puerta</div>
+      <div class="og" id="dtypes">
+        <button class="ob on" data-v="correderas">Correderas</button>
+        <button class="ob" data-v="abatibles">Abatibles</button>
+        <button class="ob" data-v="sin">Sin puerta</button>
+        <button class="ob" data-v="mixto">Mixto</button>
       </div>
     </div>
     <div class="sec">
-      <div class="shd">Acabado de puerta</div>
-      <div class="fgrid" id="dfinish">
-        <button class="fb active" data-v="liso">Liso</button>
-        <button class="fb" data-v="espejo">Espejo</button>
-        <button class="fb" data-v="cristal">Cristal</button>
-        <button class="fb" data-v="madera">Madera</button>
+      <div class="sh">Acabado de puerta</div>
+      <div class="og" id="dfinish">
+        <button class="ob on" data-v="liso">Liso</button>
+        <button class="ob" data-v="espejo">Espejo</button>
+        <button class="ob" data-v="cristal">Cristal</button>
+        <button class="ob" data-v="madera">Madera</button>
+        <button class="ob" data-v="lacado">Lacado mate</button>
+        <button class="ob" data-v="ranurado">Ranurado</button>
       </div>
     </div>
   </div>
- 
+
   <!-- COLUMNAS -->
   <div class="pane" id="pane-cols">
     <div class="sec">
-      <div class="shd">Columnas — arrastra para reordenar</div>
-      <div class="col-list" id="colList"></div>
-      <button class="add-btn" onclick="addCol()">+ Añadir columna</button>
+      <div class="sh">Columnas — arrastra para reordenar</div>
+      <div class="clist" id="colList"></div>
+      <button class="addbtn" onclick="addCol()">+ Añadir columna</button>
     </div>
     <div class="sec">
-      <div class="shd">Módulos de la columna seleccionada</div>
-      <div style="font-size:9px;color:#3A3630;margin-bottom:8px" id="colSelHint">Selecciona una columna arriba o haz clic en el armario</div>
-      <div class="mod-grid" id="modGrid">
-        <div class="mc" data-mod="barra" onclick="toggleMod('barra')"><div class="mi">🎽</div><div class="mn">Barra colgador</div></div>
-        <div class="mc" data-mod="cajones" onclick="toggleMod('cajones')"><div class="mi">🗂</div><div class="mn">Cajones x3</div></div>
-        <div class="mc" data-mod="estantes" onclick="toggleMod('estantes')"><div class="mi">📦</div><div class="mn">Estantes</div></div>
-        <div class="mc" data-mod="zapatero" onclick="toggleMod('zapatero')"><div class="mi">👟</div><div class="mn">Zapatero</div></div>
-        <div class="mc" data-mod="luz" onclick="toggleMod('luz')"><div class="mi">💡</div><div class="mn">LED interior</div></div>
-        <div class="mc" data-mod="espejo_int" onclick="toggleMod('espejo_int')"><div class="mi">🪞</div><div class="mn">Espejo int.</div></div>
-        <div class="mc" data-mod="joyero" onclick="toggleMod('joyero')"><div class="mi">💍</div><div class="mn">Joyero</div></div>
-        <div class="mc" data-mod="pantalonero" onclick="toggleMod('pantalonero')"><div class="mi">👖</div><div class="mn">Pantalonero</div></div>
+      <div class="sh">Distribución interior</div>
+      <div id="zoneEditorWrap"></div>
+    </div>
+  </div>
+
+  <!-- MATERIAL -->
+  <div class="pane" id="pane-mat">
+    <div class="sec">
+      <div class="sh">Melamina — cuerpo</div>
+      <div class="mel-grid" id="mpicker"></div>
+      <div style="font-size:9px;color:#6B6050;margin-top:2px" id="mlbl">Blanco Ártico</div>
+    </div>
+    <div class="sec">
+      <div class="sh">Melamina — interior</div>
+      <div class="mel-grid" id="ipicker"></div>
+      <div style="font-size:9px;color:#6B6050;margin-top:2px" id="ilbl">Blanco Ártico</div>
+    </div>
+    <div class="sec">
+      <div class="sh">Melamina — puertas</div>
+      <div class="og" id="dsame">
+        <button class="ob on" data-v="1" onclick="toggleDoorSame(this)">Igual al cuerpo</button>
+        <button class="ob" data-v="0" onclick="toggleDoorSame(this)">Color distinto</button>
+      </div>
+      <div id="dpicker-wrap" style="display:none;margin-top:8px">
+        <div class="mel-grid" id="dpicker"></div>
+        <div style="font-size:9px;color:#6B6050;margin-top:2px" id="dlbl">Blanco Ártico</div>
       </div>
     </div>
   </div>
- 
-  <!-- MATERIAL -->
-  <div class="pane" id="pane-mats">
+
+  <!-- TIRADORES -->
+  <div class="pane" id="pane-tir">
     <div class="sec">
-      <div class="shd">Color del cuerpo</div>
-      <div class="cgrid" id="cpicker">
-        <div class="sw active" data-c="#F5F0E8" data-n="Blanco roble" style="background:#F5F0E8;border:1px solid #ccc"></div>
-        <div class="sw" data-c="#E8D8C4" data-n="Roble natural" style="background:#E8D8C4"></div>
-        <div class="sw" data-c="#C4A882" data-n="Nogal" style="background:#C4A882"></div>
-        <div class="sw" data-c="#8B7355" data-n="Wengué" style="background:#8B7355"></div>
-        <div class="sw" data-c="#4A4A4A" data-n="Grafito" style="background:#4A4A4A"></div>
-        <div class="sw" data-c="#F0F0F0" data-n="Blanco mate" style="background:#F0F0F0;border:1px solid #ddd"></div>
-        <div class="sw" data-c="#1E1C18" data-n="Negro" style="background:#1E1C18"></div>
-        <div class="sw" data-c="#6B8E6B" data-n="Verde salvia" style="background:#6B8E6B"></div>
-        <div class="sw" data-c="#8B6B8B" data-n="Lavanda" style="background:#8B6B8B"></div>
-        <div class="sw" data-c="#5B7A8B" data-n="Azul pizarra" style="background:#5B7A8B"></div>
-      </div>
-      <div class="swl" id="clbl">Blanco roble</div>
+      <div class="sh">Tipo de tirador</div>
+      <div class="hcat" id="hcat"></div>
     </div>
     <div class="sec">
-      <div class="shd">Color interior</div>
-      <div class="cgrid" id="ipicker">
-        <div class="sw active" data-c="#EDE8DE" data-n="Natural" style="background:#EDE8DE;border:1px solid #ccc"></div>
-        <div class="sw" data-c="#F5F0E8" data-n="Blanco" style="background:#F5F0E8;border:1px solid #ddd"></div>
-        <div class="sw" data-c="#2A2622" data-n="Oscuro" style="background:#2A2622"></div>
-        <div class="sw" data-c="#D8C8A8" data-n="Miel" style="background:#D8C8A8"></div>
-      </div>
-      <div class="swl" id="ilbl">Natural</div>
-    </div>
-    <div class="sec">
-      <div class="shd">Tiradores</div>
-      <div class="fgrid" id="handles">
-        <button class="fb active" data-v="barra_oro">Barra dorada</button>
-        <button class="fb" data-v="barra_plata">Barra plateada</button>
-        <button class="fb" data-v="boton">Botón negro</button>
-        <button class="fb" data-v="sin_tirador">Sin tirador</button>
+      <div class="sh">Acabado del tirador</div>
+      <div id="hfinish-wrap">
+        <div class="og" id="hfinish">
+          <button class="ob on" data-v="oro">Dorado</button>
+          <button class="ob" data-v="negro">Negro mate</button>
+          <button class="ob" data-v="plata">Plateado</button>
+          <button class="ob" data-v="cromo">Cromado</button>
+          <button class="ob" data-v="bronce">Bronce</button>
+          <button class="ob" data-v="cobre">Cobre</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
- 
+
 <!-- VIEWPORT -->
-<div class="viewport" id="vp">
+<div class="vp" id="vpEl">
   <canvas id="c3"></canvas>
   <div class="wm">CR Design</div>
   <div class="vctrl">
-    <button class="vc" onclick="setView('front',this)">Frontal</button>
-    <button class="vc active" onclick="setView('corner',this)">Esquina</button>
-    <button class="vc" onclick="setView('inside',this)">Interior</button>
-    <button class="vc" onclick="setView('top',this)">Planta</button>
+    <button class="vc" onclick="sv('front',this)">Frontal</button>
+    <button class="vc on" onclick="sv('corner',this)">Esquina</button>
+    <button class="vc" onclick="sv('inside',this)">Interior</button>
+    <button class="vc" onclick="sv('top',this)">Planta</button>
   </div>
   <div class="selbox" id="selbox">
     <div class="sbt">Columna seleccionada</div>
     <div class="sbr">Nombre: <span id="siN">—</span></div>
     <div class="sbr">Ancho: <span id="siW">—</span></div>
-    <div class="sbr">Módulos: <span id="siM">—</span></div>
+    <div class="sbr">Zonas: <span id="siZ">—</span></div>
   </div>
   <div class="hint">Arrastra · Zoom · Clic en columna para seleccionar</div>
 </div>
- 
+
 <!-- RIGHT PANEL -->
-<div class="rpanel">
-  <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#3A3630;margin-bottom:9px">Resumen</div>
-  <div class="sblock">
-    <div class="stitle">Dimensiones</div>
-    <div class="sr"><span class="sk">Ancho</span><span class="sv" id="rW">200 cm</span></div>
-    <div class="sr"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
-    <div class="sr"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
-    <div class="sr"><span class="sk">Puertas</span><span class="sv" id="rDoor">Correderas</span></div>
-    <div class="sr"><span class="sk">Acabado</span><span class="sv" id="rFin">Liso</span></div>
-    <div class="sr"><span class="sk">Color</span><span class="sv" id="rCol">Blanco roble</span></div>
-    <div class="sr"><span class="sk">Columnas</span><span class="sv" id="rCols">3</span></div>
+<div class="rp">
+  <div class="rsh">Resumen del diseño</div>
+  <div class="sblk">
+    <div class="stit">Dimensiones</div>
+    <div class="sr2"><span class="sk">Ancho</span><span class="sv" id="rW">200 cm</span></div>
+    <div class="sr2"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
+    <div class="sr2"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
+    <div class="sr2"><span class="sk">Puertas</span><span class="sv" id="rDoor">Correderas</span></div>
+    <div class="sr2"><span class="sk">Acabado</span><span class="sv" id="rFin">Liso</span></div>
+    <div class="sr2"><span class="sk">Melamina</span><span class="sv" id="rMel">Blanco Ártico</span></div>
+    <div class="sr2"><span class="sk">Tirador</span><span class="sv" id="rHandle">—</span></div>
   </div>
-  <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#3A3630;margin-bottom:7px">Columnas</div>
+  <div class="rsh">Columnas</div>
   <div class="csums" id="csums"></div>
   <div class="ctas">
-    <button class="bwa" onclick="openWA()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Cotizar por WhatsApp
-    </button>
-    <button class="bem" onclick="openModal()">✉ Solicitar cita por email</button>
-    <a class="bwb" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">Visitar CR Design →</a>
+    <button class="bwa2" onclick="openWA()"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</button>
+    <button class="bem2" onclick="openModal()">✉ Solicitar cita por email</button>
+    <a class="bwb2" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">Visitar CR Design →</a>
   </div>
 </div>
 </div>
- 
+
 <!-- MODAL -->
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="mhd"><h2>Solicitar cita</h2><button class="mc2" onclick="closeModal()">×</button></div>
+<div class="ovl" id="ovl">
+  <div class="mdl">
+    <div class="mhd"><h2>Solicitar cita</h2><button class="mcls" onclick="closeModal()">×</button></div>
     <div class="mbdy">
       <div class="mcfg" id="mconf"></div>
       <div class="fld"><label>Nombre *</label><input type="text" id="cName" placeholder="Ej: Ana García"></div>
       <div class="fld"><label>Email *</label><input type="email" id="cEmail" placeholder="tucorreo@ejemplo.com"></div>
       <div class="fld"><label>Teléfono</label><input type="tel" id="cPhone" placeholder="+57 300 000 0000"></div>
-      <div class="fld"><label>Notas</label><textarea id="cNotes" rows="2" placeholder="Habitación, fecha, preferencias..."></textarea></div>
+      <div class="fld"><label>Notas</label><textarea id="cNotes" rows="2" placeholder="Habitación, fecha, dudas..."></textarea></div>
       <div class="mact">
         <button class="mbc" onclick="closeModal()">Cancelar</button>
         <button class="mbs" onclick="sendEmail()">Enviar solicitud</button>
@@ -307,8 +337,89 @@ header{height:52px;background:#100E0A;border-bottom:1px solid #2A2620;display:fl
   </div>
 </div>
 <div class="toast" id="toast">✓ Abriendo cliente de correo...</div>
- 
+
 <script>
+// ══════════════════════════════════════════
+// DATA: MELAMINAS REALES
+// ══════════════════════════════════════════
+const MELS = [
+  // Blancos y neutros
+  {n:'Blanco Ártico',    c:'#F4F1EB', t:'light'},
+  {n:'Blanco Nieve',     c:'#FAFAF8', t:'light'},
+  {n:'Blanco Roto',      c:'#EDE8DC', t:'light'},
+  {n:'Crema Suave',      c:'#F0E8D4', t:'light'},
+  {n:'Aluminio',         c:'#C8CAC8', t:'light'},
+  // Maderas claras
+  {n:'Roble Nórdico',    c:'#D4BC98', t:'light'},
+  {n:'Roble Natural',    c:'#C8A87A', t:'light'},
+  {n:'Roble Arena',      c:'#DCCA9E', t:'light'},
+  {n:'Pino Silvestre',   c:'#D8B880', t:'light'},
+  {n:'Haya Natural',     c:'#D0B888', t:'light'},
+  // Maderas medias
+  {n:'Nogal Europeo',    c:'#A8845C', t:'light'},
+  {n:'Cerezo Oscuro',    c:'#984C38', t:'dark'},
+  {n:'Castaño Medio',    c:'#8C6840', t:'dark'},
+  {n:'Teca Natural',     c:'#B07840', t:'light'},
+  {n:'Bambú',            c:'#C8A858', t:'light'},
+  // Maderas oscuras
+  {n:'Wengué',           c:'#3C2A1A', t:'dark'},
+  {n:'Ébano',            c:'#1C1410', t:'dark'},
+  {n:'Nogal Americano',  c:'#5A3820', t:'dark'},
+  {n:'Palisandro',       c:'#4A2C18', t:'dark'},
+  {n:'Caoba',            c:'#6A2818', t:'dark'},
+  // Grises
+  {n:'Gris Cemento',     c:'#9A9890', t:'dark'},
+  {n:'Gris Platino',     c:'#C0BEB8', t:'light'},
+  {n:'Gris Antracita',   c:'#484844', t:'dark'},
+  {n:'Gris Grafito',     c:'#5A5A58', t:'dark'},
+  {n:'Gris Perla',       c:'#D4D2CC', t:'light'},
+  // Oscuros y colores
+  {n:'Negro Azabache',   c:'#1A1814', t:'dark'},
+  {n:'Verde Salvia',     c:'#7A9878', t:'dark'},
+  {n:'Verde Bosque',     c:'#3C5A38', t:'dark'},
+  {n:'Azul Pizarra',     c:'#4A6878', t:'dark'},
+  {n:'Azul Noche',       c:'#2A3850', t:'dark'},
+];
+
+// ══════════════════════════════════════════
+// DATA: TIRADORES
+// ══════════════════════════════════════════
+const HANDLES = [
+  {id:'barra_c',  icon:'▬', name:'Barra centrada', desc:'Horizontal centro'},
+  {id:'barra_l',  icon:'▮', name:'Barra lateral',  desc:'Vertical lateral'},
+  {id:'gota',     icon:'◉', name:'Gota / Pomo',    desc:'Redondo clásico'},
+  {id:'cuadrado', icon:'⬛', name:'Cuadrado',       desc:'Moderno minimalista'},
+  {id:'concha',   icon:'◡', name:'Concha embutida', desc:'Sin relieve'},
+  {id:'barra_d',  icon:'⟷', name:'Barra doble',    desc:'Dos barras paralelas'},
+  {id:'asa',      icon:'∩', name:'Asa en U',        desc:'Forma de horquilla'},
+  {id:'sin',      icon:'✕', name:'Sin tirador',     desc:'Push-to-open'},
+];
+const HFINISH = {
+  oro:   {hex:'#C4A46B', mt:0.85, rg:0.15},
+  negro: {hex:'#1A1814', mt:0.5,  rg:0.4},
+  plata: {hex:'#C0C8D0', mt:0.85, rg:0.15},
+  cromo: {hex:'#D8E0E8', mt:0.95, rg:0.05},
+  bronce:{hex:'#8B6940', mt:0.8,  rg:0.3},
+  cobre: {hex:'#B87848', mt:0.82, rg:0.22},
+};
+
+// ══════════════════════════════════════════
+// ZONE TYPES
+// ══════════════════════════════════════════
+const ZONE_TYPES = [
+  {v:'vacio',      l:'— Vacío —'},
+  {v:'barra',      l:'🎽 Barra colgador'},
+  {v:'estante',    l:'📦 Estante fijo'},
+  {v:'cajones3',   l:'🗂 Cajones × 3'},
+  {v:'cajones2',   l:'🗂 Cajones × 2'},
+  {v:'cajon1',     l:'🗂 Cajón × 1'},
+  {v:'zapatero',   l:'👟 Zapatero inclinado'},
+  {v:'pantalonero',l:'👖 Pantalonero'},
+  {v:'espejo',     l:'🪞 Espejo interior'},
+  {v:'joyero',     l:'💍 Joyero'},
+  {v:'luz',        l:'💡 LED tira'},
+];
+
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
@@ -316,157 +427,273 @@ const CC = ['#C4A46B','#6B8ECB','#8BCB6B','#CB6B8E','#8BCBCB','#CB8B6B','#A46BC4
 let S = {
   H:220, D:60,
   door:'correderas', finish:'liso',
-  bc:'#F5F0E8', bcn:'Blanco roble',
-  ic:'#EDE8DE', handle:'barra_oro',
+  bc:'#F4F1EB', bcn:'Blanco Ártico',
+  ic:'#F4F1EB', icn:'Blanco Ártico',
+  dc:'#F4F1EB', dcn:'Blanco Ártico', doorSame:true,
+  handle:'barra_c', hfinish:'oro',
   sel:0,
   cols:[
-    {id:1,w:65,mods:new Set(['barra','estantes']),lbl:'Col A'},
-    {id:2,w:70,mods:new Set(['estantes']),lbl:'Col B'},
-    {id:3,w:65,mods:new Set(['cajones','zapatero']),lbl:'Col C'},
+    {id:1, w:65, lbl:'Col A', zones:[{t:'barra'},{t:'estante'},{t:'estante'}]},
+    {id:2, w:70, lbl:'Col B', zones:[{t:'estante'},{t:'estante'},{t:'vacio'}]},
+    {id:3, w:65, lbl:'Col C', zones:[{t:'cajones3'},{t:'zapatero'},{t:'vacio'}]},
   ]
 };
 let nid=4;
 const TW=()=>S.cols.reduce((s,c)=>s+c.w,0);
- 
+
+// ══════════════════════════════════════════
+// BUILD MEL PICKERS
+// ══════════════════════════════════════════
+function buildPicker(elId, lblId, stateKey, nameKey){
+  const el=document.getElementById(elId);
+  MELS.forEach((m,i)=>{
+    const d=document.createElement('div');
+    d.className='mel'+(S[stateKey]===m.c?' on':'');
+    d.style.cssText=`background:${m.c};border:1px solid ${m.t==='light'?'rgba(0,0,0,0.15)':'rgba(255,255,255,0.05)'}`;
+    d.title=m.n;
+    d.onclick=()=>{
+      document.querySelectorAll('#'+elId+' .mel').forEach(x=>x.classList.remove('on'));
+      d.classList.add('on');
+      S[stateKey]=m.c; S[nameKey]=m.n;
+      if(stateKey==='bc'&&S.doorSame){S.dc=m.c;S.dcn=m.n;}
+      document.getElementById(lblId).textContent=m.n;
+      build();
+    };
+    el.appendChild(d);
+  });
+}
+buildPicker('mpicker','mlbl','bc','bcn');
+buildPicker('ipicker','ilbl','ic','icn');
+buildPicker('dpicker','dlbl','dc','dcn');
+
+function toggleDoorSame(btn){
+  document.querySelectorAll('#dsame .ob').forEach(x=>x.classList.remove('on'));
+  btn.classList.add('on');
+  S.doorSame = btn.dataset.v==='1';
+  document.getElementById('dpicker-wrap').style.display = S.doorSame ? 'none' : 'block';
+  if(S.doorSame){S.dc=S.bc;S.dcn=S.bcn;}
+  build();
+}
+
+// ══════════════════════════════════════════
+// BUILD HANDLE CATALOG
+// ══════════════════════════════════════════
+function buildHCat(){
+  const el=document.getElementById('hcat');
+  HANDLES.forEach(h=>{
+    const d=document.createElement('div');
+    d.className='hcard'+(S.handle===h.id?' on':'');
+    d.innerHTML=`<div class="hicon">${h.icon}</div><div class="hname">${h.name}<br><span style="color:#3A3628;font-size:8px">${h.desc}</span></div>`;
+    d.onclick=()=>{
+      document.querySelectorAll('.hcard').forEach(x=>x.classList.remove('on'));
+      d.classList.add('on'); S.handle=h.id; build(); syncUI();
+    };
+    el.appendChild(d);
+  });
+}
+buildHCat();
+
 // ══════════════════════════════════════════
 // THREE.JS
 // ══════════════════════════════════════════
-const cv=document.getElementById('c3'),vpEl=document.getElementById('vp');
+const cv=document.getElementById('c3'),vpEl=document.getElementById('vpEl');
 const ren=new THREE.WebGLRenderer({canvas:cv,antialias:true});
 ren.setPixelRatio(Math.min(devicePixelRatio,2));
 ren.shadowMap.enabled=true; ren.shadowMap.type=THREE.PCFSoftShadowMap;
 ren.outputEncoding=THREE.sRGBEncoding;
 const sc=new THREE.Scene();
-sc.background=new THREE.Color(0x16140F);
-sc.fog=new THREE.Fog(0x16140F,12,30);
+sc.background=new THREE.Color(0x13110E);
+sc.fog=new THREE.Fog(0x13110E,12,30);
 const cam=new THREE.PerspectiveCamera(40,1,0.05,60);
-sc.add(new THREE.AmbientLight(0xFFF5E0,0.55));
-const kl=new THREE.DirectionalLight(0xFFF5E0,1.1);
+sc.add(new THREE.AmbientLight(0xFFF5E0,0.52));
+const kl=new THREE.DirectionalLight(0xFFF8E8,1.1);
 kl.position.set(4,7,5);kl.castShadow=true;kl.shadow.mapSize.set(2048,2048);sc.add(kl);
-const fl=new THREE.DirectionalLight(0xD0E8FF,0.35);fl.position.set(-4,3,3);sc.add(fl);
-const rl=new THREE.DirectionalLight(0xFFD080,0.22);rl.position.set(0,4,-5);sc.add(rl);
+sc.add(Object.assign(new THREE.DirectionalLight(0xD0E8FF,0.32),{position:new THREE.Vector3(-4,3,3)}));
+sc.add(Object.assign(new THREE.DirectionalLight(0xFFD080,0.2),{position:new THREE.Vector3(0,4,-5)}));
 const flr=new THREE.Mesh(new THREE.PlaneGeometry(30,30),new THREE.MeshLambertMaterial({color:0x100E0A}));
 flr.rotation.x=-Math.PI/2;flr.receiveShadow=true;sc.add(flr);
 const wg=new THREE.Group();sc.add(wg);
-let hits=[];
- 
+let hitObjs=[];
+
 function h3(hex){return new THREE.Color(parseInt(hex.replace('#',''),16));}
-function bx(w,h,d,col,x,y,z,o={}){
-  const m=new THREE.MeshStandardMaterial({color:h3(col),metalness:o.mt||0,roughness:o.rg!==undefined?o.rg:0.65,transparent:(o.op!==undefined&&o.op<1),opacity:o.op!==undefined?o.op:1});
+function mkBox(w,h,d,col,x,y,z,op={}){
+  const m=new THREE.MeshStandardMaterial({color:h3(col),metalness:op.mt||0,roughness:op.rg!==undefined?op.rg:0.65,transparent:(op.op!==undefined&&op.op<1),opacity:op.op!==undefined?op.op:1});
   const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);
   mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;return mesh;
 }
- 
+function mkCyl(r,h,col,x,y,z,rz,op={}){
+  const m=new THREE.MeshStandardMaterial({color:h3(col),metalness:op.mt||0.8,roughness:op.rg||0.2});
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,12),m);
+  if(rz!==undefined)mesh.rotation.z=rz;
+  mesh.position.set(x,y,z);mesh.castShadow=true;return mesh;
+}
+
+function getHandleColor(){
+  const f=HFINISH[S.hfinish]||HFINISH.oro;
+  return {hex:f.hex,mt:f.mt,rg:f.rg};
+}
+
+function drawHandle(cx,cy,cz,cw,H,D,T,idx){
+  if(S.handle==='sin') return;
+  const hc=getHandleColor();
+  const hx=idx%2===0?cx+cw*0.34:cx-cw*0.34;
+  switch(S.handle){
+    case 'barra_c':{const r=mkCyl(0.006,cw*0.5,hc.hex,cx,cy,cz,Math.PI/2,hc);wg.add(r);break;}
+    case 'barra_l':{const r=mkCyl(0.006,H*0.08,hc.hex,hx,cy,cz,0,hc);wg.add(r);break;}
+    case 'gota':{const s=new THREE.Mesh(new THREE.SphereGeometry(0.014,10,10),new THREE.MeshStandardMaterial({color:h3(hc.hex),metalness:hc.mt,roughness:hc.rg}));s.position.set(hx,cy,cz);wg.add(s);break;}
+    case 'cuadrado':{wg.add(mkBox(0.028,0.028,0.01,hc.hex,hx,cy,cz,hc));break;}
+    case 'concha':{const sh=mkBox(cw*0.4,0.018,0.006,hc.hex,cx,cy,cz-0.002,hc);wg.add(sh);break;}
+    case 'barra_d':{
+      for(const oy of[-0.04,0.04]){const r=mkCyl(0.005,cw*0.45,hc.hex,cx,cy+oy,cz,Math.PI/2,hc);wg.add(r);}break;
+    }
+    case 'asa':{
+      wg.add(mkCyl(0.007,0.09,hc.hex,hx-0.04,cy,cz,0,hc));
+      wg.add(mkCyl(0.007,0.09,hc.hex,hx+0.04,cy,cz,0,hc));
+      wg.add(mkCyl(0.007,0.082,hc.hex,hx,cy+0.045,cz,Math.PI/2,hc));
+      break;
+    }
+  }
+}
+
 function build(){
-  wg.clear();hits=[];
+  wg.clear();hitObjs=[];
   const H=S.H/100,D=S.D/100,T=0.022,TW_m=TW()/100;
-  const isDark=parseInt(S.bc.slice(1,3),16)*0.3+parseInt(S.bc.slice(3,5),16)*0.6+parseInt(S.bc.slice(5,7),16)*0.1<140;
-  const ec=isDark?'#3A3630':'#D0C8B8';
+  const lum=c=>parseInt(c.slice(1,3),16)*0.3+parseInt(c.slice(3,5),16)*0.6+parseInt(c.slice(5,7),16)*0.1;
+  const bcDark=lum(S.bc)<140;
+  const ec=bcDark?'#3A3220':'#C8C0A8';
+
   // Carcasa
-  wg.add(bx(TW_m,T,D,S.bc,0,H-T/2,0));
-  wg.add(bx(TW_m,T,D,S.bc,0,T/2,0));
-  wg.add(bx(T,H,D,S.bc,-TW_m/2+T/2,H/2,0));
-  wg.add(bx(T,H,D,S.bc,TW_m/2-T/2,H/2,0));
-  wg.add(bx(TW_m-2*T,H,T*0.4,S.ic,0,H/2,-D/2+T*0.2));
-  wg.add(bx(TW_m+0.02,0.07,D+0.02,isDark?'#100E0A':'#C8C0B0',0,0.035,0));
+  wg.add(mkBox(TW_m,T,D,S.bc,0,H-T/2,0));
+  wg.add(mkBox(TW_m,T,D,S.bc,0,T/2,0));
+  wg.add(mkBox(T,H,D,S.bc,-TW_m/2+T/2,H/2,0));
+  wg.add(mkBox(T,H,D,S.bc,TW_m/2-T/2,H/2,0));
+  wg.add(mkBox(TW_m-2*T,H,T*0.4,S.ic,0,H/2,-D/2+T*0.2));
+  wg.add(mkBox(TW_m+0.02,0.065,D+0.02,bcDark?'#100E0A':'#C0B8A0',0,0.032,0));
+
   let xc=-TW_m/2+T;
   S.cols.forEach((col,idx)=>{
     const cw=col.w/100,cx=xc+cw/2;
-    const rows=H>2.1?3:H>1.9?2:1,sH=(H-2*T)/rows;
-    if(idx<S.cols.length-1) wg.add(bx(T,H-2*T,D-T*2,ec,xc+cw,H/2,0));
-    for(let r=1;r<rows;r++) wg.add(bx(cw-T,T,D-T*2,ec,cx,T+r*sH,0));
-    // Hitbox
+    const nz=col.zones.length;
+    const zH=(H-2*T)/Math.max(nz,1);
+
+    // Divisor vertical
+    if(idx<S.cols.length-1) wg.add(mkBox(T,H-2*T,D-T*2,ec,xc+cw,H/2,0));
+    // Divisores horizontales entre zonas
+    for(let z=1;z<nz;z++) wg.add(mkBox(cw-T,T*0.8,D-T*2,ec,cx,T+z*zH,0));
+
+    // Hitbox invisible
     const hm=new THREE.Mesh(new THREE.BoxGeometry(cw-T,H-T,D-T),new THREE.MeshBasicMaterial({visible:false,side:THREE.DoubleSide}));
-    hm.position.set(cx,H/2,0);hm.userData={ci:idx};wg.add(hm);hits.push(hm);
-    // Selection highlight
+    hm.position.set(cx,H/2,0);hm.userData={ci:idx};wg.add(hm);hitObjs.push(hm);
+
+    // Highlight selected
     if(idx===S.sel){
-      const hl=new THREE.Mesh(new THREE.BoxGeometry(cw-T,H-T*2,D-T*2),new THREE.MeshBasicMaterial({color:0xC4A46B,transparent:true,opacity:0.07}));
-      hl.position.set(cx,H/2,0);wg.add(hl);
-      const wf=new THREE.Mesh(new THREE.BoxGeometry(cw-T,H-T*2,D-T*2),new THREE.MeshBasicMaterial({color:0xC4A46B,wireframe:true,transparent:true,opacity:0.22}));
-      wf.position.set(cx,H/2,0);wg.add(wf);
+      [false,true].forEach(wf=>{
+        const m=new THREE.MeshBasicMaterial({color:0xC4A46B,wireframe:wf,transparent:true,opacity:wf?0.2:0.06});
+        const mesh=new THREE.Mesh(new THREE.BoxGeometry(cw-T,H-T*2,D-T*2),m);
+        mesh.position.set(cx,H/2,0);wg.add(mesh);
+      });
     }
-    // MODULES
-    if(col.mods.has('luz')){
-      const lm=new THREE.MeshStandardMaterial({color:0xFFEEAA,emissive:0xFFDD88,emissiveIntensity:1.5});
-      const led=new THREE.Mesh(new THREE.BoxGeometry(cw*0.8,0.006,0.015),lm);
-      led.position.set(cx,H-T*2.5,-D*0.22);wg.add(led);
-      const pl=new THREE.PointLight(0xFFEE88,0.5,1.8);pl.position.set(cx,H-T*5,0);wg.add(pl);
-    }
-    if(col.mods.has('barra')){
-      const rm=new THREE.MeshStandardMaterial({color:0xC4A46B,metalness:0.85,roughness:0.15});
-      const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,cw*0.82,12),rm);
-      rod.rotation.z=Math.PI/2;rod.position.set(cx,T+sH*0.72,D*0.08);wg.add(rod);
-      for(const s of[-1,1]){const sup=new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,0.032,8),rm);sup.position.set(cx+s*cw*0.36,T+sH*0.72+0.018,D*0.08);wg.add(sup);}
-    }
-    if(col.mods.has('estantes')){
-      const sm=new THREE.MeshStandardMaterial({color:h3(ec),roughness:0.7});
-      for(let r=0;r<rows;r++){const sh=new THREE.Mesh(new THREE.BoxGeometry(cw-T*2,T*0.65,D-T*2.5),sm);sh.position.set(cx,T+r*sH+sH*0.5,0);wg.add(sh);}
-    }
-    if(col.mods.has('cajones')){
-      const dm=new THREE.MeshStandardMaterial({color:h3(S.ic),roughness:0.7});
-      const hc=S.handle==='barra_plata'?0xC0C8D0:S.handle==='boton'?0x1A1814:0xC4A46B;
-      const hm2=new THREE.MeshStandardMaterial({color:hc,metalness:0.82,roughness:0.18});
-      for(let i=0;i<3;i++){
-        const dy=T+(i/3)*(H-2*T)*0.88+0.03,dh=(H-2*T)*0.88/3-0.015;
-        const dr=new THREE.Mesh(new THREE.BoxGeometry(cw-T*3,dh,D*0.83),dm);dr.position.set(cx,dy+dh/2,T*0.4);wg.add(dr);
-        if(S.handle!=='sin_tirador'){
-          const hnd=new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,cw*0.2,8),hm2);
-          hnd.rotation.z=Math.PI/2;hnd.position.set(cx,dy+dh/2,D/2-T*0.4);wg.add(hnd);
-        }
-      }
-    }
-    if(col.mods.has('zapatero')){
-      const shm=new THREE.MeshStandardMaterial({color:h3(ec),roughness:0.8});
-      for(let z=0;z<3;z++){const sh=new THREE.Mesh(new THREE.BoxGeometry(cw-T*2,T*0.5,D*0.42),shm);sh.rotation.x=0.2;sh.position.set(cx,T+sH*0.07+z*sH*0.28,-D*0.05);wg.add(sh);}
-    }
-    if(col.mods.has('pantalonero')){
-      const pm=new THREE.MeshStandardMaterial({color:0xC4A46B,metalness:0.7,roughness:0.3});
-      for(let p=0;p<4;p++){const ph=new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,cw*0.6,8),pm);ph.rotation.z=Math.PI/2;ph.position.set(cx,T+sH*0.18+p*0.11,D*0.05);wg.add(ph);}
-    }
-    if(col.mods.has('espejo_int')){
-      const em=new THREE.Mesh(new THREE.BoxGeometry(cw-T*3,H*0.72,0.006),new THREE.MeshStandardMaterial({color:0xC8D8E8,metalness:0.9,roughness:0.05,transparent:true,opacity:0.55}));
-      em.position.set(cx,H*0.5,-D/2+T*2.2);wg.add(em);
-    }
-    if(col.mods.has('joyero')){
-      const jm=new THREE.Mesh(new THREE.BoxGeometry(cw-T*3,sH*0.35,D*0.75),new THREE.MeshStandardMaterial({color:h3(S.ic),roughness:0.6}));
-      jm.position.set(cx,H-T-sH*0.22,0);wg.add(jm);
-    }
+
+    // Draw zones
+    col.zones.forEach((zone,zi)=>{
+      const zy=T+zi*zH,zcy=zy+zH/2;
+      drawZone(zone.t,cx,zcy,zH,cw,D,T,xc,idx,zi);
+    });
+
     // PUERTAS
     if(S.door!=='sin'){
-      let dc,dmt,drg,dop;
+      let dColor=S.doorSame?S.bc:S.dc,dmt=0,drg=0.62,dop=1;
       switch(S.finish){
-        case 'espejo':dc='#C8D8E8';dmt=0.95;drg=0.05;dop=0.5;break;
-        case 'cristal':dc='#A8D8F0';dmt=0.1;drg=0.05;dop=0.28;break;
-        case 'madera':dc='#A06835';dmt=0;drg=0.82;dop=1;break;
-        default:dc=S.bc;dmt=0;drg=0.6;dop=1;
+        case 'espejo': dColor='#C8D8E8';dmt=0.95;drg=0.05;dop=0.5;break;
+        case 'cristal':dColor='#A8D8F0';dmt=0.1;drg=0.05;dop=0.28;break;
+        case 'madera': dColor='#A07048';dmt=0;drg=0.84;dop=1;break;
+        case 'lacado': dmt=0.1;drg=0.35;break;
+        case 'ranurado':dmt=0;drg=0.9;break;
       }
-      const door=new THREE.Mesh(new THREE.BoxGeometry(cw-0.005,H-0.005,T*1.3),new THREE.MeshStandardMaterial({color:h3(dc),metalness:dmt,roughness:drg,transparent:dop<1,opacity:dop}));
-      door.position.set(cx,H/2,D/2+T*0.7);door.castShadow=true;wg.add(door);
-      if(S.handle!=='sin_tirador'){
-        const hc2=S.handle==='barra_plata'?0xC0C8D0:S.handle==='boton'?0x1A1814:0xC4A46B;
-        const hm3=new THREE.MeshStandardMaterial({color:hc2,metalness:0.82,roughness:0.18});
-        if(S.handle==='boton'){
-          const btn=new THREE.Mesh(new THREE.SphereGeometry(0.012,10,10),hm3);
-          btn.position.set(cx+(idx%2===0?cw*0.34:-cw*0.34),H/2,D/2+T*1.7);wg.add(btn);
-        } else {
-          const hnd2=new THREE.Mesh(new THREE.CylinderGeometry(0.006,0.006,0.09,8),hm3);
-          hnd2.position.set(cx+(idx%2===0?cw*0.34:-cw*0.34),H/2,D/2+T*1.7);wg.add(hnd2);
-        }
-      }
+      const door=new THREE.Mesh(new THREE.BoxGeometry(cw-0.005,H-0.005,T*1.4),
+        new THREE.MeshStandardMaterial({color:h3(dColor),metalness:dmt,roughness:drg,transparent:dop<1,opacity:dop}));
+      door.position.set(cx,H/2,D/2+T*0.8);door.castShadow=true;wg.add(door);
+      drawHandle(cx,H/2,D/2+T*2,cw,H,D,T,idx);
     }
+
     xc+=cw;
   });
-  syncCam();
-  syncUI();
-  renderColList();
-  renderCSums();
+  syncUI();renderColList();renderZoneEditor();renderCSums();
 }
- 
+
+function drawZone(type,cx,zcy,zH,cw,D,T,xStart,colIdx,zi){
+  const hc=getHandleColor();
+  switch(type){
+    case 'barra':{
+      const rm=new THREE.MeshStandardMaterial({color:h3(hc.hex),metalness:hc.mt,roughness:hc.rg});
+      const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,cw*0.82,12),rm);
+      rod.rotation.z=Math.PI/2;rod.position.set(cx,zcy+zH*0.25,D*0.08);wg.add(rod);
+      for(const s of[-1,1]){const sup=new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,0.03,8),rm);sup.position.set(cx+s*cw*0.36,zcy+zH*0.25+0.016,D*0.08);wg.add(sup);}
+      break;
+    }
+    case 'estante':{
+      const sm=new THREE.MeshStandardMaterial({color:h3(S.ic),roughness:0.65});
+      const sh=new THREE.Mesh(new THREE.BoxGeometry(cw-T*2,T*0.65,D-T*2.5),sm);
+      sh.position.set(cx,zcy,0);wg.add(sh);break;
+    }
+    case 'cajones3':case 'cajones2':case 'cajon1':{
+      const n=type==='cajones3'?3:type==='cajones2'?2:1;
+      const dh=zH/n-T*0.5;
+      for(let i=0;i<n;i++){
+        const dy=zcy-zH/2+T+(i+0.5)*zH/n;
+        wg.add(mkBox(cw-T*3,dh*0.85,D*0.82,S.ic,cx,dy,T*0.4));
+        // Frente del cajón
+        wg.add(mkBox(cw-T*3,dh*0.88,T*0.8,S.bc,cx,dy,D/2-T*0.5));
+        if(S.handle!=='sin'){
+          const dhx=colIdx%2===0?cx+cw*0.3:cx-cw*0.3;
+          drawHandle(dhx,dy,D/2,cw*0.5,zH,D,T,colIdx);
+        }
+      }break;
+    }
+    case 'zapatero':{
+      const shm=new THREE.MeshStandardMaterial({color:h3(S.ic),roughness:0.75});
+      const nsh=Math.max(2,Math.floor(zH/0.15));
+      for(let i=0;i<nsh;i++){
+        const sh=new THREE.Mesh(new THREE.BoxGeometry(cw-T*2,T*0.5,D*0.42),shm);
+        sh.rotation.x=0.22;
+        sh.position.set(cx,zcy-zH/2+T+(i+0.5)*(zH-T)/nsh,-D*0.04);wg.add(sh);
+      }break;
+    }
+    case 'pantalonero':{
+      const pm=new THREE.MeshStandardMaterial({color:h3(hc.hex),metalness:hc.mt,roughness:hc.rg});
+      const np=Math.max(2,Math.floor(zH/0.1));
+      for(let i=0;i<np;i++){
+        const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.005,0.005,cw*0.6,8),pm);
+        rod.rotation.z=Math.PI/2;rod.position.set(cx,zcy-zH/2+T+(i+0.5)*(zH-T)/np,D*0.06);wg.add(rod);
+      }break;
+    }
+    case 'espejo':{
+      const em=new THREE.Mesh(new THREE.BoxGeometry(cw-T*3,zH*0.92,0.006),
+        new THREE.MeshStandardMaterial({color:0xC8D8E8,metalness:0.9,roughness:0.05,transparent:true,opacity:0.55}));
+      em.position.set(cx,zcy,-D/2+T*2.5);wg.add(em);break;
+    }
+    case 'joyero':{
+      const jh=Math.min(zH*0.6,0.22);
+      wg.add(mkBox(cw-T*3,jh,D*0.72,S.ic,cx,zcy,0));
+      // tapa
+      wg.add(mkBox(cw-T*3,T*0.5,D*0.72,S.bc,cx,zcy+jh/2,0));
+      break;
+    }
+    case 'luz':{
+      const ledM=new THREE.MeshStandardMaterial({color:0xFFEEAA,emissive:0xFFDD88,emissiveIntensity:1.5});
+      const led=new THREE.Mesh(new THREE.BoxGeometry(cw*0.8,0.006,0.016),ledM);
+      led.position.set(cx,zcy+zH/2-T,-D*0.2);wg.add(led);
+      const pl=new THREE.PointLight(0xFFEE88,0.5,1.8);pl.position.set(cx,zcy,0);wg.add(pl);
+      break;
+    }
+  }
+}
+
 // ══════════════════════════════════════════
 // CAMERA
 // ══════════════════════════════════════════
-let ry=0.65,rx=0.25,cdist=1,isDrag=false,lmx=0,lmy=0;
-function syncCam(){const H=S.H/100,W=TW()/100;cdist=Math.max(H,W)*1.75+1.8;}
+let ry=0.65,rx=0.25,cdist=5,isDrag=false,lmx=0,lmy=0;
+function synCam(){const H=S.H/100,W=TW()/100;cdist=Math.max(H,W)*1.75+1.8;}
 function posCam(){
   const H=S.H/100,tgt=new THREE.Vector3(0,H*0.5,0);
   cam.position.x=Math.sin(ry)*cdist*Math.cos(rx);
@@ -474,67 +701,67 @@ function posCam(){
   cam.position.y=H*0.5+cdist*Math.sin(rx);
   cam.lookAt(tgt);
 }
-function setView(v,btn){
-  document.querySelectorAll('.vc').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  switch(v){case 'front':ry=0;rx=0.12;break;case 'corner':ry=0.65;rx=0.25;break;case 'inside':ry=Math.PI;rx=0.08;cdist*=0.4;break;case 'top':rx=1.35;ry=0.1;break;}
+function sv(v,btn){
+  document.querySelectorAll('.vc').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  switch(v){
+    case 'front':ry=0;rx=0.1;synCam();break;
+    case 'corner':ry=0.65;rx=0.25;synCam();break;
+    case 'inside':ry=Math.PI;rx=0.08;cdist=S.H/100*0.55;break;
+    case 'top':rx=1.35;ry=0.1;synCam();break;
+  }
   posCam();
 }
 cv.addEventListener('mousedown',e=>{isDrag=true;lmx=e.clientX;lmy=e.clientY;});
 window.addEventListener('mouseup',()=>isDrag=false);
-window.addEventListener('mousemove',e=>{
-  if(!isDrag)return;
-  ry+=(e.clientX-lmx)*0.007;rx+=(e.clientY-lmy)*0.004;
-  rx=Math.max(-0.5,Math.min(1.4,rx));lmx=e.clientX;lmy=e.clientY;posCam();
-});
+window.addEventListener('mousemove',e=>{if(!isDrag)return;ry+=(e.clientX-lmx)*0.007;rx+=(e.clientY-lmy)*0.004;rx=Math.max(-0.5,Math.min(1.4,rx));lmx=e.clientX;lmy=e.clientY;posCam();});
 cv.addEventListener('wheel',e=>{cdist=Math.max(0.6,Math.min(22,cdist*(1+e.deltaY*0.001)));posCam();},{passive:true});
 cv.addEventListener('touchstart',e=>{if(e.touches.length===1){isDrag=true;lmx=e.touches[0].clientX;lmy=e.touches[0].clientY;}});
 cv.addEventListener('touchend',()=>isDrag=false);
 cv.addEventListener('touchmove',e=>{if(!isDrag||e.touches.length!==1)return;ry+=(e.touches[0].clientX-lmx)*0.009;rx+=(e.touches[0].clientY-lmy)*0.005;rx=Math.max(-0.5,Math.min(1.4,rx));lmx=e.touches[0].clientX;lmy=e.touches[0].clientY;posCam();});
-// Click select
+// Raycasting click
 const ray=new THREE.Raycaster(),m2=new THREE.Vector2();
 cv.addEventListener('click',e=>{
   const r=cv.getBoundingClientRect();
   m2.x=((e.clientX-r.left)/r.width)*2-1;
   m2.y=-((e.clientY-r.top)/r.height)*2+1;
   ray.setFromCamera(m2,cam);
-  const is=ray.intersectObjects(hits);
-  if(is.length>0){S.sel=is[0].object.userData.ci;build();updateSelBox();switchTab('cols',null);}
+  const is=ray.intersectObjects(hitObjs);
+  if(is.length>0){S.sel=is[0].object.userData.ci;build();updSelBox();stab('cols',null);}
 });
 function resize(){const w=vpEl.clientWidth,h=vpEl.clientHeight;ren.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();}
 window.addEventListener('resize',()=>{resize();posCam();});resize();
 function loop(){requestAnimationFrame(loop);ren.render(sc,cam);}loop();
- 
+
 // ══════════════════════════════════════════
-// UI
+// UI UPDATES
 // ══════════════════════════════════════════
-function switchTab(id,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
-  if(el) el.classList.add('active');
-  else document.querySelectorAll('.tab').forEach((t,i)=>{if(['dims','cols','mats'][i]===id)t.classList.add('active');});
-  document.getElementById('pane-'+id).classList.add('active');
-  if(id==='cols') updateModHighlights();
+function stab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  if(el){el.classList.add('on');}
+  else{const ids=['dims','cols','mat','tir'];ids.forEach((k,i)=>{if(k===id)document.querySelectorAll('.tab')[i].classList.add('on');});}
+  document.getElementById('pane-'+id).classList.add('on');
 }
- 
+
 function renderColList(){
   const el=document.getElementById('colList');el.innerHTML='';
   S.cols.forEach((col,idx)=>{
     const d=document.createElement('div');
-    d.className='col-item'+(idx===S.sel?' sel':'');
+    d.className='ci'+(idx===S.sel?' sel':'');
     d.draggable=true;d.dataset.i=idx;
-    d.innerHTML=`<span class="cdrag">⠿</span><div style="width:9px;height:9px;border-radius:50%;background:${CC[idx%CC.length]};flex-shrink:0"></div><span class="clbl">${col.lbl}</span><input class="cwi" type="number" value="${col.w}" min="30" max="200" onclick="event.stopPropagation()"><span class="cu">cm</span>${S.cols.length>1?`<button class="cdel" onclick="delCol(${idx});event.stopPropagation()">×</button>`:''}`;
-    d.addEventListener('click',()=>{S.sel=idx;build();updateSelBox();updateModHighlights();});
+    d.innerHTML=`<span class="cdg">⠿</span><div style="width:8px;height:8px;border-radius:50%;background:${CC[idx%CC.length]};flex-shrink:0"></div><span class="clb">${col.lbl}</span><input class="cwi" type="number" value="${col.w}" min="30" max="250" onclick="event.stopPropagation()"><span class="cdu">cm</span>${S.cols.length>1?`<button class="cdel" onclick="delCol(${idx});event.stopPropagation()">×</button>`:''}`;
+    d.addEventListener('click',()=>{S.sel=idx;build();updSelBox();});
     d.querySelector('.cwi').addEventListener('change',e=>{
-      const v=Math.max(30,Math.min(200,parseInt(e.target.value)||60));
+      const v=Math.max(30,Math.min(250,parseInt(e.target.value)||60));
       S.cols[idx].w=v;e.target.value=v;build();
     });
     d.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',idx);d.style.opacity='0.4';});
     d.addEventListener('dragend',()=>d.style.opacity='');
-    d.addEventListener('dragover',e=>{e.preventDefault();d.classList.add('drag-over');});
-    d.addEventListener('dragleave',()=>d.classList.remove('drag-over'));
+    d.addEventListener('dragover',e=>{e.preventDefault();d.classList.add('dov');});
+    d.addEventListener('dragleave',()=>d.classList.remove('dov'));
     d.addEventListener('drop',e=>{
-      e.preventDefault();d.classList.remove('drag-over');
+      e.preventDefault();d.classList.remove('dov');
       const from=parseInt(e.dataTransfer.getData('text/plain')),to=idx;
       if(from===to)return;
       const mv=S.cols.splice(from,1)[0];S.cols.splice(to,0,mv);
@@ -542,45 +769,63 @@ function renderColList(){
     });
     el.appendChild(d);
   });
-  document.getElementById('colSelHint').textContent=`Columna seleccionada: ${S.cols[S.sel]?.lbl||'—'}`;
 }
- 
-function updateModHighlights(){
-  const col=S.cols[S.sel];if(!col)return;
-  document.querySelectorAll('.mc').forEach(c=>{
-    const on=col.mods.has(c.dataset.mod);
-    c.classList.toggle('on',on);
+
+function renderZoneEditor(){
+  const wrap=document.getElementById('zoneEditorWrap');
+  const col=S.cols[S.sel];
+  if(!col){wrap.innerHTML='<div class="no-col-msg">Selecciona una columna</div>';return;}
+  wrap.innerHTML='';
+  const box=document.createElement('div');
+  box.className='zone-editor';
+  box.innerHTML=`<div class="ze-title">Zonas — ${col.lbl} (${col.w}cm)</div><div class="ze-col-lbl">Cada zona ocupa una sección del módulo</div>`;
+  col.zones.forEach((zone,zi)=>{
+    const row=document.createElement('div');
+    row.className='zone-row';
+    const sel=document.createElement('select');
+    sel.className='zone-sel';
+    ZONE_TYPES.forEach(zt=>{
+      const opt=document.createElement('option');
+      opt.value=zt.v;opt.textContent=zt.l;
+      if(zt.v===zone.t)opt.selected=true;
+      sel.appendChild(opt);
+    });
+    sel.onchange=()=>{S.cols[S.sel].zones[zi].t=sel.value;build();};
+    const mv=document.createElement('div');mv.className='zone-move';
+    const mu=document.createElement('button');mu.className='zmv';mu.textContent='↑';mu.onclick=()=>{if(zi>0){const z=col.zones.splice(zi,1)[0];col.zones.splice(zi-1,0,z);build();}};
+    const md=document.createElement('button');md.className='zmv';md.textContent='↓';md.onclick=()=>{if(zi<col.zones.length-1){const z=col.zones.splice(zi,1)[0];col.zones.splice(zi+1,0,z);build();}};
+    mv.append(mu,md);
+    const del=document.createElement('button');del.className='zone-del';del.textContent='×';
+    del.onclick=()=>{if(col.zones.length>1){col.zones.splice(zi,1);build();}};
+    const num=document.createElement('div');num.className='zone-num';num.textContent=zi+1;
+    row.append(num,sel,mv,del);
+    box.appendChild(row);
   });
+  const addZ=document.createElement('button');addZ.className='add-zone';addZ.textContent='+ Añadir zona';
+  addZ.onclick=()=>{col.zones.push({t:'vacio'});build();};
+  box.appendChild(addZ);
+  wrap.appendChild(box);
 }
- 
-function toggleMod(mod){
-  const col=S.cols[S.sel];if(!col)return;
-  col.mods.has(mod)?col.mods.delete(mod):col.mods.add(mod);
-  build();updateModHighlights();updateSelBox();
-}
- 
+
 function addCol(){
   const lbl=`Col ${String.fromCharCode(65+S.cols.length%26)}`;
-  S.cols.push({id:nid++,w:60,mods:new Set(),lbl});
-  S.sel=S.cols.length-1;build();updateSelBox();switchTab('cols',null);
+  S.cols.push({id:nid++,w:60,lbl,zones:[{t:'estante'},{t:'vacio'}]});
+  S.sel=S.cols.length-1;build();updSelBox();stab('cols',null);
 }
- 
 function delCol(i){
   if(S.cols.length<=1)return;
   S.cols.splice(i,1);
   if(S.sel>=S.cols.length)S.sel=S.cols.length-1;
-  build();updateSelBox();
+  build();updSelBox();
 }
- 
-function updateSelBox(){
+function updSelBox(){
   const col=S.cols[S.sel];
   if(!col){document.getElementById('selbox').classList.remove('show');return;}
   document.getElementById('selbox').classList.add('show');
   document.getElementById('siN').textContent=col.lbl;
   document.getElementById('siW').textContent=col.w+' cm';
-  document.getElementById('siM').textContent=col.mods.size>0?Array.from(col.mods).join(', '):'ninguno';
+  document.getElementById('siZ').textContent=col.zones.map(z=>ZONE_TYPES.find(t=>t.v===z.t)?.l.replace(/[^\w\s]/g,'').trim()||z.t).join(', ');
 }
- 
 function syncUI(){
   const tw=TW();
   document.getElementById('inW').value=tw;
@@ -589,57 +834,59 @@ function syncUI(){
   document.getElementById('rD').textContent=S.D+' cm';
   document.getElementById('rDoor').textContent=S.door.charAt(0).toUpperCase()+S.door.slice(1);
   document.getElementById('rFin').textContent=S.finish.charAt(0).toUpperCase()+S.finish.slice(1);
-  document.getElementById('rCol').textContent=S.bcn;
-  document.getElementById('rCols').textContent=S.cols.length;
+  document.getElementById('rMel').textContent=S.bcn;
+  const hd=HANDLES.find(h=>h.id===S.handle);
+  document.getElementById('rHandle').textContent=(hd?.name||'—')+' · '+(S.hfinish);
 }
- 
 function renderCSums(){
   const el=document.getElementById('csums');el.innerHTML='';
   S.cols.forEach((col,i)=>{
     const d=document.createElement('div');
-    d.className='csi'+(i===S.sel?' active':'');
-    d.onclick=()=>{S.sel=i;build();updateSelBox();updateModHighlights();switchTab('cols',null);};
-    const tags=Array.from(col.mods).map(m=>`<span class="ctag">${m}</span>`).join('');
-    d.innerHTML=`<div class="csidot" style="background:${CC[i%CC.length]}"></div><span class="csin">${col.lbl}</span><span class="csiw">${col.w}cm</span>`;
+    d.className='csi'+(i===S.sel?' on':'');
+    d.onclick=()=>{S.sel=i;build();updSelBox();stab('cols',null);};
+    d.innerHTML=`<div class="csdot" style="background:${CC[i%CC.length]}"></div><span class="csn">${col.lbl}</span><span class="csw">${col.w}cm</span>`;
     el.appendChild(d);
-    if(col.mods.size>0){const tr=document.createElement('div');tr.style.cssText='display:flex;flex-wrap:wrap;gap:2px;padding:2px 7px 5px 19px';tr.innerHTML=tags;el.appendChild(tr);}
+    if(col.zones.length>0){
+      const tr=document.createElement('div');tr.style.cssText='display:flex;flex-wrap:wrap;gap:2px;padding:2px 6px 5px 17px';
+      col.zones.forEach(z=>{const t=ZONE_TYPES.find(x=>x.v===z.t);if(t&&z.t!=='vacio')tr.innerHTML+=`<span class="ctag">${t.l.split(' ').slice(1).join(' ')}</span>`;});
+      el.appendChild(tr);
+    }
   });
 }
- 
-// Dimension inputs
-document.getElementById('inH').addEventListener('change',e=>{S.H=Math.max(150,Math.min(300,parseInt(e.target.value)||220));e.target.value=S.H;build();});
+
+// Events
+document.getElementById('inH').addEventListener('change',e=>{S.H=Math.max(150,Math.min(300,parseInt(e.target.value)||220));e.target.value=S.H;synCam();build();posCam();});
 document.getElementById('inD').addEventListener('change',e=>{S.D=Math.max(30,Math.min(80,parseInt(e.target.value)||60));e.target.value=S.D;build();});
-// Door
-document.getElementById('dtypes').addEventListener('click',e=>{const b=e.target.closest('.fb');if(!b)return;document.querySelectorAll('#dtypes .fb').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.door=b.dataset.v;build();});
-document.getElementById('dfinish').addEventListener('click',e=>{const b=e.target.closest('.fb');if(!b)return;document.querySelectorAll('#dfinish .fb').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.finish=b.dataset.v;build();});
-// Colors
-document.getElementById('cpicker').addEventListener('click',e=>{const d=e.target.closest('.sw');if(!d)return;document.querySelectorAll('#cpicker .sw').forEach(x=>x.classList.remove('active'));d.classList.add('active');S.bc=d.dataset.c;S.bcn=d.dataset.n;document.getElementById('clbl').textContent=d.dataset.n;build();});
-document.getElementById('ipicker').addEventListener('click',e=>{const d=e.target.closest('.sw');if(!d)return;document.querySelectorAll('#ipicker .sw').forEach(x=>x.classList.remove('active'));d.classList.add('active');S.ic=d.dataset.c;document.getElementById('ilbl').textContent=d.dataset.n;build();});
-document.getElementById('handles').addEventListener('click',e=>{const b=e.target.closest('.fb');if(!b)return;document.querySelectorAll('#handles .fb').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.handle=b.dataset.v;build();});
- 
+document.getElementById('dtypes').addEventListener('click',e=>{const b=e.target.closest('.ob');if(!b)return;document.querySelectorAll('#dtypes .ob').forEach(x=>x.classList.remove('on'));b.classList.add('on');S.door=b.dataset.v;build();});
+document.getElementById('dfinish').addEventListener('click',e=>{const b=e.target.closest('.ob');if(!b)return;document.querySelectorAll('#dfinish .ob').forEach(x=>x.classList.remove('on'));b.classList.add('on');S.finish=b.dataset.v;build();});
+document.getElementById('hfinish').addEventListener('click',e=>{const b=e.target.closest('.ob');if(!b)return;document.querySelectorAll('#hfinish .ob').forEach(x=>x.classList.remove('on'));b.classList.add('on');S.hfinish=b.dataset.v;build();syncUI();});
+
 // ══════════════════════════════════════════
 // CONTACT
 // ══════════════════════════════════════════
 function cfgTxt(){
-  const cols=S.cols.map((c,i)=>`  Col ${i+1} "${c.lbl}" (${c.w}cm): ${Array.from(c.mods).join(', ')||'sin módulos'}`).join('\n');
-  return `Ancho: ${TW()}cm | Alto: ${S.H}cm | Fondo: ${S.D}cm\nPuertas: ${S.door} (${S.finish}) | Color: ${S.bcn}\n${cols}`;
+  const cols=S.cols.map((c,i)=>`  Col ${i+1} "${c.lbl}" (${c.w}cm):\n`+c.zones.map((z,zi)=>`    Zona ${zi+1}: ${ZONE_TYPES.find(t=>t.v===z.t)?.l||z.t}`).join('\n')).join('\n');
+  const hd=HANDLES.find(h=>h.id===S.handle);
+  return `Ancho total: ${TW()}cm | Alto: ${S.H}cm | Fondo: ${S.D}cm\nPuertas: ${S.door} (${S.finish})\nMelamina cuerpo: ${S.bcn} | Interior: ${S.icn}\nTirador: ${hd?.name||'—'} · acabado ${S.hfinish}\n\nColumnas:\n${cols}`;
 }
-function openWA(){window.open(`https://wa.me/573146309609?text=${encodeURIComponent('Hola CR Design! Me interesa este armario:\n\n'+cfgTxt()+'\n\n¿Pueden darme información y concertar una cita?')}`,'_blank');}
-function openModal(){document.getElementById('mconf').textContent=cfgTxt();document.getElementById('overlay').classList.add('open');}
-function closeModal(){document.getElementById('overlay').classList.remove('open');}
+function openWA(){window.open(`https://wa.me/573146309609?text=${encodeURIComponent('Hola CR Design Muebles! Me interesa este armario:\n\n'+cfgTxt()+'\n\n¿Pueden darme información y concertar una cita?')}`,'_blank');}
+function openModal(){document.getElementById('mconf').textContent=cfgTxt();document.getElementById('ovl').classList.add('open');}
+function closeModal(){document.getElementById('ovl').classList.remove('open');}
 function sendEmail(){
   const name=document.getElementById('cName').value.trim(),email=document.getElementById('cEmail').value.trim();
   if(!name||!email){alert('Por favor, introduce tu nombre y email.');return;}
   const phone=document.getElementById('cPhone').value.trim(),notes=document.getElementById('cNotes').value.trim();
-  const colsD=S.cols.map((c,i)=>`  Columna ${i+1} "${c.lbl}" (${c.w}cm):\n    Módulos: ${Array.from(c.mods).join(', ')||'sin módulos'}`).join('\n');
-  const body=encodeURIComponent(`Hola CR Design Muebles,\n\nSolicito una cita para un armario a medida:\n\n━━━━━━━━━━━━━━━━━━━━━\nDIMENSIONES\n━━━━━━━━━━━━━━━━━━━━━\nAncho total: ${TW()} cm\nAlto:        ${S.H} cm\nFondo:       ${S.D} cm\nPuertas:     ${S.door} (${S.finish})\nColor:       ${S.bcn}\nTiradores:   ${S.handle}\n\n━━━━━━━━━━━━━━━━━━━━━\nCOLUMNAS\n━━━━━━━━━━━━━━━━━━━━━\n${colsD}\n\n━━━━━━━━━━━━━━━━━━━━━\nMIS DATOS\n━━━━━━━━━━━━━━━━━━━━━\nNombre:   ${name}\nEmail:    ${email}\nTeléfono: ${phone||'No indicado'}\n\nNotas: ${notes||'—'}\n\nGracias,\n${name}`);
-  window.location.href=`mailto:miguel_716@hotmail.com?subject=${encodeURIComponent('Solicitud de cita — Armario a medida · CR Design Muebles')}&body=${body}`;
+  const hd=HANDLES.find(h=>h.id===S.handle);
+  const body=encodeURIComponent(`Hola CR Design Muebles,\n\nSolicito cita para un armario:\n\n${cfgTxt()}\n\n━━━━━━━━━━━━━━━━━━━━━\nMIS DATOS\n━━━━━━━━━━━━━━━━━━━━━\nNombre:   ${name}\nEmail:    ${email}\nTeléfono: ${phone||'No indicado'}\n\nNotas: ${notes||'—'}\n\nGracias, ${name}`);
+  window.location.href=`mailto:miguel_716@hotmail.com?subject=${encodeURIComponent('Solicitud de cita — Armario 3D · CR Design Muebles')}&body=${body}`;
   closeModal();
   const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);
 }
- 
+
+// ══════════════════════════════════════════
 // INIT
-build();posCam();updateSelBox();
+// ══════════════════════════════════════════
+synCam();build();posCam();updSelBox();
 </script>
 </body>
 </html>
