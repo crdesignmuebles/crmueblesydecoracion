@@ -3,46 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CR Design 3D Pro - Configurador Completo</title>
+<title>CR Design 3D Constructor - Construye tu mueble</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Inter', sans-serif; background: #1a1a1a; overflow: hidden; height: 100vh; }
 
-  /* Toolbar */
+  /* Toolbar principal */
   .toolbar {
-    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    position: fixed; top: 0; left: 0; right: 0; height: auto;
     background: #2c2c2c; border-bottom: 1px solid #444;
-    display: flex; align-items: center; padding: 0 15px; gap: 8px;
-    z-index: 100; overflow-x: auto;
+    display: flex; flex-wrap: wrap; align-items: center;
+    padding: 8px 15px; gap: 6px;
+    z-index: 100;
   }
-  .logo { font-size: 16px; font-weight: 700; background: linear-gradient(135deg, #C4A46B, #E8D8B0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .btn { padding: 6px 12px; background: #3a3a3a; border: none; border-radius: 6px; color: #e0e0e0; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
-  .btn:hover { background: #4a4a4a; }
+  .logo { font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #C4A46B, #E8D8B0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-right: 10px; }
+  .btn { padding: 5px 10px; background: #3a3a3a; border: none; border-radius: 5px; color: #e0e0e0; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+  .btn:hover { background: #4a4a4a; transform: translateY(-1px); }
   .btn-primary { background: #C4A46B; color: #1a1a1a; }
   .btn-danger { background: #8B3A3A; color: #fff; }
+  .btn-success { background: #2D6A4F; color: #fff; }
   .separator { width: 1px; height: 25px; background: #555; margin: 0 5px; }
+  .toolbar-group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 
   /* Paneles */
-  .sidebar-left { position: fixed; left: 0; top: 56px; bottom: 0; width: 320px; background: #252525; border-right: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
-  .sidebar-right { position: fixed; right: 0; top: 56px; bottom: 0; width: 280px; background: #252525; border-left: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
-  #canvas-container { position: fixed; top: 56px; left: 320px; right: 280px; bottom: 0; background: #1a1a1a; }
+  .sidebar-left { position: fixed; left: 0; top: 85px; bottom: 0; width: 320px; background: #252525; border-right: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
+  .sidebar-right { position: fixed; right: 0; top: 85px; bottom: 0; width: 280px; background: #252525; border-left: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
+  #canvas-container { position: fixed; top: 85px; left: 320px; right: 280px; bottom: 0; background: #1a1a1a; }
   canvas { width: 100%; height: 100%; display: block; }
 
   .section { margin-bottom: 20px; border-bottom: 1px solid #3a3a3a; padding-bottom: 15px; }
   .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #C4A46B; margin-bottom: 12px; font-weight: 600; }
 
-  .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
-  .option-btn { background: #333; border: 1px solid #444; border-radius: 6px; padding: 6px; cursor: pointer; text-align: center; font-size: 10px; }
-  .option-btn:hover { background: #3d3d3d; }
-  .option-btn.selected { border-color: #C4A46B; background: rgba(196, 164, 107, 0.15); color: #C4A46B; }
-
-  .element-list { max-height: 300px; overflow-y: auto; }
-  .element-item { background: #333; margin-bottom: 6px; padding: 8px 10px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
+  .element-list { max-height: 280px; overflow-y: auto; }
+  .element-item { background: #333; margin-bottom: 5px; padding: 7px 8px; border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; font-size: 11px; }
   .element-item:hover { background: #3d3d3d; }
   .element-item.selected { border-color: #C4A46B; background: #3a3a3a; }
 
-  .transform-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+  .transform-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
   .transform-input { background: #333; border: 1px solid #444; border-radius: 4px; padding: 5px 6px; color: #e0e0e0; font-size: 11px; width: 100%; }
   .transform-input:focus { outline: none; border-color: #C4A46B; }
 
@@ -50,7 +48,7 @@
   .medidas-realtime span { color: #C4A46B; font-weight: bold; }
 
   .float-buttons { position: fixed; bottom: 20px; right: 300px; display: flex; gap: 8px; z-index: 95; }
-  .float-btn { width: 40px; height: 40px; background: #2c2c2c; border: 1px solid #555; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .float-btn { width: 38px; height: 38px; background: #2c2c2c; border: 1px solid #555; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
   .float-btn:hover { background: #C4A46B; }
 
   @media (max-width: 900px) { .sidebar-left, .sidebar-right { display: none; } #canvas-container { left: 0; right: 0; } .float-buttons { right: 20px; } }
@@ -59,29 +57,47 @@
 <body>
 
 <div class="toolbar">
-  <div class="logo">🎨 CR DESIGN 3D PRO</div>
+  <div class="logo">🧱 CR DESIGN CONSTRUCTOR</div>
   <div class="separator"></div>
-  <button class="btn" onclick="addModule('barra')">➕ Barra</button>
-  <button class="btn" onclick="addModule('estante')">📦 Estante</button>
-  <button class="btn" onclick="addModule('cajon')">🗄️ Cajón</button>
-  <button class="btn" onclick="addModule('zapatero')">👟 Zapatero</button>
-  <button class="btn" onclick="addModule('luz')">💡 LED</button>
+  
+  <div class="toolbar-group">
+    <span style="color:#aaa; font-size:10px; margin-right:5px;">ESTRUCTURA:</span>
+    <button class="btn" onclick="addElement('lateral')">🧱 Lateral</button>
+    <button class="btn" onclick="addElement('piso')">📌 Piso</button>
+    <button class="btn" onclick="addElement('techo')">📌 Techo</button>
+    <button class="btn" onclick="addElement('espaldar')">📌 Espaldar</button>
+  </div>
+  
   <div class="separator"></div>
-  <button class="btn btn-primary" onclick="addDoor()">🚪 Añadir puerta</button>
+  
+  <div class="toolbar-group">
+    <span style="color:#aaa; font-size:10px; margin-right:5px;">PUERTAS:</span>
+    <button class="btn" onclick="addElement('puerta')">🚪 Puerta</button>
+    <button class="btn" onclick="addElement('tirador')">🔘 Tirador</button>
+  </div>
+  
   <div class="separator"></div>
-  <button class="btn btn-primary" onclick="exportPDF()">📄 PDF</button>
-  <button class="btn btn-primary" onclick="sendEmail()">✉ Enviar</button>
-  <button class="btn" onclick="resetView()">🎥 Reset</button>
+  
+  <div class="toolbar-group">
+    <span style="color:#aaa; font-size:10px; margin-right:5px;">INTERIORES:</span>
+    <button class="btn" onclick="addElement('estante')">📦 Estante</button>
+    <button class="btn" onclick="addElement('cajonero')">🗄️ Cajonero</button>
+    <button class="btn" onclick="addElement('zapatero')">👟 Zapatero</button>
+    <button class="btn" onclick="addElement('luz')">💡 Luz LED</button>
+    <button class="btn btn-primary" onclick="generateModule()">✨ GENERAR MÓDULO</button>
+  </div>
+  
+  <div class="separator"></div>
+  
+  <div class="toolbar-group">
+    <button class="btn btn-danger" onclick="deleteAllElements()">🗑 Limpiar todo</button>
+    <button class="btn btn-primary" onclick="exportPDF()">📄 PDF</button>
+    <button class="btn btn-primary" onclick="sendEmail()">✉ Enviar</button>
+    <button class="btn" onclick="resetView()">🎥 Reset vista</button>
+  </div>
 </div>
 
 <div class="sidebar-left">
-  <div class="section">
-    <div class="section-title">📐 MEDIDAS DEL MUEBLE</div>
-    <div style="margin-bottom: 8px;"><label style="font-size: 11px;">Alto (cm)</label><input type="number" id="alto-mueble" class="transform-input" value="220" step="5" onchange="updateFurnitureSize()"></div>
-    <div style="margin-bottom: 8px;"><label style="font-size: 11px;">Ancho (cm)</label><input type="number" id="ancho-mueble" class="transform-input" value="200" step="5" onchange="updateFurnitureSize()"></div>
-    <div style="margin-bottom: 8px;"><label style="font-size: 11px;">Fondo (cm)</label><input type="number" id="fondo-mueble" class="transform-input" value="60" step="5" onchange="updateFurnitureSize()"></div>
-  </div>
-
   <div class="section">
     <div class="section-title">⚙️ ELEMENTO SELECCIONADO</div>
     <div id="selected-info" style="color: #aaa; font-size: 12px; margin-bottom: 8px;">Ninguno</div>
@@ -94,15 +110,7 @@
         <div><label style="font-size: 9px;">Alto (cm)</label><input type="number" id="size-y" class="transform-input" step="5" onchange="updateElementSize()"></div>
         <div><label style="font-size: 9px;">Fondo (cm)</label><input type="number" id="size-z" class="transform-input" step="5" onchange="updateElementSize()"></div>
       </div>
-      <div style="margin-top: 8px;">
-        <label style="font-size: 10px;">Tipo de puerta (si es puerta)</label>
-        <select id="door-type-select" class="transform-input" onchange="updateDoorType()" style="margin-top: 4px;">
-          <option value="corredera">🚪 Corredera</option>
-          <option value="abatible">🚪 Abatible</option>
-          <option value="espejo">🪞 Espejo</option>
-          <option value="cristal">🔮 Cristal</option>
-        </select>
-      </div>
+      <div id="extra-controls" style="margin-top: 8px;"></div>
       <button class="btn btn-danger" style="width: 100%; margin-top: 8px;" onclick="deleteSelectedElement()">🗑 ELIMINAR</button>
     </div>
   </div>
@@ -110,7 +118,7 @@
   <div class="section">
     <div class="section-title">📊 RESUMEN</div>
     <div class="medidas-realtime">
-      <div>Mueble: <span id="med-ancho">0</span> x <span id="med-alto">0</span> x <span id="med-fondo">0</span> cm</div>
+      <div>Elementos totales: <span id="med-total">0</span></div>
       <div>Puertas: <span id="med-puertas">0</span></div>
       <div>Módulos: <span id="med-modulos">0</span></div>
     </div>
@@ -119,12 +127,8 @@
 
 <div class="sidebar-right">
   <div class="section">
-    <div class="section-title">🚪 PUERTAS</div>
-    <div class="element-list" id="doors-list"></div>
-  </div>
-  <div class="section">
-    <div class="section-title">📦 MÓDULOS INTERIORES</div>
-    <div class="element-list" id="modules-list"></div>
+    <div class="section-title">📋 LISTA DE ELEMENTOS</div>
+    <div class="element-list" id="elements-list"></div>
   </div>
   <div class="section">
     <div class="section-title">🎬 VISTAS</div>
@@ -159,30 +163,27 @@
   import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
   // ============================================
-  // ESTADO GLOBAL - TODO ES INDEPENDIENTE
+  // ESTADO - TODO ES INDEPENDIENTE
   // ============================================
   
   let scene, camera, renderer, controls, transformControls;
-  let furnitureGroup = new THREE.Group();      // Estructura del mueble
-  let doorsGroup = new THREE.Group();          // Puertas (manipulables)
-  let modulesGroup = new THREE.Group();        // Módulos internos
-  
-  let doors = [];           // Lista de puertas { id, type, mesh, position, size }
-  let modules = [];         // Lista de módulos { id, type, mesh, position, size }
+  let elementsGroup = new THREE.Group();
+  let elements = [];
   let selectedElement = null;
-  let selectedType = null;  // 'door' o 'module'
-  let nextDoorId = 1;
-  let nextModuleId = 1;
+  let nextId = 1;
   
-  // Dimensiones del mueble
-  let furnitureSize = { width: 2.0, height: 2.2, depth: 0.6 };
-  
-  // Colores para acabados
-  const finishColors = {
-    corredera: 0xE8D8C4,
-    abatible: 0xE8D8C4,
-    espejo: 0xC8D8E8,
-    cristal: 0xA8D8F0
+  // Configuración de tipos de elementos
+  const elementTypes = {
+    lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, defaultSize: { w: 1.8, h: 2.2, d: 0.018 }, defaultPos: { x: -0.9, y: 1.1, z: 0 } },
+    piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 0.018, d: 0.6 }, defaultPos: { x: 0, y: 0.009, z: 0 } },
+    techo: { nombre: 'Techo', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 0.018, d: 0.6 }, defaultPos: { x: 0, y: 2.191, z: 0 } },
+    espaldar: { nombre: 'Espaldar', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 2.2, d: 0.018 }, defaultPos: { x: 0, y: 1.1, z: -0.291 } },
+    puerta: { nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4, defaultSize: { w: 0.9, h: 2.1, d: 0.022 }, defaultPos: { x: -0.45, y: 1.05, z: 0.31 } },
+    tirador: { nombre: 'Tirador', icon: '🔘', color: 0xC4A46B, defaultSize: { w: 0.1, h: 0.02, d: 0.008 }, defaultPos: { x: -0.45, y: 1.1, z: 0.32 } },
+    estante: { nombre: 'Estante', icon: '📦', color: 0xE8D8C4, defaultSize: { w: 1.6, h: 0.018, d: 0.5 }, defaultPos: { x: 0, y: 1.2, z: 0 } },
+    cajonero: { nombre: 'Cajonero', icon: '🗄️', color: 0xE8D8C4, defaultSize: { w: 0.5, h: 0.6, d: 0.45 }, defaultPos: { x: 0, y: 0.3, z: 0 } },
+    zapatero: { nombre: 'Zapatero', icon: '👟', color: 0xD4BC98, defaultSize: { w: 0.7, h: 0.15, d: 0.4 }, defaultPos: { x: 0, y: 0.15, z: 0 } },
+    luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, defaultSize: { w: 0.4, h: 0.03, d: 0.03 }, defaultPos: { x: 0, y: 2.15, z: 0.2 } }
   };
   
   // ============================================
@@ -216,19 +217,19 @@
     const mainLight = new THREE.DirectionalLight(0xffffff, 1);
     mainLight.position.set(5, 8, 3);
     mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 1024;
+    mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
     const fillLight = new THREE.PointLight(0x88aaff, 0.3);
     fillLight.position.set(-2, 2, 3);
     scene.add(fillLight);
     
-    // Suelo
-    const gridHelper = new THREE.GridHelper(10, 20, 0x888888, 0x444444);
-    gridHelper.position.y = -0.01;
+    // Suelo de referencia
+    const gridHelper = new THREE.GridHelper(8, 20, 0x555555, 0x333333);
+    gridHelper.position.y = -0.02;
     scene.add(gridHelper);
     
-    scene.add(furnitureGroup);
-    scene.add(doorsGroup);
-    scene.add(modulesGroup);
+    scene.add(elementsGroup);
     
     // Transform controls
     transformControls = new TransformControls(camera, renderer.domElement);
@@ -240,7 +241,7 @@
     });
     scene.add(transformControls);
     
-    // Click para seleccionar elementos
+    // Click para seleccionar
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     renderer.domElement.addEventListener('click', (event) => {
@@ -248,279 +249,158 @@
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
-      
-      const allMeshes = [...doors.map(d => d.mesh), ...modules.map(m => m.mesh)];
-      const intersects = raycaster.intersectObjects(allMeshes);
-      
+      const intersects = raycaster.intersectObjects(elements.map(e => e.mesh));
       if (intersects.length > 0) {
         const hit = intersects[0].object;
-        const doorHit = doors.find(d => d.mesh === hit);
-        const moduleHit = modules.find(m => m.mesh === hit);
-        if (doorHit) selectElement(doorHit, 'door');
-        else if (moduleHit) selectElement(moduleHit, 'module');
+        const element = elements.find(e => e.mesh === hit);
+        if (element) selectElement(element);
       } else {
-        selectElement(null, null);
+        selectElement(null);
       }
     });
-    
-    buildFurniture();
-    
-    // Puerta de ejemplo
-    addDoor('corredera', { x: -0.5, y: 1.1, z: 0.32 }, { width: 0.9, height: 2.18, depth: 0.022 });
-    addDoor('corredera', { x: 0.5, y: 1.1, z: 0.32 }, { width: 0.9, height: 2.18, depth: 0.022 });
-    
-    // Módulos de ejemplo
-    addModule('barra', { x: -0.4, y: 1.8, z: 0.15 }, { width: 0.7, height: 0.05, depth: 0.05 });
-    addModule('estante', { x: 0, y: 1.2, z: 0 }, { width: 1.2, height: 0.02, depth: 0.5 });
-    addModule('cajon', { x: 0.5, y: 0.4, z: 0 }, { width: 0.5, height: 0.25, depth: 0.45 });
     
     animate();
     updateUI();
   }
   
   // ============================================
-  // CONSTRUCCIÓN DEL MUEBLE (SOLO ESTRUCTURA)
+  // CREAR ELEMENTOS
   // ============================================
   
-  function buildFurniture() {
-    while(furnitureGroup.children.length > 0) {
-      furnitureGroup.remove(furnitureGroup.children[0]);
-    }
+  function addElement(type) {
+    const config = elementTypes[type];
+    if (!config) return;
     
-    const w = furnitureSize.width;
-    const h = furnitureSize.height;
-    const d = furnitureSize.depth;
-    const thickness = 0.018;
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0xF5F0E8, roughness: 0.6 });
-    
-    // Panel superior
-    const top = new THREE.Mesh(new THREE.BoxGeometry(w, thickness, d), bodyMat);
-    top.position.set(0, h - thickness/2, 0);
-    top.castShadow = true;
-    furnitureGroup.add(top);
-    
-    // Panel inferior
-    const bottom = new THREE.Mesh(new THREE.BoxGeometry(w, thickness, d), bodyMat);
-    bottom.position.set(0, thickness/2, 0);
-    bottom.castShadow = true;
-    furnitureGroup.add(bottom);
-    
-    // Panel izquierdo
-    const left = new THREE.Mesh(new THREE.BoxGeometry(thickness, h, d), bodyMat);
-    left.position.set(-w/2 + thickness/2, h/2, 0);
-    left.castShadow = true;
-    furnitureGroup.add(left);
-    
-    // Panel derecho
-    const right = new THREE.Mesh(new THREE.BoxGeometry(thickness, h, d), bodyMat);
-    right.position.set(w/2 - thickness/2, h/2, 0);
-    right.castShadow = true;
-    furnitureGroup.add(right);
-    
-    // Panel trasero
-    const back = new THREE.Mesh(new THREE.BoxGeometry(w, h, thickness), bodyMat);
-    back.position.set(0, h/2, -d/2 + thickness/2);
-    back.castShadow = true;
-    furnitureGroup.add(back);
-  }
-  
-  // ============================================
-  // PUERTAS (MANIPULABLES)
-  // ============================================
-  
-  function addDoor(type = 'corredera', position = null, size = null) {
-    const defaultPos = position || { x: 0, y: furnitureSize.height/2, z: furnitureSize.depth/2 + 0.02 };
-    const defaultSize = size || { width: furnitureSize.width / 2 - 0.05, height: furnitureSize.height - 0.05, depth: 0.022 };
-    
-    const id = nextDoorId++;
-    const color = finishColors[type] || 0xE8D8C4;
-    
-    let material;
-    if (type === 'espejo') {
-      material = new THREE.MeshStandardMaterial({ color: 0xC8D8E8, metalness: 0.95, roughness: 0.05 });
-    } else if (type === 'cristal') {
-      material = new THREE.MeshStandardMaterial({ color: 0xA8D8F0, metalness: 0.1, roughness: 0.05, transparent: true, opacity: 0.6 });
-    } else {
-      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.5 });
-    }
-    
-    const geometry = new THREE.BoxGeometry(defaultSize.width, defaultSize.height, defaultSize.depth);
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(defaultPos.x, defaultPos.y, defaultPos.z);
-    mesh.castShadow = true;
-    mesh.userData = { id, type: 'door', doorType: type, isDoor: true };
-    
-    doorsGroup.add(mesh);
-    
-    doors.push({
-      id: id,
-      type: type,
-      doorType: type,
-      mesh: mesh,
-      position: { x: defaultPos.x, y: defaultPos.y, z: defaultPos.z },
-      size: { width: defaultSize.width, height: defaultSize.height, depth: defaultSize.depth }
-    });
-    
-    updateUI();
-    return mesh;
-  }
-  
-  function updateDoorType() {
-    if (!selectedElement || selectedType !== 'door') return;
-    const newType = document.getElementById('door-type-select').value;
-    const door = selectedElement;
-    const idx = doors.findIndex(d => d.id === door.id);
-    if (idx === -1) return;
-    
-    // Recrear la puerta con el nuevo tipo
-    const oldPos = door.position;
-    const oldSize = door.size;
-    
-    doorsGroup.remove(door.mesh);
-    
-    let material;
-    if (newType === 'espejo') {
-      material = new THREE.MeshStandardMaterial({ color: 0xC8D8E8, metalness: 0.95, roughness: 0.05 });
-    } else if (newType === 'cristal') {
-      material = new THREE.MeshStandardMaterial({ color: 0xA8D8F0, metalness: 0.1, roughness: 0.05, transparent: true, opacity: 0.6 });
-    } else {
-      material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.5 });
-    }
-    
-    const geometry = new THREE.BoxGeometry(oldSize.width, oldSize.height, oldSize.depth);
-    const newMesh = new THREE.Mesh(geometry, material);
-    newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
-    newMesh.castShadow = true;
-    newMesh.userData = { id: door.id, type: 'door', doorType: newType, isDoor: true };
-    
-    doorsGroup.add(newMesh);
-    
-    doors[idx] = {
-      id: door.id,
-      type: newType,
-      doorType: newType,
-      mesh: newMesh,
-      position: oldPos,
-      size: oldSize
-    };
-    
-    selectElement(doors[idx], 'door');
-    updateUI();
-  }
-  
-  // ============================================
-  // MÓDULOS INTERIORES
-  // ============================================
-  
-  function addModule(type, position = null, size = null) {
-    let defaultSize, defaultPos;
-    
-    switch(type) {
-      case 'barra':
-        defaultSize = { width: 0.7, height: 0.05, depth: 0.05 };
-        defaultPos = { x: 0, y: 1.8, z: 0.15 };
-        break;
-      case 'estante':
-        defaultSize = { width: 0.8, height: 0.02, depth: 0.5 };
-        defaultPos = { x: 0, y: 1.2, z: 0 };
-        break;
-      case 'cajon':
-        defaultSize = { width: 0.5, height: 0.25, depth: 0.45 };
-        defaultPos = { x: 0, y: 0.5, z: 0 };
-        break;
-      case 'zapatero':
-        defaultSize = { width: 0.7, height: 0.12, depth: 0.4 };
-        defaultPos = { x: 0, y: 0.3, z: 0 };
-        break;
-      case 'luz':
-        defaultSize = { width: 0.4, height: 0.03, depth: 0.03 };
-        defaultPos = { x: 0, y: 2.1, z: 0.2 };
-        break;
-      default: return;
-    }
-    
-    const finalPos = position || defaultPos;
-    const finalSize = size || defaultSize;
-    const id = nextModuleId++;
+    const id = nextId++;
+    const color = config.color;
     
     let geometry, material, mesh;
     
-    switch(type) {
-      case 'barra':
-        geometry = new THREE.CylinderGeometry(0.012, 0.012, finalSize.width, 12);
-        material = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.85 });
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.z = Math.PI / 2;
-        break;
-      case 'estante':
-        geometry = new THREE.BoxGeometry(finalSize.width, finalSize.height, finalSize.depth);
-        material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.7 });
-        mesh = new THREE.Mesh(geometry, material);
-        break;
-      case 'cajon':
-        geometry = new THREE.BoxGeometry(finalSize.width, finalSize.height, finalSize.depth);
-        material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.5 });
-        mesh = new THREE.Mesh(geometry, material);
-        const front = new THREE.Mesh(new THREE.BoxGeometry(finalSize.width + 0.02, finalSize.height + 0.02, 0.02),
-          new THREE.MeshStandardMaterial({ color: 0xD4BC98 }));
-        front.position.set(0, 0, finalSize.depth/2 + 0.01);
-        mesh.add(front);
-        break;
-      case 'zapatero':
-        geometry = new THREE.BoxGeometry(finalSize.width, finalSize.height, finalSize.depth);
-        material = new THREE.MeshStandardMaterial({ color: 0xD4BC98, roughness: 0.7 });
-        mesh = new THREE.Mesh(geometry, material);
-        break;
-      case 'luz':
-        geometry = new THREE.BoxGeometry(finalSize.width, finalSize.height, finalSize.depth);
-        material = new THREE.MeshStandardMaterial({ color: 0xFFEEAA, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
-        mesh = new THREE.Mesh(geometry, material);
-        break;
-      default: return;
+    if (type === 'tirador') {
+      geometry = new THREE.CylinderGeometry(0.008, 0.008, config.defaultSize.w, 8);
+      material = new THREE.MeshStandardMaterial({ color: color, metalness: 0.85 });
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.z = Math.PI / 2;
+    } else if (type === 'luz') {
+      geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
+      material = new THREE.MeshStandardMaterial({ color: color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      mesh = new THREE.Mesh(geometry, material);
+    } else {
+      geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
+      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+      mesh = new THREE.Mesh(geometry, material);
     }
     
-    mesh.position.set(finalPos.x, finalPos.y, finalPos.z);
+    mesh.position.set(config.defaultPos.x, config.defaultPos.y, config.defaultPos.z);
     mesh.castShadow = true;
-    mesh.userData = { id, type: 'module', moduleType: type };
+    mesh.receiveShadow = true;
+    mesh.userData = { id, type, elementType: type };
     
-    modulesGroup.add(mesh);
+    elementsGroup.add(mesh);
     
-    modules.push({
+    elements.push({
       id: id,
       type: type,
-      moduleType: type,
       mesh: mesh,
-      position: { x: finalPos.x, y: finalPos.y, z: finalPos.z },
-      size: finalSize
+      position: { x: config.defaultPos.x, y: config.defaultPos.y, z: config.defaultPos.z },
+      size: { width: config.defaultSize.w, height: config.defaultSize.h, depth: config.defaultSize.d }
     });
     
     updateUI();
-    return mesh;
+  }
+  
+  // Generar módulo completo (estructura + interior)
+  function generateModule() {
+    // Preguntar dimensiones
+    const ancho = parseFloat(prompt("Ancho del módulo (cm):", "80")) / 100;
+    const alto = parseFloat(prompt("Alto del módulo (cm):", "200")) / 100;
+    const fondo = parseFloat(prompt("Fondo del módulo (cm):", "60")) / 100;
+    
+    if (isNaN(ancho) || isNaN(alto) || isNaN(fondo)) return;
+    
+    const x = 0;
+    const y = alto / 2;
+    const z = 0;
+    const thickness = 0.018;
+    
+    // Lateral izquierdo
+    addElementWithSize('lateral', { x: -ancho/2 + thickness/2, y: y, z: z }, { w: thickness, h: alto, d: fondo });
+    // Lateral derecho
+    addElementWithSize('lateral', { x: ancho/2 - thickness/2, y: y, z: z }, { w: thickness, h: alto, d: fondo });
+    // Piso
+    addElementWithSize('piso', { x: 0, y: thickness/2, z: 0 }, { w: ancho, h: thickness, d: fondo });
+    // Techo
+    addElementWithSize('techo', { x: 0, y: alto - thickness/2, z: 0 }, { w: ancho, h: thickness, d: fondo });
+    // Espaldar
+    addElementWithSize('espaldar', { x: 0, y: alto/2, z: -fondo/2 + thickness/2 }, { w: ancho, h: alto, d: thickness });
+    
+    // Puerta
+    addElementWithSize('puerta', { x: 0, y: alto/2, z: fondo/2 + 0.01 }, { w: ancho - 0.02, h: alto - 0.02, d: 0.022 });
+    
+    // Tirador
+    addElementWithSize('tirador', { x: ancho/4, y: alto/2, z: fondo/2 + 0.025 }, { w: 0.1, h: 0.02, d: 0.008 });
+    
+    // Estante interior
+    addElementWithSize('estante', { x: 0, y: alto * 0.6, z: 0 }, { w: ancho - thickness*2, h: 0.018, d: fondo - thickness*2 });
+    
+    updateUI();
+  }
+  
+  function addElementWithSize(type, position, size) {
+    const config = elementTypes[type];
+    if (!config) return;
+    
+    const id = nextId++;
+    const color = config.color;
+    
+    let geometry, material, mesh;
+    
+    if (type === 'tirador') {
+      geometry = new THREE.CylinderGeometry(0.008, 0.008, size.w, 8);
+      material = new THREE.MeshStandardMaterial({ color: color, metalness: 0.85 });
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.z = Math.PI / 2;
+    } else if (type === 'luz') {
+      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+      material = new THREE.MeshStandardMaterial({ color: color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      mesh = new THREE.Mesh(geometry, material);
+    } else {
+      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+      mesh = new THREE.Mesh(geometry, material);
+    }
+    
+    mesh.position.set(position.x, position.y, position.z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData = { id, type, elementType: type };
+    
+    elementsGroup.add(mesh);
+    
+    elements.push({
+      id: id,
+      type: type,
+      mesh: mesh,
+      position: { x: position.x, y: position.y, z: position.z },
+      size: { width: size.w, height: size.h, depth: size.d }
+    });
+    
+    updateUI();
   }
   
   // ============================================
   // SELECCIÓN Y MANIPULACIÓN
   // ============================================
   
-  function selectElement(element, type) {
+  function selectElement(element) {
     if (selectedElement === element) return;
     
     selectedElement = element;
-    selectedType = type;
     
     if (element) {
       transformControls.attach(element.mesh);
       document.getElementById('transform-controls').style.display = 'block';
       updateUIFromElement();
-      
-      // Mostrar selector de tipo de puerta si es una puerta
-      const doorTypeSelect = document.getElementById('door-type-select').parentElement;
-      if (type === 'door') {
-        doorTypeSelect.style.display = 'block';
-        document.getElementById('door-type-select').value = element.doorType || element.type;
-      } else {
-        doorTypeSelect.style.display = 'none';
-      }
     } else {
       transformControls.detach();
       document.getElementById('transform-controls').style.display = 'none';
@@ -556,94 +436,67 @@
     const d = parseFloat(document.getElementById('size-z').value) / 100;
     
     const oldPos = selectedElement.mesh.position.clone();
+    const oldType = selectedElement.type;
     const oldId = selectedElement.id;
     
-    if (selectedType === 'door') {
-      // Recrear puerta con nuevo tamaño
-      const idx = doors.findIndex(d => d.id === oldId);
-      if (idx !== -1) {
-        doorsGroup.remove(selectedElement.mesh);
-        const newMesh = addDoor(selectedElement.doorType, oldPos, { width: w, height: h, depth: d });
-        if (newMesh) {
-          doors[idx].mesh = newMesh;
-          doors[idx].size = { width: w, height: h, depth: d };
-          selectElement(doors[idx], 'door');
-        }
-      }
-    } else if (selectedType === 'module') {
-      const idx = modules.findIndex(m => m.id === oldId);
-      if (idx !== -1) {
-        modulesGroup.remove(selectedElement.mesh);
-        const newMesh = addModule(selectedElement.moduleType, oldPos, { width: w, height: h, depth: d });
-        if (newMesh) {
-          modules[idx].mesh = newMesh;
-          modules[idx].size = { width: w, height: h, depth: d };
-          selectElement(modules[idx], 'module');
-        }
-      }
+    const idx = elements.findIndex(e => e.id === oldId);
+    if (idx === -1) return;
+    
+    elementsGroup.remove(selectedElement.mesh);
+    
+    const config = elementTypes[oldType];
+    let geometry, material, newMesh;
+    
+    if (oldType === 'tirador') {
+      geometry = new THREE.CylinderGeometry(0.008, 0.008, w, 8);
+      material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
+      newMesh = new THREE.Mesh(geometry, material);
+      newMesh.rotation.z = Math.PI / 2;
+    } else if (oldType === 'luz') {
+      geometry = new THREE.BoxGeometry(w, h, d);
+      material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      newMesh = new THREE.Mesh(geometry, material);
+    } else {
+      geometry = new THREE.BoxGeometry(w, h, d);
+      material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
+      newMesh = new THREE.Mesh(geometry, material);
     }
+    
+    newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
+    newMesh.castShadow = true;
+    newMesh.userData = { id: oldId, type: oldType, elementType: oldType };
+    
+    elementsGroup.add(newMesh);
+    
+    elements[idx] = {
+      id: oldId,
+      type: oldType,
+      mesh: newMesh,
+      position: { x: oldPos.x, y: oldPos.y, z: oldPos.z },
+      size: { width: w, height: h, depth: d }
+    };
+    
+    selectElement(elements[idx]);
+    updateUI();
   }
   
   function deleteSelectedElement() {
     if (!selectedElement) return;
-    
-    if (selectedType === 'door') {
-      const idx = doors.findIndex(d => d.id === selectedElement.id);
-      if (idx !== -1) {
-        doorsGroup.remove(selectedElement.mesh);
-        doors.splice(idx, 1);
-      }
-    } else if (selectedType === 'module') {
-      const idx = modules.findIndex(m => m.id === selectedElement.id);
-      if (idx !== -1) {
-        modulesGroup.remove(selectedElement.mesh);
-        modules.splice(idx, 1);
-      }
+    const idx = elements.findIndex(e => e.id === selectedElement.id);
+    if (idx !== -1) {
+      elementsGroup.remove(selectedElement.mesh);
+      elements.splice(idx, 1);
+      selectElement(null);
+      updateUI();
     }
-    
-    selectElement(null, null);
-    updateUI();
   }
   
-  function updateDoorType() {
-    if (!selectedElement || selectedType !== 'door') return;
-    const newType = document.getElementById('door-type-select').value;
-    const door = selectedElement;
-    const idx = doors.findIndex(d => d.id === door.id);
-    if (idx === -1) return;
-    
-    const oldPos = door.position;
-    const oldSize = door.size;
-    
-    doorsGroup.remove(door.mesh);
-    
-    let material;
-    if (newType === 'espejo') {
-      material = new THREE.MeshStandardMaterial({ color: 0xC8D8E8, metalness: 0.95, roughness: 0.05 });
-    } else if (newType === 'cristal') {
-      material = new THREE.MeshStandardMaterial({ color: 0xA8D8F0, metalness: 0.1, roughness: 0.05, transparent: true, opacity: 0.6 });
-    } else {
-      material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.5 });
-    }
-    
-    const geometry = new THREE.BoxGeometry(oldSize.width, oldSize.height, oldSize.depth);
-    const newMesh = new THREE.Mesh(geometry, material);
-    newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
-    newMesh.castShadow = true;
-    newMesh.userData = { id: door.id, type: 'door', doorType: newType, isDoor: true };
-    
-    doorsGroup.add(newMesh);
-    
-    doors[idx] = {
-      id: door.id,
-      type: newType,
-      doorType: newType,
-      mesh: newMesh,
-      position: oldPos,
-      size: oldSize
-    };
-    
-    selectElement(doors[idx], 'door');
+  function deleteAllElements() {
+    elements.forEach(el => {
+      elementsGroup.remove(el.mesh);
+    });
+    elements = [];
+    selectElement(null);
     updateUI();
   }
   
@@ -651,61 +504,39 @@
   // UTILIDADES
   // ============================================
   
-  function updateFurnitureSize() {
-    furnitureSize.width = parseFloat(document.getElementById('ancho-mueble').value) / 100;
-    furnitureSize.height = parseFloat(document.getElementById('alto-mueble').value) / 100;
-    furnitureSize.depth = parseFloat(document.getElementById('fondo-mueble').value) / 100;
-    buildFurniture();
-    updateUI();
-  }
-  
   function updateUI() {
-    // Actualizar listas
-    const doorsContainer = document.getElementById('doors-list');
-    doorsContainer.innerHTML = '';
-    doors.forEach(door => {
+    const listContainer = document.getElementById('elements-list');
+    listContainer.innerHTML = '';
+    
+    elements.forEach(el => {
       const div = document.createElement('div');
-      div.className = 'element-item' + (selectedElement === door ? ' selected' : '');
-      const icon = door.doorType === 'corredera' ? '🚪➡️' : door.doorType === 'abatible' ? '🚪↗️' : door.doorType === 'espejo' ? '🪞' : '🔮';
-      div.innerHTML = `<div class="element-name">${icon} Puerta #${door.id}</div><button class="btn" style="padding: 2px 6px;" onclick="window.selectDoorById(${door.id})">✏️</button>`;
-      div.onclick = () => selectElement(door, 'door');
-      doorsContainer.appendChild(div);
+      div.className = 'element-item' + (selectedElement === el ? ' selected' : '');
+      const config = elementTypes[el.type];
+      const icon = config ? config.icon : '📦';
+      div.innerHTML = `<div class="element-name">${icon} ${config?.nombre || el.type} #${el.id}</div><button class="btn" style="padding: 2px 6px;" onclick="window.selectElementById(${el.id})">✏️</button>`;
+      div.onclick = () => selectElement(el);
+      listContainer.appendChild(div);
     });
     
-    const modulesContainer = document.getElementById('modules-list');
-    modulesContainer.innerHTML = '';
-    modules.forEach(mod => {
-      const div = document.createElement('div');
-      div.className = 'element-item' + (selectedElement === mod ? ' selected' : '');
-      const icon = mod.type === 'barra' ? '🎽' : mod.type === 'estante' ? '📦' : mod.type === 'cajon' ? '🗄️' : mod.type === 'zapatero' ? '👟' : '💡';
-      div.innerHTML = `<div class="element-name">${icon} ${mod.type} #${mod.id}</div><button class="btn" style="padding: 2px 6px;" onclick="window.selectModuleById(${mod.id})">✏️</button>`;
-      div.onclick = () => selectElement(mod, 'module');
-      modulesContainer.appendChild(div);
-    });
+    const puertas = elements.filter(e => e.type === 'puerta').length;
+    const modulos = elements.filter(e => ['estante', 'cajonero', 'zapatero', 'luz'].includes(e.type)).length;
     
-    document.getElementById('med-ancho').innerHTML = (furnitureSize.width * 100).toFixed(0);
-    document.getElementById('med-alto').innerHTML = (furnitureSize.height * 100).toFixed(0);
-    document.getElementById('med-fondo').innerHTML = (furnitureSize.depth * 100).toFixed(0);
-    document.getElementById('med-puertas').innerHTML = doors.length;
-    document.getElementById('med-modulos').innerHTML = modules.length;
+    document.getElementById('med-total').innerHTML = elements.length;
+    document.getElementById('med-puertas').innerHTML = puertas;
+    document.getElementById('med-modulos').innerHTML = modulos;
     
     const infoDiv = document.getElementById('selected-info');
     if (selectedElement) {
-      const typeName = selectedType === 'door' ? `Puerta ${selectedElement.doorType}` : `${selectedElement.type}`;
-      infoDiv.innerHTML = `<div style="color: #C4A46B;">${typeName} #${selectedElement.id}</div>`;
+      const config = elementTypes[selectedElement.type];
+      infoDiv.innerHTML = `<div style="color: #C4A46B;">${config?.nombre || selectedElement.type} #${selectedElement.id}</div>`;
     } else {
       infoDiv.innerHTML = `<div style="color: #aaa;">Ninguno seleccionado</div>`;
     }
   }
   
-  window.selectDoorById = (id) => {
-    const door = doors.find(d => d.id === id);
-    if (door) selectElement(door, 'door');
-  };
-  
-  window.selectModuleById = (id) => {
-    const mod = modules.find(m => m.id === id);
-    if (mod) selectElement(mod, 'module');
+  window.selectElementById = (id) => {
+    const el = elements.find(e => e.id === id);
+    if (el) selectElement(el);
   };
   
   function setView(view) {
@@ -725,18 +556,22 @@
   }
   
   function exportPDF() {
-    let summary = `🔷 DISEÑO DE ARMARIO - CR DESIGN 🔷\n\n`;
-    summary += `📏 MEDIDAS:\n• Ancho: ${(furnitureSize.width * 100).toFixed(0)} cm\n• Alto: ${(furnitureSize.height * 100).toFixed(0)} cm\n• Fondo: ${(furnitureSize.depth * 100).toFixed(0)} cm\n\n`;
-    summary += `🚪 PUERTAS (${doors.length}):\n`;
-    doors.forEach(d => summary += `• Puerta #${d.id}: ${d.doorType}\n`);
-    summary += `\n📦 MÓDULOS (${modules.length}):\n`;
-    modules.forEach(m => summary += `• ${m.type} #${m.id}: posición (${(m.position.x*100).toFixed(0)}, ${(m.position.y*100).toFixed(0)}) cm\n`);
+    let summary = `🔷 DISEÑO DE MUEBLE - CR DESIGN 🔷\n\n`;
+    summary += `📦 ELEMENTOS (${elements.length}):\n`;
+    elements.forEach(e => {
+      const config = elementTypes[e.type];
+      summary += `• ${config?.nombre || e.type} #${e.id}: posición (${(e.position.x*100).toFixed(0)}, ${(e.position.y*100).toFixed(0)}, ${(e.position.z*100).toFixed(0)}) cm | tamaño: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
+    });
     alert('📄 Resumen del diseño:\n\n' + summary);
   }
   
   function sendEmail() {
-    let summary = `Diseño de armario CR Design\n\nMedidas: ${(furnitureSize.width*100).toFixed(0)}x${(furnitureSize.height*100).toFixed(0)}x${(furnitureSize.depth*100).toFixed(0)} cm\nPuertas: ${doors.length}\nMódulos: ${modules.length}`;
-    window.location.href = `mailto:miguel_716@hotmail.com?subject=Diseño de armario&body=${encodeURIComponent(summary)}`;
+    let summary = `Diseño de mueble CR Design\n\nElementos: ${elements.length}\n\n`;
+    elements.forEach(e => {
+      const config = elementTypes[e.type];
+      summary += `${config?.nombre || e.type}: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
+    });
+    window.location.href = `mailto:miguel_716@hotmail.com?subject=Diseño de mueble&body=${encodeURIComponent(summary)}`;
     alert('✉ Abriendo correo...');
   }
   
@@ -747,13 +582,12 @@
   }
   
   // Exponer funciones globales
-  window.addModule = addModule;
-  window.addDoor = addDoor;
-  window.updateFurnitureSize = updateFurnitureSize;
+  window.addElement = addElement;
+  window.generateModule = generateModule;
   window.updateElementPosition = updateElementPosition;
   window.updateElementSize = updateElementSize;
   window.deleteSelectedElement = deleteSelectedElement;
-  window.updateDoorType = updateDoorType;
+  window.deleteAllElements = deleteAllElements;
   window.setView = setView;
   window.resetView = resetView;
   window.exportPDF = exportPDF;
