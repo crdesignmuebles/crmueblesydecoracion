@@ -3,406 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>CR Design 3D Pro - Configurador SketchUp Style</title>
+<title>CR Design 3D Constructor - Construye tu mueble</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    user-select: none;
-  }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: #1a1a1a;
-    overflow: hidden;
-    height: 100vh;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #1a1a1a; overflow: hidden; height: 100vh; }
 
   /* Toolbar principal */
   .toolbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    background: #2c2c2c;
-    border-bottom: 1px solid #444;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    gap: 15px;
+    position: fixed; top: 0; left: 0; right: 0; height: auto;
+    background: #2c2c2c; border-bottom: 1px solid #444;
+    display: flex; flex-wrap: wrap; align-items: center;
+    padding: 8px 15px; gap: 6px;
     z-index: 100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
   }
+  .logo { font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #C4A46B, #E8D8B0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-right: 10px; }
+  .btn { padding: 5px 10px; background: #3a3a3a; border: none; border-radius: 5px; color: #e0e0e0; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+  .btn:hover { background: #4a4a4a; transform: translateY(-1px); }
+  .btn-primary { background: #C4A46B; color: #1a1a1a; }
+  .btn-danger { background: #8B3A3A; color: #fff; }
+  .btn-success { background: #2D6A4F; color: #fff; }
+  .separator { width: 1px; height: 25px; background: #555; margin: 0 5px; }
+  .toolbar-group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 
-  .logo {
-    font-size: 18px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #C4A46B, #E8D8B0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-right: 20px;
-  }
+  /* Paneles */
+  .sidebar-left { position: fixed; left: 0; top: 85px; bottom: 0; width: 320px; background: #252525; border-right: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
+  .sidebar-right { position: fixed; right: 0; top: 85px; bottom: 0; width: 280px; background: #252525; border-left: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
+  #canvas-container { position: fixed; top: 85px; left: 320px; right: 280px; bottom: 0; background: #1a1a1a; }
+  canvas { width: 100%; height: 100%; display: block; }
 
-  .btn {
-    padding: 8px 16px;
-    background: #3a3a3a;
-    border: none;
-    border-radius: 6px;
-    color: #e0e0e0;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .section { margin-bottom: 20px; border-bottom: 1px solid #3a3a3a; padding-bottom: 15px; }
+  .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #C4A46B; margin-bottom: 12px; font-weight: 600; }
 
-  .btn:hover {
-    background: #4a4a4a;
-    transform: translateY(-1px);
-  }
+  .element-list { max-height: 280px; overflow-y: auto; }
+  .element-item { background: #333; margin-bottom: 5px; padding: 7px 8px; border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; font-size: 11px; }
+  .element-item:hover { background: #3d3d3d; }
+  .element-item.selected { border-color: #C4A46B; background: #3a3a3a; }
 
-  .btn-primary {
-    background: #C4A46B;
-    color: #1a1a1a;
-  }
+  .transform-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
+  .transform-input { background: #333; border: 1px solid #444; border-radius: 4px; padding: 5px 6px; color: #e0e0e0; font-size: 11px; width: 100%; }
+  .transform-input:focus { outline: none; border-color: #C4A46B; }
 
-  .btn-primary:hover {
-    background: #D4B47B;
-  }
+  .medidas-realtime { background: #333; border-radius: 6px; padding: 10px; margin-top: 10px; font-size: 11px; }
+  .medidas-realtime span { color: #C4A46B; font-weight: bold; }
 
-  .btn-danger {
-    background: #8B3A3A;
-    color: #fff;
-  }
+  .float-buttons { position: fixed; bottom: 20px; right: 300px; display: flex; gap: 8px; z-index: 95; }
+  .float-btn { width: 38px; height: 38px; background: #2c2c2c; border: 1px solid #555; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .float-btn:hover { background: #C4A46B; }
 
-  .btn-danger:hover {
-    background: #A54A4A;
-  }
-
-  .separator {
-    width: 1px;
-    height: 30px;
-    background: #555;
-    margin: 0 5px;
-  }
-
-  /* Panel lateral izquierdo - Propiedades */
-  .sidebar-left {
-    position: fixed;
-    left: 0;
-    top: 56px;
-    bottom: 0;
-    width: 280px;
-    background: #252525;
-    border-right: 1px solid #444;
-    overflow-y: auto;
-    z-index: 90;
-    padding: 15px;
-  }
-
-  /* Panel lateral derecho - Capas/Elementos */
-  .sidebar-right {
-    position: fixed;
-    right: 0;
-    top: 56px;
-    bottom: 0;
-    width: 260px;
-    background: #252525;
-    border-left: 1px solid #444;
-    overflow-y: auto;
-    z-index: 90;
-    padding: 15px;
-  }
-
-  /* Canvas 3D */
-  #canvas-container {
-    position: fixed;
-    top: 56px;
-    left: 280px;
-    right: 260px;
-    bottom: 0;
-    background: #1a1a1a;
-  }
-
-  canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  /* Secciones del panel */
-  .section {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #3a3a3a;
-    padding-bottom: 15px;
-  }
-
-  .section-title {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #C4A46B;
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-
-  /* Lista de elementos */
-  .element-list {
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .element-item {
-    background: #333;
-    margin-bottom: 6px;
-    padding: 8px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s;
-    border: 1px solid transparent;
-  }
-
-  .element-item:hover {
-    background: #3d3d3d;
-  }
-
-  .element-item.selected {
-    border-color: #C4A46B;
-    background: #3a3a3a;
-  }
-
-  .element-name {
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .element-actions {
-    display: flex;
-    gap: 5px;
-  }
-
-  .element-actions button {
-    background: transparent;
-    border: none;
-    color: #aaa;
-    cursor: pointer;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-
-  .element-actions button:hover {
-    background: #555;
-    color: #fff;
-  }
-
-  /* Controles de transformación */
-  .transform-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .transform-input {
-    background: #333;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 6px 8px;
-    color: #e0e0e0;
-    font-size: 12px;
-    width: 100%;
-  }
-
-  .transform-input:focus {
-    outline: none;
-    border-color: #C4A46B;
-  }
-
-  .color-picker {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid #555;
-  }
-
-  .medidas-realtime {
-    background: #333;
-    border-radius: 6px;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 12px;
-  }
-
-  .medidas-realtime span {
-    color: #C4A46B;
-    font-weight: bold;
-  }
-
-  /* Botones flotantes */
-  .float-buttons {
-    position: fixed;
-    bottom: 20px;
-    right: 280px;
-    display: flex;
-    gap: 8px;
-    z-index: 95;
-  }
-
-  .float-btn {
-    width: 40px;
-    height: 40px;
-    background: #2c2c2c;
-    border: 1px solid #555;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    transition: all 0.2s;
-  }
-
-  .float-btn:hover {
-    background: #C4A46B;
-    border-color: #C4A46B;
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #2a2a2a;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 3px;
-  }
-
-  @media (max-width: 900px) {
-    .sidebar-left, .sidebar-right {
-      display: none;
-    }
-    #canvas-container {
-      left: 0;
-      right: 0;
-    }
-    .float-buttons {
-      right: 20px;
-    }
-  }
+  @media (max-width: 900px) { .sidebar-left, .sidebar-right { display: none; } #canvas-container { left: 0; right: 0; } .float-buttons { right: 20px; } }
 </style>
 </head>
 <body>
 
 <div class="toolbar">
-  <div class="logo">🎨 CR DESIGN 3D PRO</div>
-  <button class="btn" onclick="addElement('barra')">➕ Barra colgador</button>
-  <button class="btn" onclick="addElement('estante')">📦 Estante</button>
-  <button class="btn" onclick="addElement('cajon')">🗄️ Cajón</button>
-  <button class="btn" onclick="addElement('puerta')">🚪 Puerta</button>
-  <button class="btn" onclick="addElement('luz')">💡 Luz LED</button>
+  <div class="logo">🧱 CR DESIGN CONSTRUCTOR</div>
   <div class="separator"></div>
-  <button class="btn btn-primary" onclick="exportPDF()">📄 Exportar PDF</button>
-  <button class="btn btn-primary" onclick="sendEmail()">✉ Enviar diseño</button>
+  
+  <div class="toolbar-group">
+    <span style="color:#aaa; font-size:10px; margin-right:5px;">ESTRUCTURA:</span>
+    <button class="btn" onclick="addElement('lateral')">🧱 Lateral</button>
+    <button class="btn" onclick="addElement('piso')">📌 Piso</button>
+    <button class="btn" onclick="addElement('techo')">📌 Techo</button>
+    <button class="btn" onclick="addElement('espaldar')">📌 Espaldar</button>
+  </div>
+  
   <div class="separator"></div>
-  <button class="btn" onclick="resetView()">🎥 Reset vista</button>
+  
+  <div class="toolbar-group">
+    <span style="color:#aaa; font-size:10px; margin-right:5px;">PUERTAS:</span>
+    <button class="btn" onclick="addElement('puerta')">🚪 Puerta</button>
+    <button class="btn" onclick="addElement('tirador')">🔘 Tirador</button>
+  </div>
+  
+  <div class="separator"></div>
+  
+  <div class="toolbar-group">
+    <span style="color:#aaa; font-size:10px; margin-right:5px;">INTERIORES:</span>
+    <button class="btn" onclick="addElement('estante')">📦 Estante</button>
+    <button class="btn" onclick="addElement('cajonero')">🗄️ Cajonero</button>
+    <button class="btn" onclick="addElement('zapatero')">👟 Zapatero</button>
+    <button class="btn" onclick="addElement('luz')">💡 Luz LED</button>
+    <button class="btn btn-primary" onclick="generateModule()">✨ GENERAR MÓDULO</button>
+  </div>
+  
+  <div class="separator"></div>
+  
+  <div class="toolbar-group">
+    <button class="btn btn-danger" onclick="deleteAllElements()">🗑 Limpiar todo</button>
+    <button class="btn btn-primary" onclick="exportPDF()">📄 PDF</button>
+    <button class="btn btn-primary" onclick="sendEmail()">✉ Enviar</button>
+    <button class="btn" onclick="resetView()">🎥 Reset vista</button>
+  </div>
 </div>
 
 <div class="sidebar-left">
   <div class="section">
-    <div class="section-title">📐 Dimensiones del armario</div>
-    <div style="margin-bottom: 10px;">
-      <label style="font-size: 12px; color: #aaa;">Alto (cm)</label>
-      <input type="number" id="alto-armario" class="transform-input" value="220" step="5" onchange="updateWardrobeSize()">
-    </div>
-    <div style="margin-bottom: 10px;">
-      <label style="font-size: 12px; color: #aaa;">Ancho (cm)</label>
-      <input type="number" id="ancho-armario" class="transform-input" value="200" step="5" onchange="updateWardrobeSize()">
-    </div>
-    <div style="margin-bottom: 10px;">
-      <label style="font-size: 12px; color: #aaa;">Fondo (cm)</label>
-      <input type="number" id="fondo-armario" class="transform-input" value="60" step="5" onchange="updateWardrobeSize()">
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">🎨 Apariencia</div>
-    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-      <div>Color cuerpo:</div>
-      <input type="color" id="color-cuerpo" value="#F5F0E8" class="color-picker" onchange="updateColors()">
-    </div>
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <div>Color puertas:</div>
-      <input type="color" id="color-puertas" value="#E8D8C4" class="color-picker" onchange="updateColors()">
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">⚙️ Elemento seleccionado</div>
-    <div id="selected-info">
-      <div style="color: #aaa; font-size: 12px;">Ninguno seleccionado</div>
-    </div>
+    <div class="section-title">⚙️ ELEMENTO SELECCIONADO</div>
+    <div id="selected-info" style="color: #aaa; font-size: 12px; margin-bottom: 8px;">Ninguno</div>
     <div id="transform-controls" style="display: none;">
       <div class="transform-controls">
-        <div>
-          <label style="font-size: 10px;">X (cm)</label>
-          <input type="number" id="pos-x" class="transform-input" step="1" onchange="updateElementPosition()">
-        </div>
-        <div>
-          <label style="font-size: 10px;">Y (cm)</label>
-          <input type="number" id="pos-y" class="transform-input" step="1" onchange="updateElementPosition()">
-        </div>
-        <div>
-          <label style="font-size: 10px;">Z (cm)</label>
-          <input type="number" id="pos-z" class="transform-input" step="1" onchange="updateElementPosition()">
-        </div>
-        <div>
-          <label style="font-size: 10px;">Ancho (cm)</label>
-          <input type="number" id="size-x" class="transform-input" step="5" onchange="updateElementSize()">
-        </div>
-        <div>
-          <label style="font-size: 10px;">Alto (cm)</label>
-          <input type="number" id="size-y" class="transform-input" step="5" onchange="updateElementSize()">
-        </div>
-        <div>
-          <label style="font-size: 10px;">Fondo (cm)</label>
-          <input type="number" id="size-z" class="transform-input" step="5" onchange="updateElementSize()">
-        </div>
+        <div><label style="font-size: 9px;">X (cm)</label><input type="number" id="pos-x" class="transform-input" step="1" onchange="updateElementPosition()"></div>
+        <div><label style="font-size: 9px;">Y (cm)</label><input type="number" id="pos-y" class="transform-input" step="1" onchange="updateElementPosition()"></div>
+        <div><label style="font-size: 9px;">Z (cm)</label><input type="number" id="pos-z" class="transform-input" step="1" onchange="updateElementPosition()"></div>
+        <div><label style="font-size: 9px;">Ancho (cm)</label><input type="number" id="size-x" class="transform-input" step="5" onchange="updateElementSize()"></div>
+        <div><label style="font-size: 9px;">Alto (cm)</label><input type="number" id="size-y" class="transform-input" step="5" onchange="updateElementSize()"></div>
+        <div><label style="font-size: 9px;">Fondo (cm)</label><input type="number" id="size-z" class="transform-input" step="5" onchange="updateElementSize()"></div>
       </div>
-      <button class="btn btn-danger" style="margin-top: 10px; width: 100%;" onclick="deleteSelected()">🗑 Eliminar seleccionado</button>
+      <div id="extra-controls" style="margin-top: 8px;"></div>
+      <button class="btn btn-danger" style="width: 100%; margin-top: 8px;" onclick="deleteSelectedElement()">🗑 ELIMINAR</button>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title">📊 Medidas en tiempo real</div>
+    <div class="section-title">📊 RESUMEN</div>
     <div class="medidas-realtime">
-      <div>Ancho total: <span id="med-ancho">0</span> cm</div>
-      <div>Alto total: <span id="med-alto">0</span> cm</div>
-      <div>Fondo total: <span id="med-fondo">0</span> cm</div>
-      <div>Elementos: <span id="med-elementos">0</span></div>
+      <div>Elementos totales: <span id="med-total">0</span></div>
+      <div>Puertas: <span id="med-puertas">0</span></div>
+      <div>Módulos: <span id="med-modulos">0</span></div>
     </div>
   </div>
 </div>
 
 <div class="sidebar-right">
   <div class="section">
-    <div class="section-title">📋 Lista de elementos</div>
-    <div class="element-list" id="element-list"></div>
+    <div class="section-title">📋 LISTA DE ELEMENTOS</div>
+    <div class="element-list" id="elements-list"></div>
   </div>
   <div class="section">
-    <div class="section-title">🎬 Vistas rápidas</div>
+    <div class="section-title">🎬 VISTAS</div>
     <button class="btn" style="width: 100%; margin-bottom: 5px;" onclick="setView('front')">◀ Frontal</button>
     <button class="btn" style="width: 100%; margin-bottom: 5px;" onclick="setView('side')">▶ Lateral</button>
     <button class="btn" style="width: 100%; margin-bottom: 5px;" onclick="setView('top')">▼ Superior</button>
@@ -411,7 +140,6 @@
 </div>
 
 <div id="canvas-container"></div>
-
 <div class="float-buttons">
   <div class="float-btn" onclick="setView('front')">◀</div>
   <div class="float-btn" onclick="setView('side')">▶</div>
@@ -435,29 +163,33 @@
   import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
   // ============================================
-  // CONFIGURACIÓN INICIAL
+  // ESTADO - TODO ES INDEPENDIENTE
   // ============================================
   
-  // Estado global
   let scene, camera, renderer, controls, transformControls;
-  let wardrobeGroup = new THREE.Group();
+  let elementsGroup = new THREE.Group();
   let elements = [];
   let selectedElement = null;
-  let elementIdCounter = 1;
+  let nextId = 1;
   
-  // Dimensiones del armario
-  let wardrobeSize = {
-    width: 2.0,
-    height: 2.2,
-    depth: 0.6
+  // Configuración de tipos de elementos
+  const elementTypes = {
+    lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, defaultSize: { w: 1.8, h: 2.2, d: 0.018 }, defaultPos: { x: -0.9, y: 1.1, z: 0 } },
+    piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 0.018, d: 0.6 }, defaultPos: { x: 0, y: 0.009, z: 0 } },
+    techo: { nombre: 'Techo', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 0.018, d: 0.6 }, defaultPos: { x: 0, y: 2.191, z: 0 } },
+    espaldar: { nombre: 'Espaldar', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 2.2, d: 0.018 }, defaultPos: { x: 0, y: 1.1, z: -0.291 } },
+    puerta: { nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4, defaultSize: { w: 0.9, h: 2.1, d: 0.022 }, defaultPos: { x: -0.45, y: 1.05, z: 0.31 } },
+    tirador: { nombre: 'Tirador', icon: '🔘', color: 0xC4A46B, defaultSize: { w: 0.1, h: 0.02, d: 0.008 }, defaultPos: { x: -0.45, y: 1.1, z: 0.32 } },
+    estante: { nombre: 'Estante', icon: '📦', color: 0xE8D8C4, defaultSize: { w: 1.6, h: 0.018, d: 0.5 }, defaultPos: { x: 0, y: 1.2, z: 0 } },
+    cajonero: { nombre: 'Cajonero', icon: '🗄️', color: 0xE8D8C4, defaultSize: { w: 0.5, h: 0.6, d: 0.45 }, defaultPos: { x: 0, y: 0.3, z: 0 } },
+    zapatero: { nombre: 'Zapatero', icon: '👟', color: 0xD4BC98, defaultSize: { w: 0.7, h: 0.15, d: 0.4 }, defaultPos: { x: 0, y: 0.15, z: 0 } },
+    luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, defaultSize: { w: 0.4, h: 0.03, d: 0.03 }, defaultPos: { x: 0, y: 2.15, z: 0.2 } }
   };
   
-  let colors = {
-    body: 0xF5F0E8,
-    doors: 0xE8D8C4
-  };
+  // ============================================
+  // INICIALIZACIÓN
+  // ============================================
   
-  // Inicializar escena
   function init() {
     const container = document.getElementById('canvas-container');
     const width = container.clientWidth;
@@ -468,255 +200,203 @@
     scene.fog = new THREE.FogExp2(0x1a1a1a, 0.008);
     
     camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(4, 2.5, 4);
-    camera.lookAt(0, 1.2, 0);
+    camera.position.set(4, 1.8, 4);
     
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
     
-    // Controles de órbita
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
     controls.target.set(0, 1.2, 0);
     
     // Luces
     const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     scene.add(ambientLight);
-    
     const mainLight = new THREE.DirectionalLight(0xffffff, 1);
     mainLight.position.set(5, 8, 3);
     mainLight.castShadow = true;
-    mainLight.receiveShadow = true;
     mainLight.shadow.mapSize.width = 1024;
     mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
-    
     const fillLight = new THREE.PointLight(0x88aaff, 0.3);
     fillLight.position.set(-2, 2, 3);
     scene.add(fillLight);
     
-    const backLight = new THREE.PointLight(0xffaa66, 0.2);
-    backLight.position.set(0, 1.5, -2);
-    scene.add(backLight);
-    
-    // Suelo tipo grid
-    const gridHelper = new THREE.GridHelper(10, 20, 0x888888, 0x444444);
-    gridHelper.position.y = -0.01;
+    // Suelo de referencia
+    const gridHelper = new THREE.GridHelper(8, 20, 0x555555, 0x333333);
+    gridHelper.position.y = -0.02;
     scene.add(gridHelper);
     
-    // Piso semitransparente
-    const floorPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(8, 8),
-      new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.8, metalness: 0.1, transparent: true, opacity: 0.3 })
-    );
-    floorPlane.rotation.x = -Math.PI / 2;
-    floorPlane.position.y = -0.02;
-    floorPlane.receiveShadow = true;
-    scene.add(floorPlane);
-    
-    scene.add(wardrobeGroup);
+    scene.add(elementsGroup);
     
     // Transform controls
     transformControls = new TransformControls(camera, renderer.domElement);
-    transformControls.addEventListener('dragging-changed', function(event) {
+    transformControls.addEventListener('dragging-changed', (event) => {
       controls.enabled = !event.value;
     });
-    transformControls.addEventListener('objectChange', function() {
-      if (selectedElement && selectedElement.userData) {
-        updateUIFromElement();
-      }
+    transformControls.addEventListener('objectChange', () => {
+      if (selectedElement) updateUIFromElement();
     });
     scene.add(transformControls);
     
-    // Construir armario base
-    buildWardrobe();
-    
-    // Elementos de ejemplo
-    addElementToScene('barra', { x: -0.5, y: 1.8, z: 0.15 }, { width: 0.8, height: 0.05, depth: 0.05 });
-    addElementToScene('estante', { x: 0, y: 1.2, z: 0 }, { width: 1.6, height: 0.02, depth: 0.5 });
-    addElementToScene('cajon', { x: 0.6, y: 0.4, z: 0 }, { width: 0.5, height: 0.25, depth: 0.45 });
+    // Click para seleccionar
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    renderer.domElement.addEventListener('click', (event) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(elements.map(e => e.mesh));
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        const element = elements.find(e => e.mesh === hit);
+        if (element) selectElement(element);
+      } else {
+        selectElement(null);
+      }
+    });
     
     animate();
     updateUI();
   }
   
-  // Construir armario base
-  function buildWardrobe() {
-    // Limpiar grupo
-    while(wardrobeGroup.children.length > 0) {
-      const child = wardrobeGroup.children[0];
-      if (child.userData && child.userData.isElement) {
-        // Los elementos se manejan aparte
-        wardrobeGroup.remove(child);
-      } else {
-        wardrobeGroup.remove(child);
-      }
+  // ============================================
+  // CREAR ELEMENTOS
+  // ============================================
+  
+  function addElement(type) {
+    const config = elementTypes[type];
+    if (!config) return;
+    
+    const id = nextId++;
+    const color = config.color;
+    
+    let geometry, material, mesh;
+    
+    if (type === 'tirador') {
+      geometry = new THREE.CylinderGeometry(0.008, 0.008, config.defaultSize.w, 8);
+      material = new THREE.MeshStandardMaterial({ color: color, metalness: 0.85 });
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.z = Math.PI / 2;
+    } else if (type === 'luz') {
+      geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
+      material = new THREE.MeshStandardMaterial({ color: color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      mesh = new THREE.Mesh(geometry, material);
+    } else {
+      geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
+      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+      mesh = new THREE.Mesh(geometry, material);
     }
     
-    const w = wardrobeSize.width;
-    const h = wardrobeSize.height;
-    const d = wardrobeSize.depth;
-    const thickness = 0.018;
+    mesh.position.set(config.defaultPos.x, config.defaultPos.y, config.defaultPos.z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData = { id, type, elementType: type };
     
-    const bodyMat = new THREE.MeshStandardMaterial({ color: colors.body, roughness: 0.6, metalness: 0.1 });
-    const doorMat = new THREE.MeshStandardMaterial({ color: colors.doors, roughness: 0.5, metalness: 0.05 });
+    elementsGroup.add(mesh);
     
-    // Panel superior
-    const top = new THREE.Mesh(new THREE.BoxGeometry(w, thickness, d), bodyMat);
-    top.position.set(0, h - thickness/2, 0);
-    top.castShadow = true;
-    top.receiveShadow = true;
-    wardrobeGroup.add(top);
+    elements.push({
+      id: id,
+      type: type,
+      mesh: mesh,
+      position: { x: config.defaultPos.x, y: config.defaultPos.y, z: config.defaultPos.z },
+      size: { width: config.defaultSize.w, height: config.defaultSize.h, depth: config.defaultSize.d }
+    });
     
-    // Panel inferior
-    const bottom = new THREE.Mesh(new THREE.BoxGeometry(w, thickness, d), bodyMat);
-    bottom.position.set(0, thickness/2, 0);
-    bottom.castShadow = true;
-    bottom.receiveShadow = true;
-    wardrobeGroup.add(bottom);
-    
-    // Panel izquierdo
-    const left = new THREE.Mesh(new THREE.BoxGeometry(thickness, h, d), bodyMat);
-    left.position.set(-w/2 + thickness/2, h/2, 0);
-    left.castShadow = true;
-    left.receiveShadow = true;
-    wardrobeGroup.add(left);
-    
-    // Panel derecho
-    const right = new THREE.Mesh(new THREE.BoxGeometry(thickness, h, d), bodyMat);
-    right.position.set(w/2 - thickness/2, h/2, 0);
-    right.castShadow = true;
-    right.receiveShadow = true;
-    wardrobeGroup.add(right);
-    
-    // Panel trasero
-    const back = new THREE.Mesh(new THREE.BoxGeometry(w, h, thickness), bodyMat);
-    back.position.set(0, h/2, -d/2 + thickness/2);
-    back.castShadow = true;
-    back.receiveShadow = true;
-    wardrobeGroup.add(back);
-    
-    // Puertas (simuladas)
-    const doorLeft = new THREE.Mesh(new THREE.BoxGeometry(w/2 - 0.01, h - 0.02, thickness * 1.5), doorMat);
-    doorLeft.position.set(-w/4, h/2, d/2 + thickness);
-    doorLeft.castShadow = true;
-    wardrobeGroup.add(doorLeft);
-    
-    const doorRight = new THREE.Mesh(new THREE.BoxGeometry(w/2 - 0.01, h - 0.02, thickness * 1.5), doorMat);
-    doorRight.position.set(w/4, h/2, d/2 + thickness);
-    doorRight.castShadow = true;
-    wardrobeGroup.add(doorRight);
+    updateUI();
   }
   
-  // Agregar elemento al escenario
-  function addElementToScene(type, position, size) {
-    let geometry, material, mesh;
-    const id = elementIdCounter++;
+  // Generar módulo completo (estructura + interior)
+  function generateModule() {
+    // Preguntar dimensiones
+    const ancho = parseFloat(prompt("Ancho del módulo (cm):", "80")) / 100;
+    const alto = parseFloat(prompt("Alto del módulo (cm):", "200")) / 100;
+    const fondo = parseFloat(prompt("Fondo del módulo (cm):", "60")) / 100;
     
-    switch(type) {
-      case 'barra':
-        geometry = new THREE.CylinderGeometry(0.012, 0.012, size.width, 12);
-        material = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.85, roughness: 0.15 });
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.z = Math.PI / 2;
-        break;
-      case 'estante':
-        geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
-        material = new THREE.MeshStandardMaterial({ color: colors.body, roughness: 0.7 });
-        mesh = new THREE.Mesh(geometry, material);
-        break;
-      case 'cajon':
-        geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
-        material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.5 });
-        mesh = new THREE.Mesh(geometry, material);
-        // Frente del cajón
-        const front = new THREE.Mesh(new THREE.BoxGeometry(size.width + 0.02, size.height + 0.02, 0.02), 
-          new THREE.MeshStandardMaterial({ color: 0xD4BC98, roughness: 0.4 }));
-        front.position.set(0, 0, size.depth/2 + 0.01);
-        mesh.add(front);
-        break;
-      case 'puerta':
-        geometry = new THREE.BoxGeometry(size.width, size.height, 0.02);
-        material = new THREE.MeshStandardMaterial({ color: colors.doors, roughness: 0.4 });
-        mesh = new THREE.Mesh(geometry, material);
-        break;
-      case 'luz':
-        geometry = new THREE.BoxGeometry(size.width, size.height, size.depth);
-        material = new THREE.MeshStandardMaterial({ color: 0xFFEEAA, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
-        mesh = new THREE.Mesh(geometry, material);
-        break;
-      default:
-        return null;
+    if (isNaN(ancho) || isNaN(alto) || isNaN(fondo)) return;
+    
+    const x = 0;
+    const y = alto / 2;
+    const z = 0;
+    const thickness = 0.018;
+    
+    // Lateral izquierdo
+    addElementWithSize('lateral', { x: -ancho/2 + thickness/2, y: y, z: z }, { w: thickness, h: alto, d: fondo });
+    // Lateral derecho
+    addElementWithSize('lateral', { x: ancho/2 - thickness/2, y: y, z: z }, { w: thickness, h: alto, d: fondo });
+    // Piso
+    addElementWithSize('piso', { x: 0, y: thickness/2, z: 0 }, { w: ancho, h: thickness, d: fondo });
+    // Techo
+    addElementWithSize('techo', { x: 0, y: alto - thickness/2, z: 0 }, { w: ancho, h: thickness, d: fondo });
+    // Espaldar
+    addElementWithSize('espaldar', { x: 0, y: alto/2, z: -fondo/2 + thickness/2 }, { w: ancho, h: alto, d: thickness });
+    
+    // Puerta
+    addElementWithSize('puerta', { x: 0, y: alto/2, z: fondo/2 + 0.01 }, { w: ancho - 0.02, h: alto - 0.02, d: 0.022 });
+    
+    // Tirador
+    addElementWithSize('tirador', { x: ancho/4, y: alto/2, z: fondo/2 + 0.025 }, { w: 0.1, h: 0.02, d: 0.008 });
+    
+    // Estante interior
+    addElementWithSize('estante', { x: 0, y: alto * 0.6, z: 0 }, { w: ancho - thickness*2, h: 0.018, d: fondo - thickness*2 });
+    
+    updateUI();
+  }
+  
+  function addElementWithSize(type, position, size) {
+    const config = elementTypes[type];
+    if (!config) return;
+    
+    const id = nextId++;
+    const color = config.color;
+    
+    let geometry, material, mesh;
+    
+    if (type === 'tirador') {
+      geometry = new THREE.CylinderGeometry(0.008, 0.008, size.w, 8);
+      material = new THREE.MeshStandardMaterial({ color: color, metalness: 0.85 });
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.z = Math.PI / 2;
+    } else if (type === 'luz') {
+      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+      material = new THREE.MeshStandardMaterial({ color: color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      mesh = new THREE.Mesh(geometry, material);
+    } else {
+      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+      mesh = new THREE.Mesh(geometry, material);
     }
     
     mesh.position.set(position.x, position.y, position.z);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
-    mesh.userData = {
-      id: id,
-      type: type,
-      isElement: true,
-      size: { width: size.width, height: size.height, depth: size.depth }
-    };
+    mesh.userData = { id, type, elementType: type };
     
-    wardrobeGroup.add(mesh);
+    elementsGroup.add(mesh);
     
     elements.push({
       id: id,
       type: type,
       mesh: mesh,
       position: { x: position.x, y: position.y, z: position.z },
-      size: { width: size.width, height: size.height, depth: size.depth }
+      size: { width: size.w, height: size.h, depth: size.d }
     });
     
     updateUI();
-    return mesh;
   }
   
-  // Agregar elemento desde UI
-  function addElement(type) {
-    let defaultSize = { width: 0.6, height: 0.05, depth: 0.05 };
-    let defaultPos = { x: 0, y: 1.5, z: 0.15 };
-    
-    switch(type) {
-      case 'barra':
-        defaultSize = { width: 0.8, height: 0.05, depth: 0.05 };
-        defaultPos = { x: 0, y: 1.8, z: 0.15 };
-        break;
-      case 'estante':
-        defaultSize = { width: 0.8, height: 0.02, depth: 0.5 };
-        defaultPos = { x: 0, y: 1.2, z: 0 };
-        break;
-      case 'cajon':
-        defaultSize = { width: 0.5, height: 0.25, depth: 0.45 };
-        defaultPos = { x: 0, y: 0.5, z: 0 };
-        break;
-      case 'puerta':
-        defaultSize = { width: 0.6, height: 1.8, depth: 0.02 };
-        defaultPos = { x: -0.5, y: 1.1, z: 0.32 };
-        break;
-      case 'luz':
-        defaultSize = { width: 0.4, height: 0.03, depth: 0.03 };
-        defaultPos = { x: 0, y: 2.1, z: 0.2 };
-        break;
-    }
-    
-    addElementToScene(type, defaultPos, defaultSize);
-  }
+  // ============================================
+  // SELECCIÓN Y MANIPULACIÓN
+  // ============================================
   
-  // Seleccionar elemento
   function selectElement(element) {
     if (selectedElement === element) return;
     
     selectedElement = element;
+    
     if (element) {
       transformControls.attach(element.mesh);
       document.getElementById('transform-controls').style.display = 'block';
@@ -728,13 +408,10 @@
     updateUI();
   }
   
-  // Actualizar UI desde elemento seleccionado
   function updateUIFromElement() {
     if (!selectedElement) return;
-    
     const pos = selectedElement.mesh.position;
-    const size = selectedElement.userData.size;
-    
+    const size = selectedElement.size;
     document.getElementById('pos-x').value = (pos.x * 100).toFixed(1);
     document.getElementById('pos-y').value = (pos.y * 100).toFixed(1);
     document.getElementById('pos-z').value = (pos.z * 100).toFixed(1);
@@ -743,7 +420,6 @@
     document.getElementById('size-z').value = (size.depth * 100).toFixed(1);
   }
   
-  // Actualizar posición del elemento
   function updateElementPosition() {
     if (!selectedElement) return;
     const x = parseFloat(document.getElementById('pos-x').value) / 100;
@@ -753,127 +429,122 @@
     selectedElement.position = { x, y, z };
   }
   
-  // Actualizar tamaño del elemento
   function updateElementSize() {
     if (!selectedElement) return;
     const w = parseFloat(document.getElementById('size-x').value) / 100;
     const h = parseFloat(document.getElementById('size-y').value) / 100;
     const d = parseFloat(document.getElementById('size-z').value) / 100;
     
-    // Recrear mesh con nuevo tamaño
-    const oldType = selectedElement.type;
     const oldPos = selectedElement.mesh.position.clone();
+    const oldType = selectedElement.type;
+    const oldId = selectedElement.id;
     
-    wardrobeGroup.remove(selectedElement.mesh);
+    const idx = elements.findIndex(e => e.id === oldId);
+    if (idx === -1) return;
     
-    const newMesh = addElementToScene(oldType, oldPos, { width: w, height: h, depth: d });
-    if (newMesh) {
-      const index = elements.findIndex(e => e.id === selectedElement.id);
-      if (index !== -1) {
-        elements[index].mesh = newMesh;
-        elements[index].size = { width: w, height: h, depth: d };
-        selectElement(elements[index]);
-      }
+    elementsGroup.remove(selectedElement.mesh);
+    
+    const config = elementTypes[oldType];
+    let geometry, material, newMesh;
+    
+    if (oldType === 'tirador') {
+      geometry = new THREE.CylinderGeometry(0.008, 0.008, w, 8);
+      material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
+      newMesh = new THREE.Mesh(geometry, material);
+      newMesh.rotation.z = Math.PI / 2;
+    } else if (oldType === 'luz') {
+      geometry = new THREE.BoxGeometry(w, h, d);
+      material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+      newMesh = new THREE.Mesh(geometry, material);
+    } else {
+      geometry = new THREE.BoxGeometry(w, h, d);
+      material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
+      newMesh = new THREE.Mesh(geometry, material);
     }
+    
+    newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
+    newMesh.castShadow = true;
+    newMesh.userData = { id: oldId, type: oldType, elementType: oldType };
+    
+    elementsGroup.add(newMesh);
+    
+    elements[idx] = {
+      id: oldId,
+      type: oldType,
+      mesh: newMesh,
+      position: { x: oldPos.x, y: oldPos.y, z: oldPos.z },
+      size: { width: w, height: h, depth: d }
+    };
+    
+    selectElement(elements[idx]);
+    updateUI();
   }
   
-  // Eliminar elemento seleccionado
-  function deleteSelected() {
+  function deleteSelectedElement() {
     if (!selectedElement) return;
-    
-    const index = elements.findIndex(e => e.id === selectedElement.id);
-    if (index !== -1) {
-      wardrobeGroup.remove(selectedElement.mesh);
-      elements.splice(index, 1);
+    const idx = elements.findIndex(e => e.id === selectedElement.id);
+    if (idx !== -1) {
+      elementsGroup.remove(selectedElement.mesh);
+      elements.splice(idx, 1);
       selectElement(null);
       updateUI();
     }
   }
   
-  // Actualizar dimensiones del armario
-  function updateWardrobeSize() {
-    wardrobeSize.width = parseFloat(document.getElementById('ancho-armario').value) / 100;
-    wardrobeSize.height = parseFloat(document.getElementById('alto-armario').value) / 100;
-    wardrobeSize.depth = parseFloat(document.getElementById('fondo-armario').value) / 100;
-    buildWardrobe();
-    
-    // Reubicar elementos existentes
+  function deleteAllElements() {
     elements.forEach(el => {
-      wardrobeGroup.add(el.mesh);
+      elementsGroup.remove(el.mesh);
     });
+    elements = [];
+    selectElement(null);
     updateUI();
   }
   
-  // Actualizar colores
-  function updateColors() {
-    colors.body = parseInt(document.getElementById('color-cuerpo').value.substring(1), 16);
-    colors.doors = parseInt(document.getElementById('color-puertas').value.substring(1), 16);
-    buildWardrobe();
-    elements.forEach(el => {
-      wardrobeGroup.add(el.mesh);
-    });
-  }
+  // ============================================
+  // UTILIDADES
+  // ============================================
   
-  // Actualizar lista de elementos en UI
   function updateUI() {
-    const listContainer = document.getElementById('element-list');
+    const listContainer = document.getElementById('elements-list');
     listContainer.innerHTML = '';
     
     elements.forEach(el => {
       const div = document.createElement('div');
       div.className = 'element-item' + (selectedElement === el ? ' selected' : '');
-      div.innerHTML = `
-        <div class="element-name">
-          <span>${el.type === 'barra' ? '🎽' : el.type === 'estante' ? '📦' : el.type === 'cajon' ? '🗄️' : el.type === 'puerta' ? '🚪' : '💡'}</span>
-          <span>${el.type.charAt(0).toUpperCase() + el.type.slice(1)} #${el.id}</span>
-        </div>
-        <div class="element-actions">
-          <button onclick="window.selectElementById(${el.id})">✏️</button>
-        </div>
-      `;
+      const config = elementTypes[el.type];
+      const icon = config ? config.icon : '📦';
+      div.innerHTML = `<div class="element-name">${icon} ${config?.nombre || el.type} #${el.id}</div><button class="btn" style="padding: 2px 6px;" onclick="window.selectElementById(${el.id})">✏️</button>`;
+      div.onclick = () => selectElement(el);
       listContainer.appendChild(div);
     });
     
-    // Medidas en tiempo real
-    document.getElementById('med-ancho').innerHTML = (wardrobeSize.width * 100).toFixed(0);
-    document.getElementById('med-alto').innerHTML = (wardrobeSize.height * 100).toFixed(0);
-    document.getElementById('med-fondo').innerHTML = (wardrobeSize.depth * 100).toFixed(0);
-    document.getElementById('med-elementos').innerHTML = elements.length;
+    const puertas = elements.filter(e => e.type === 'puerta').length;
+    const modulos = elements.filter(e => ['estante', 'cajonero', 'zapatero', 'luz'].includes(e.type)).length;
     
-    // Info selección
+    document.getElementById('med-total').innerHTML = elements.length;
+    document.getElementById('med-puertas').innerHTML = puertas;
+    document.getElementById('med-modulos').innerHTML = modulos;
+    
     const infoDiv = document.getElementById('selected-info');
     if (selectedElement) {
-      infoDiv.innerHTML = `<div style="color: #C4A46B; font-size: 12px;">${selectedElement.type.toUpperCase()} #${selectedElement.id}</div>`;
+      const config = elementTypes[selectedElement.type];
+      infoDiv.innerHTML = `<div style="color: #C4A46B;">${config?.nombre || selectedElement.type} #${selectedElement.id}</div>`;
     } else {
-      infoDiv.innerHTML = `<div style="color: #aaa; font-size: 12px;">Ninguno seleccionado</div>`;
+      infoDiv.innerHTML = `<div style="color: #aaa;">Ninguno seleccionado</div>`;
     }
   }
   
-  // Seleccionar por ID (desde UI)
-  window.selectElementById = function(id) {
+  window.selectElementById = (id) => {
     const el = elements.find(e => e.id === id);
     if (el) selectElement(el);
   };
   
-  // Vistas predefinidas
   function setView(view) {
     switch(view) {
-      case 'front':
-        camera.position.set(0, 1.2, 5);
-        controls.target.set(0, 1.2, 0);
-        break;
-      case 'side':
-        camera.position.set(4, 1.2, 0);
-        controls.target.set(0, 1.2, 0);
-        break;
-      case 'top':
-        camera.position.set(0, 5, 0);
-        controls.target.set(0, 1.2, 0);
-        break;
-      case 'iso':
-        camera.position.set(4, 3, 4);
-        controls.target.set(0, 1.2, 0);
-        break;
+      case 'front': camera.position.set(0, 1.2, 5); controls.target.set(0, 1.2, 0); break;
+      case 'side': camera.position.set(4, 1.2, 0); controls.target.set(0, 1.2, 0); break;
+      case 'top': camera.position.set(0, 5, 0); controls.target.set(0, 1.2, 0); break;
+      case 'iso': camera.position.set(4, 2.5, 4); controls.target.set(0, 1.2, 0); break;
     }
     controls.update();
   }
@@ -884,60 +555,47 @@
     controls.update();
   }
   
-  // Exportar a PDF
   function exportPDF() {
-    alert('📄 Generando PDF del diseño...\n\n' + getDesignSummary());
-  }
-  
-  // Enviar por email
-  function sendEmail() {
-    const summary = getDesignSummary();
-    window.location.href = `mailto:miguel_716@hotmail.com?subject=Diseño de armario CR Design&body=${encodeURIComponent(summary)}`;
-    showToast('✉ Abriendo cliente de correo...');
-  }
-  
-  function getDesignSummary() {
-    let summary = `🔷 DISEÑO DE ARMARIO - CR DESIGN 🔷\n\n`;
-    summary += `📏 MEDIDAS:\n`;
-    summary += `• Ancho: ${(wardrobeSize.width * 100).toFixed(0)} cm\n`;
-    summary += `• Alto: ${(wardrobeSize.height * 100).toFixed(0)} cm\n`;
-    summary += `• Fondo: ${(wardrobeSize.depth * 100).toFixed(0)} cm\n\n`;
+    let summary = `🔷 DISEÑO DE MUEBLE - CR DESIGN 🔷\n\n`;
     summary += `📦 ELEMENTOS (${elements.length}):\n`;
-    elements.forEach(el => {
-      summary += `• ${el.type}: posición (${(el.position.x*100).toFixed(0)}, ${(el.position.y*100).toFixed(0)}) cm\n`;
+    elements.forEach(e => {
+      const config = elementTypes[e.type];
+      summary += `• ${config?.nombre || e.type} #${e.id}: posición (${(e.position.x*100).toFixed(0)}, ${(e.position.y*100).toFixed(0)}, ${(e.position.z*100).toFixed(0)}) cm | tamaño: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
     });
-    return summary;
+    alert('📄 Resumen del diseño:\n\n' + summary);
   }
   
-  function showToast(msg) {
-    // Implementación simple
-    alert(msg);
+  function sendEmail() {
+    let summary = `Diseño de mueble CR Design\n\nElementos: ${elements.length}\n\n`;
+    elements.forEach(e => {
+      const config = elementTypes[e.type];
+      summary += `${config?.nombre || e.type}: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
+    });
+    window.location.href = `mailto:miguel_716@hotmail.com?subject=Diseño de mueble&body=${encodeURIComponent(summary)}`;
+    alert('✉ Abriendo correo...');
   }
   
-  // Exponer funciones globales
-  window.addElement = addElement;
-  window.updateWardrobeSize = updateWardrobeSize;
-  window.updateColors = updateColors;
-  window.updateElementPosition = updateElementPosition;
-  window.updateElementSize = updateElementSize;
-  window.deleteSelected = deleteSelected;
-  window.setView = setView;
-  window.resetView = resetView;
-  window.exportPDF = exportPDF;
-  window.sendEmail = sendEmail;
-  
-  // Animación
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
   }
   
-  // Iniciar
+  // Exponer funciones globales
+  window.addElement = addElement;
+  window.generateModule = generateModule;
+  window.updateElementPosition = updateElementPosition;
+  window.updateElementSize = updateElementSize;
+  window.deleteSelectedElement = deleteSelectedElement;
+  window.deleteAllElements = deleteAllElements;
+  window.setView = setView;
+  window.resetView = resetView;
+  window.exportPDF = exportPDF;
+  window.sendEmail = sendEmail;
+  
   init();
   animate();
   
-  // Resize
   window.addEventListener('resize', () => {
     const container = document.getElementById('canvas-container');
     const width = container.clientWidth;
