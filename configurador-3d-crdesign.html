@@ -2,877 +2,337 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Configurador 3D — CR Design Muebles</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --acc:#C4A46B;--acc-d:#9E7E48;--dark:#1E1C18;--bg:#16140F;
+  --panel:#1A1814;--panel2:#242018;--border:#2A2620;
+  --muted:#6B685F;--cream:#F7F4EE;--green:#25D366;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--cream);overflow:hidden}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #13110E;
-    color: #E8E0D0;
-    overflow: hidden;
-    height: 100vh;
-  }
+/* ── HEADER ── */
+header{height:50px;background:#100E0A;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0}
+.logo{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);text-decoration:none}
+.logo span{color:var(--acc)}
+.hbtns{display:flex;gap:6px}
+.hb{padding:6px 11px;font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;border-radius:2px;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.hb-g{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.hb-g:hover{color:var(--acc);border-color:var(--acc)}
+.hb-w{background:var(--green);color:#fff}
+.hb-a{background:var(--acc);color:var(--dark);font-weight:500}
+.hb-a:hover{background:var(--acc-d);color:var(--cream)}
 
-  header {
-    height: 50px;
-    background: #0D0B08;
-    border-bottom: 1px solid #252018;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 14px;
-    flex-shrink: 0;
-  }
+/* ── DESKTOP LAYOUT ── */
+.layout{display:flex;height:calc(100vh - 50px)}
+.lpanel{width:240px;background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.viewport{flex:1;position:relative;overflow:hidden;min-width:0}
+.rpanel{width:200px;background:var(--panel);border-left:1px solid var(--border);overflow-y:auto;flex-shrink:0}
 
-  .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    color: #E8E0D0;
-    text-decoration: none;
-  }
+/* ── MOBILE LAYOUT ── */
+@media(max-width:700px){
+  html,body{overflow:hidden}
+  .layout{flex-direction:column;height:calc(100vh - 50px)}
+  .lpanel{width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border);flex-shrink:0;overflow-y:visible}
+  .viewport{flex:1;min-height:220px}
+  .rpanel{display:none}
+  .hb-g{display:none}
+  header{padding:0 10px}
+  .logo{font-size:13px}
+}
 
-  .logo em {
-    color: #C4A46B;
-    font-style: normal;
-  }
+/* ── SCROLLBARS ── */
+.lpanel::-webkit-scrollbar,.rpanel::-webkit-scrollbar{width:3px}
+.lpanel::-webkit-scrollbar-thumb,.rpanel::-webkit-scrollbar-thumb{background:#3A3630;border-radius:2px}
 
-  .hbtns {
-    display: flex;
-    gap: 6px;
-  }
+/* ── TABS ── */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:#100E0A}
+.tab{flex:1;padding:9px 4px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:var(--acc);border-bottom-color:var(--acc)}
+.pane{display:none;padding:12px}
+.pane.active{display:block}
 
-  .hb {
-    padding: 5px 12px;
-    font-size: 10px;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all .15s;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-  }
+/* Mobile: horizontal scroll tabs content */
+@media(max-width:700px){
+  .pane{padding:10px}
+  .pane.active{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px}
+  .pane.active::-webkit-scrollbar{height:2px}
+  .pane.active::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+  .sec{flex-shrink:0;min-width:160px;margin-bottom:0}
+  .sec:last-child{padding-right:10px}
+}
 
-  .hbg {
-    background: transparent;
-    color: #5A5650;
-    border: 1px solid #252018;
-  }
+/* ── SECTIONS ── */
+.sec{margin-bottom:16px}
+.shd{font-size:9px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:#3A3630;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--border)}
 
-  .hbg:hover {
-    border-color: #C4A46B;
-    color: #C4A46B;
-  }
+/* ── DIM INPUTS ── */
+.dim-row{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.dim-row label{font-size:10px;color:var(--muted);min-width:46px}
+.diw{flex:1;position:relative}
+.di{width:100%;padding:6px 26px 6px 8px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--panel2);border:1px solid #3A3630;border-radius:3px;color:var(--cream);outline:none}
+.di:focus{border-color:var(--acc)}
+.du{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#4A4740;pointer-events:none}
+.dn{font-size:9px;color:#3A3630;margin-top:-4px;margin-bottom:7px;padding-left:53px}
 
-  .hbw {
-    background: #25D366;
-    color: #fff;
-  }
+/* ── COLUMNS ── */
+.col-list{display:flex;flex-direction:column;gap:4px;margin-bottom:7px}
+.ci{background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:7px 8px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:border-color .15s}
+.ci:hover,.ci.sel{border-color:var(--acc);background:rgba(196,164,107,0.07)}
+.ci.drag-over{border-style:dashed;border-color:var(--acc)}
+.cdot2{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.clbl{font-size:10px;color:var(--cream);flex:1;min-width:0}
+.cwi{width:46px;padding:3px 4px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--panel);border:1px solid #3A3630;border-radius:2px;color:var(--acc);outline:none;text-align:center}
+.cwi:focus{border-color:var(--acc)}
+.cu{font-size:8px;color:var(--muted)}
+.cdel{width:17px;height:17px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:#4A3030;font-size:13px;cursor:pointer;border-radius:2px;line-height:1;transition:all .15s;flex-shrink:0}
+.cdel:hover{background:#3A1A1A;color:#E74C3C}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px;border:1px dashed #3A3630;border-radius:3px;font-size:10px;color:var(--muted);cursor:pointer;transition:all .15s;background:transparent;width:100%;font-family:'DM Sans',sans-serif}
+.add-btn:hover{border-color:var(--acc);color:var(--acc)}
 
-  .hbw:hover {
-    background: #1ebe5d;
-  }
+/* ── MODULES ── */
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.mc{background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:7px 5px;cursor:pointer;transition:all .15s;text-align:center}
+.mc:hover{border-color:var(--acc)}
+.mc.on{border-color:var(--acc);background:rgba(196,164,107,0.1)}
+.mi{font-size:16px;margin-bottom:2px}
+.mn{font-size:8px;color:var(--muted);line-height:1.3}
+.mc.on .mn{color:var(--acc)}
 
-  .hba {
-    background: #C4A46B;
-    color: #1A1510;
-    font-weight: 500;
-  }
+/* ── COLORS ── */
+.cgrid{display:flex;flex-wrap:wrap;gap:5px}
+.sw{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;outline:2px solid transparent;outline-offset:2px;transition:all .15s;flex-shrink:0}
+.sw:hover{transform:scale(1.1)}
+.sw.active{outline-color:var(--acc)}
+.swl{font-size:9px;color:var(--muted);margin-top:4px}
 
-  .layout {
-    display: flex;
-    height: calc(100vh - 50px);
-  }
+/* ── FINISH BTNs ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.fb{padding:6px 4px;font-size:9px;font-family:'DM Sans',sans-serif;border:1px solid var(--border);border-radius:3px;background:var(--panel2);color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
+.fb:hover{border-color:var(--acc);color:var(--cream)}
+.fb.active{background:rgba(196,164,107,0.12);color:var(--acc);border-color:var(--acc)}
 
-  .lp {
-    width: 260px;
-    background: #181510;
-    border-right: 1px solid #252018;
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 12px;
-  }
+/* ── VIEWPORT ── */
+#c3{display:block;width:100%;height:100%}
+.vctrl{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:3px;background:rgba(16,14,10,0.9);border:1px solid var(--border);border-radius:4px;padding:3px}
+.vc{padding:4px 9px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.07em;text-transform:uppercase;background:transparent;color:var(--muted);border:none;border-radius:2px;cursor:pointer;transition:all .15s}
+.vc:hover{color:var(--cream)}
+.vc.active{background:rgba(196,164,107,0.18);color:var(--acc)}
+.wm{position:absolute;top:10px;left:10px;font-family:'Playfair Display',serif;font-size:10px;color:rgba(255,255,255,0.1);pointer-events:none;letter-spacing:0.06em}
+.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,0.15);letter-spacing:0.08em;text-transform:uppercase;pointer-events:none;white-space:nowrap}
+.selbox{position:absolute;top:8px;right:8px;background:rgba(16,14,10,0.92);border:1px solid var(--acc);border-radius:3px;padding:8px 11px;font-size:9px;display:none;min-width:130px}
+.selbox.show{display:block}
+.sbt{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--acc);margin-bottom:5px}
+.sbr{display:flex;justify-content:space-between;gap:12px;color:var(--muted);margin-bottom:2px}
+.sbr span{color:var(--cream);font-weight:500}
 
-  .rp {
-    width: 200px;
-    background: #181510;
-    border-left: 1px solid #252018;
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 12px;
-  }
+/* Mobile: bottom action bar */
+.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:#100E0A;border-top:1px solid var(--border);padding:8px 12px;gap:6px;z-index:50}
+@media(max-width:700px){
+  .mob-bar{display:flex}
+  .hint{display:none}
+}
+.mb-wa{flex:1;padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;background:var(--green);color:#fff;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.mb-em{flex:1;padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;background:var(--acc);color:var(--dark);border:none;border-radius:3px;cursor:pointer}
 
-  .vp {
-    flex: 1;
-    position: relative;
-    background: #13110E;
-    overflow: hidden;
-  }
+/* ── RIGHT PANEL ── */
+.rpanel{padding:12px}
+.sblock{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:10px;margin-bottom:11px}
+.stitle{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+.sr{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);font-size:10px}
+.sr:last-child{border-bottom:none}
+.sk{color:var(--muted)}.sv{font-weight:500;color:var(--cream)}
+.csums{margin-bottom:11px}
+.csi{display:flex;align-items:center;gap:4px;padding:4px 6px;background:#100E0A;border:1px solid var(--border);border-radius:3px;margin-bottom:3px;font-size:9px;cursor:pointer;transition:border-color .15s}
+.csi:hover,.csi.active{border-color:var(--acc)}
+.csidot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.csin{flex:1;color:var(--muted)}.csiw{color:var(--cream);font-weight:500}
+.ctag{font-size:7px;padding:1px 4px;background:#2A2620;border-radius:2px;color:var(--muted)}
+.ctas{display:flex;flex-direction:column;gap:5px}
+.bwa{padding:10px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--green);color:#fff;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.bwa:hover{background:#1ebe5d}
+.bem{padding:9px;font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--acc);color:var(--dark);border:none;border-radius:3px;cursor:pointer}
+.bem:hover{background:var(--acc-d);color:var(--cream)}
+.bwb{padding:8px;font-size:9px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:3px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .15s}
+.bwb:hover{border-color:var(--muted);color:var(--cream)}
 
-  #canvas3d {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .sh {
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: #302820;
-    margin-bottom: 9px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #252018;
-  }
-
-  .sec {
-    margin-bottom: 16px;
-  }
-
-  .dr {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 7px;
-  }
-
-  .dr label {
-    font-size: 11px;
-    color: #6B6050;
-    min-width: 50px;
-  }
-
-  .diw {
-    flex: 1;
-    position: relative;
-  }
-
-  .di {
-    width: 100%;
-    padding: 5px 26px 5px 8px;
-    font-size: 12px;
-    background: #201C14;
-    border: 1px solid #302820;
-    border-radius: 2px;
-    color: #E8E0D0;
-    outline: none;
-  }
-
-  .di:focus {
-    border-color: #C4A46B;
-  }
-
-  .du {
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 9px;
-    color: #3A3628;
-  }
-
-  .clist {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 7px;
-  }
-
-  .ci {
-    background: #201C14;
-    border: 1px solid #252018;
-    border-radius: 2px;
-    padding: 6px 8px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-  }
-
-  .ci.sel {
-    border-color: #C4A46B;
-    background: rgba(196, 164, 107, 0.07);
-  }
-
-  .clb {
-    font-size: 11px;
-    color: #E8E0D0;
-    flex: 1;
-  }
-
-  .cwi {
-    width: 46px;
-    padding: 2px 4px;
-    font-size: 11px;
-    background: #181510;
-    border: 1px solid #302820;
-    border-radius: 2px;
-    color: #C4A46B;
-    text-align: center;
-  }
-
-  .cdel {
-    width: 17px;
-    height: 17px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    color: #3A2828;
-    font-size: 13px;
-    cursor: pointer;
-    border: none;
-  }
-
-  .cdel:hover {
-    color: #E74C3C;
-  }
-
-  .addbtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 6px;
-    border: 1px dashed #302820;
-    border-radius: 2px;
-    font-size: 10px;
-    color: #3A3628;
-    cursor: pointer;
-    background: transparent;
-    width: 100%;
-  }
-
-  .addbtn:hover {
-    border-color: #C4A46B;
-    color: #C4A46B;
-  }
-
-  .mel-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
-    margin-bottom: 6px;
-  }
-
-  .mel {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 3px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    outline: 2px solid transparent;
-  }
-
-  .mel.on {
-    outline-color: #C4A46B;
-  }
-
-  .vctrl {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 5px;
-    background: rgba(13, 11, 8, 0.9);
-    border: 1px solid #252018;
-    border-radius: 3px;
-    padding: 5px;
-    z-index: 10;
-  }
-
-  .vc {
-    padding: 5px 12px;
-    font-size: 9px;
-    background: transparent;
-    color: #5A5650;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-  }
-
-  .vc:hover {
-    color: #E8E0D0;
-  }
-
-  .vc.on {
-    background: rgba(196, 164, 107, 0.18);
-    color: #C4A46B;
-  }
-
-  .hint {
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 8px;
-    color: rgba(255, 255, 255, 0.15);
-    pointer-events: none;
-    white-space: nowrap;
-    z-index: 10;
-  }
-
-  .sblk {
-    background: #0D0B08;
-    border: 1px solid #252018;
-    border-radius: 2px;
-    padding: 10px;
-    margin-bottom: 11px;
-  }
-
-  .stit {
-    font-size: 8px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #C4A46B;
-    margin-bottom: 8px;
-  }
-
-  .sr2 {
-    display: flex;
-    justify-content: space-between;
-    padding: 3px 0;
-    font-size: 10px;
-  }
-
-  .sk {
-    color: #6B6050;
-  }
-
-  .sv {
-    font-weight: 500;
-    color: #E8E0D0;
-  }
-
-  .ctas {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .bwa2 {
-    padding: 10px;
-    font-size: 10px;
-    font-weight: 500;
-    text-transform: uppercase;
-    background: #25D366;
-    color: #fff;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-  }
-
-  .bem2 {
-    padding: 9px;
-    font-size: 10px;
-    font-weight: 500;
-    text-transform: uppercase;
-    background: #C4A46B;
-    color: #1A1510;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-  }
-
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: #0D0B08;
-    border: 1px solid #C4A46B;
-    color: #E8E0D0;
-    padding: 9px 17px;
-    border-radius: 2px;
-    font-size: 11px;
-    opacity: 0;
-    transition: all .3s;
-    pointer-events: none;
-    z-index: 999;
-  }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center;padding:12px}
+.overlay.open{display:flex}
+.modal{background:#1E1C18;border:1px solid #3A3630;width:100%;max-width:360px;border-radius:4px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,0.7)}
+.mhd{background:#100E0A;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.mhd h2{font-family:'Playfair Display',serif;font-size:15px;color:var(--cream);font-weight:400}
+.mc2{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+.mc2:hover{color:var(--cream)}
+.mbdy{padding:16px}
+.mcfg{background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:8px;font-size:9px;color:var(--muted);margin-bottom:12px;line-height:1.8;white-space:pre-wrap;max-height:90px;overflow-y:auto}
+.fld{margin-bottom:9px}
+.fld label{display:block;font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.fld input,.fld textarea{width:100%;padding:7px 9px;font-size:13px;font-family:'DM Sans',sans-serif;background:#100E0A;border:1px solid var(--border);border-radius:3px;color:var(--cream);outline:none;transition:border-color .15s}
+.fld input:focus,.fld textarea:focus{border-color:var(--acc)}
+.fld textarea{resize:none}
+.mact{display:flex;gap:6px;margin-top:4px}
+.mact button{flex:1;padding:10px;font-size:11px;font-family:'DM Sans',sans-serif;border-radius:3px;cursor:pointer;font-weight:500}
+.mbc{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.mbs{background:var(--acc);color:var(--dark);border:none}
+.mbs:hover{background:var(--acc-d);color:var(--cream)}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(10px);background:#100E0A;border:1px solid var(--acc);color:var(--cream);padding:9px 16px;border-radius:3px;font-size:11px;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(min-width:701px){.toast{bottom:22px}}
 </style>
 </head>
 <body>
 
 <header>
-  <a class="logo" href="index.html">CR <em>Design</em> Muebles</a>
+  <a class="logo" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">CR <span>Design</span> Muebles</a>
   <div class="hbtns">
-    <a class="hb hbg" href="index.html">← Volver</a>
-    <button class="hb hbw" id="whatsappBtn">WhatsApp</button>
-    <button class="hb hba" id="citaBtn">✉ Cita</button>
+    <a class="hb hb-g" href="https://crdesignmuebles.github.io/crmueblesydecoracion/" target="_blank">← Web</a>
+    <button class="hb hb-w" onclick="openWA()">WhatsApp</button>
+    <button class="hb hb-a" onclick="openModal()">✉ Cita</button>
   </div>
 </header>
 
 <div class="layout">
 
-  <div class="lp">
-    <div class="sec">
-      <div class="sh">Dimensiones</div>
-      <div class="dr"><label>Alto</label><div class="diw"><input class="di" type="number" id="altoInput" value="220" min="150" max="300"><span class="du">cm</span></div></div>
-      <div class="dr"><label>Fondo</label><div class="diw"><input class="di" type="number" id="fondoInput" value="60" min="30" max="80"><span class="du">cm</span></div></div>
-      <div class="dr"><label>Ancho</label><div class="diw"><input class="di" type="text" id="anchoDisplay" readonly><span class="du">cm</span></div></div>
+  <!-- LEFT PANEL -->
+  <div class="lpanel">
+    <div class="tab-bar">
+      <div class="tab active" onclick="switchTab('dims',this)">Medidas</div>
+      <div class="tab" onclick="switchTab('cols',this)">Columnas</div>
+      <div class="tab" onclick="switchTab('mats',this)">Material</div>
     </div>
 
-    <div class="sec">
-      <div class="sh">Columnas</div>
-      <div class="clist" id="colList"></div>
-      <button class="addbtn" id="addColBtn">+ Añadir columna</button>
+    <!-- MEDIDAS -->
+    <div class="pane active" id="pane-dims">
+      <div class="sec">
+        <div class="shd">Dimensiones</div>
+        <div class="dim-row"><label>Alto</label><div class="diw"><input class="di" type="number" id="inH" value="220" min="150" max="300"><span class="du">cm</span></div></div>
+        <div class="dn">150–300 cm</div>
+        <div class="dim-row"><label>Fondo</label><div class="diw"><input class="di" type="number" id="inD" value="60" min="30" max="80"><span class="du">cm</span></div></div>
+        <div class="dn">30–80 cm</div>
+        <div class="dim-row"><label>Ancho</label><div class="diw"><input class="di" type="number" id="inW" value="200" readonly style="color:var(--muted)"><span class="du">cm</span></div></div>
+        <div class="dn">Suma de columnas</div>
+      </div>
+      <div class="sec">
+        <div class="shd">Tipo de puerta</div>
+        <div class="fgrid" id="dtypes">
+          <button class="fb active" data-v="correderas">Correderas</button>
+          <button class="fb" data-v="abatibles">Abatibles</button>
+          <button class="fb" data-v="sin">Sin puerta</button>
+          <button class="fb" data-v="mixto">Mixto</button>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="shd">Acabado de puerta</div>
+        <div class="fgrid" id="dfinish">
+          <button class="fb active" data-v="liso">Liso</button>
+          <button class="fb" data-v="espejo">Espejo</button>
+          <button class="fb" data-v="cristal">Cristal</button>
+          <button class="fb" data-v="madera">Madera</button>
+        </div>
+      </div>
     </div>
 
-    <div class="sec">
-      <div class="sh">Color</div>
-      <div class="mel-grid" id="colorGrid"></div>
+    <!-- COLUMNAS -->
+    <div class="pane" id="pane-cols">
+      <div class="sec">
+        <div class="shd">Columnas</div>
+        <div class="col-list" id="colList"></div>
+        <button class="add-btn" onclick="addCol()">+ Añadir columna</button>
+      </div>
+      <div class="sec">
+        <div class="shd">Módulos — <span id="colSelHint" style="color:var(--acc);font-style:normal">Col A</span></div>
+        <div class="mod-grid" id="modGrid">
+          <div class="mc on" data-mod="barra" onclick="toggleMod('barra')"><div class="mi">🎽</div><div class="mn">Barra colgador</div></div>
+          <div class="mc" data-mod="cajones" onclick="toggleMod('cajones')"><div class="mi">🗂</div><div class="mn">Cajones x3</div></div>
+          <div class="mc on" data-mod="estantes" onclick="toggleMod('estantes')"><div class="mi">📦</div><div class="mn">Estantes</div></div>
+          <div class="mc" data-mod="zapatero" onclick="toggleMod('zapatero')"><div class="mi">👟</div><div class="mn">Zapatero</div></div>
+          <div class="mc" data-mod="luz" onclick="toggleMod('luz')"><div class="mi">💡</div><div class="mn">LED interior</div></div>
+          <div class="mc" data-mod="espejo_int" onclick="toggleMod('espejo_int')"><div class="mi">🪞</div><div class="mn">Espejo int.</div></div>
+          <div class="mc" data-mod="joyero" onclick="toggleMod('joyero')"><div class="mi">💍</div><div class="mn">Joyero</div></div>
+          <div class="mc" data-mod="pantalonero" onclick="toggleMod('pantalonero')"><div class="mi">👖</div><div class="mn">Pantalonero</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATERIAL -->
+    <div class="pane" id="pane-mats">
+      <div class="sec">
+        <div class="shd">Color cuerpo</div>
+        <div class="cgrid" id="cpicker">
+          <div class="sw active" data-c="#F5F0E8" data-n="Blanco roble" style="background:#F5F0E8;border:1px solid #ccc"></div>
+          <div class="sw" data-c="#E8D8C4" data-n="Roble natural" style="background:#E8D8C4"></div>
+          <div class="sw" data-c="#C4A882" data-n="Nogal" style="background:#C4A882"></div>
+          <div class="sw" data-c="#8B7355" data-n="Wengué" style="background:#8B7355"></div>
+          <div class="sw" data-c="#4A4A4A" data-n="Grafito" style="background:#4A4A4A"></div>
+          <div class="sw" data-c="#F0F0F0" data-n="Blanco mate" style="background:#F0F0F0;border:1px solid #ddd"></div>
+          <div class="sw" data-c="#1E1C18" data-n="Negro" style="background:#1E1C18"></div>
+          <div class="sw" data-c="#6B8E6B" data-n="Verde salvia" style="background:#6B8E6B"></div>
+          <div class="sw" data-c="#8B6B8B" data-n="Lavanda" style="background:#8B6B8B"></div>
+          <div class="sw" data-c="#5B7A8B" data-n="Azul pizarra" style="background:#5B7A8B"></div>
+        </div>
+        <div class="swl" id="clbl">Blanco roble</div>
+      </div>
+      <div class="sec">
+        <div class="shd">Color interior</div>
+        <div class="cgrid" id="ipicker">
+          <div class="sw active" data-c="#EDE8DE" data-n="Natural" style="background:#EDE8DE;border:1px solid #ccc"></div>
+          <div class="sw" data-c="#F5F0E8" data-n="Blanco" style="background:#F5F0E8;border:1px solid #ddd"></div>
+          <div class="sw" data-c="#2A2622" data-n="Oscuro" style="background:#2A2622"></div>
+          <div class="sw" data-c="#D8C8A8" data-n="Miel" style="background:#D8C8A8"></div>
+        </div>
+        <div class="swl" id="ilbl">Natural</div>
+      </div>
+      <div class="sec">
+        <div class="shd">Tiradores</div>
+        <div class="fgrid" id="handles">
+          <button class="fb active" data-v="barra_oro">Dorado</button>
+          <button class="fb" data-v="barra_plata">Plateado</button>
+          <button class="fb" data-v="boton">Botón negro</button>
+          <button class="fb" data-v="sin_tirador">Sin tirador</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="vp">
-    <canvas id="canvas3d"></canvas>
+  <!-- VIEWPORT -->
+  <div class="viewport" id="vp">
+    <canvas id="c3"></canvas>
+    <div class="wm">CR Design</div>
     <div class="vctrl">
-      <button class="vc" data-view="front">Frontal</button>
-      <button class="vc on" data-view="corner">Esquina</button>
-      <button class="vc" data-view="top">Planta</button>
+      <button class="vc" onclick="setView('front',this)">Frontal</button>
+      <button class="vc active" onclick="setView('corner',this)">Esquina</button>
+      <button class="vc" onclick="setView('inside',this)">Interior</button>
+      <button class="vc" onclick="setView('top',this)">Planta</button>
     </div>
-    <div class="hint">🖱️ Arrastra para rotar | Rueda para zoom</div>
+    <div class="selbox" id="selbox">
+      <div class="sbt">Columna seleccionada</div>
+      <div class="sbr">Nombre: <span id="siN">—</span></div>
+      <div class="sbr">Ancho: <span id="siW">—</span></div>
+      <div class="sbr">Módulos: <span id="siM">—</span></div>
+    </div>
+    <div class="hint">Arrastra · Scroll zoom · Toca columna para seleccionar</div>
   </div>
 
-  <div class="rp">
-    <div class="sblk">
-      <div class="stit">Resumen</div>
-      <div class="sr2"><span class="sk">Ancho</span><span class="sv" id="resAncho">200 cm</span></div>
-      <div class="sr2"><span class="sk">Alto</span><span class="sv" id="resAlto">220 cm</span></div>
-      <div class="sr2"><span class="sk">Fondo</span><span class="sv" id="resFondo">60 cm</span></div>
-      <div class="sr2"><span class="sk">Columnas</span><span class="sv" id="resCols">3</span></div>
+  <!-- RIGHT PANEL (desktop only) -->
+  <div class="rpanel">
+    <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#3A3630;margin-bottom:8px">Resumen</div>
+    <div class="sblock">
+      <div class="stitle">Dimensiones</div>
+      <div class="sr"><span class="sk">Ancho</span><span class="sv" id="rW">200 cm</span></div>
+      <div class="sr"><span class="sk">Alto</span><span class="sv" id="rH">220 cm</span></div>
+      <div class="sr"><span class="sk">Fondo</span><span class="sv" id="rD">60 cm</span></div>
+      <div class="sr"><span class="sk">Puertas</span><span class="sv" id="rDoor">Correderas</span></div>
+      <div class="sr"><span class="sk">Acabado</span><span class="sv" id="rFin">Liso</span></div>
+      <div class="sr"><span class="sk">Color</span><span class="sv" id="rCol">Blanco roble</span></div>
+      <div class="sr"><span class="sk">Columnas</span><span class="sv" id="rCols">3</span></div>
     </div>
+    <div style="font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:#3A3630;margin-bottom:6px">Columnas</div>
+    <div class="csums" id="csums"></div>
     <div class="ctas">
-      <button class="bwa2" id="whatsappBtn2">📱 WhatsApp</button>
-      <button class="bem2" id="citaBtn2">✉ Solicitar cita</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast">✓ Abriendo WhatsApp...</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-  // ============================================
-  // CONFIGURADOR 3D - COMPLETO Y FUNCIONAL
-  // ============================================
-
-  // Estado
-  let estado = {
-    alto: 2.2,
-    fondo: 0.6,
-    color: 0xF4F1EB,
-    columnas: [
-      { id: 1, ancho: 0.65, nombre: 'Col A' },
-      { id: 2, ancho: 0.70, nombre: 'Col B' },
-      { id: 3, ancho: 0.65, nombre: 'Col C' }
-    ],
-    seleccion: 0
-  };
-
-  let nextId = 4;
-  let scene, camera, renderer, muebleGroup;
-  let rotating = false;
-  let lastX = 0, lastY = 0;
-  let rotX = 0.3, rotY = 0.5;
-  let distance = 3.5;
-  let hitboxes = [];
-
-  // Colores disponibles
-  const colores = [
-    { nombre: 'Blanco Ártico', hex: 0xF4F1EB },
-    { nombre: 'Roble Nórdico', hex: 0xD4BC98 },
-    { nombre: 'Roble Natural', hex: 0xC8A87A },
-    { nombre: 'Nogal', hex: 0xA8845C },
-    { nombre: 'Wengué', hex: 0x3C2A1A },
-    { nombre: 'Ébano', hex: 0x1C1410 },
-    { nombre: 'Gris', hex: 0x9A9890 },
-    { nombre: 'Verde', hex: 0x7A9878 }
-  ];
-
-  function anchoTotal() {
-    return estado.columnas.reduce((s, c) => s + c.ancho, 0);
-  }
-
-  function init3D() {
-    const canvas = document.getElementById('canvas3d');
-    const container = canvas.parentElement;
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x13110E);
-    scene.fog = new THREE.Fog(0x13110E, 8, 20);
-
-    camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
-    camera.position.set(2.5, 1.5, 3.5);
-
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.shadowMap.enabled = true;
-
-    // Luces
-    const ambient = new THREE.AmbientLight(0x404040, 0.6);
-    scene.add(ambient);
-    
-    const mainLight = new THREE.DirectionalLight(0xFFF5E0, 1);
-    mainLight.position.set(3, 5, 2);
-    mainLight.castShadow = true;
-    scene.add(mainLight);
-    
-    const fillLight = new THREE.DirectionalLight(0x88AACC, 0.4);
-    fillLight.position.set(-2, 2, 3);
-    scene.add(fillLight);
-    
-    const backLight = new THREE.PointLight(0xFFAA66, 0.3);
-    backLight.position.set(0, 1.5, -1.5);
-    scene.add(backLight);
-
-    // Suelo
-    const grid = new THREE.GridHelper(8, 20, 0x3A3628, 0x252018);
-    grid.position.y = -0.01;
-    scene.add(grid);
-
-    muebleGroup = new THREE.Group();
-    scene.add(muebleGroup);
-
-    // Controles
-    canvas.addEventListener('mousedown', (e) => {
-      rotating = true;
-      lastX = e.clientX;
-      lastY = e.clientY;
-    });
-
-    window.addEventListener('mouseup', () => {
-      rotating = false;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!rotating) return;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      rotY += dx * 0.008;
-      rotX += dy * 0.008;
-      rotX = Math.max(0.1, Math.min(1.2, rotX));
-      lastX = e.clientX;
-      lastY = e.clientY;
-      updateCamera();
-    });
-
-    canvas.addEventListener('wheel', (e) => {
-      distance += e.deltaY * 0.005;
-      distance = Math.max(1.2, Math.min(6, distance));
-      updateCamera();
-    });
-
-    // Click para seleccionar
-    canvas.addEventListener('click', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const mouse = new THREE.Vector2();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(hitboxes);
-
-      if (intersects.length > 0) {
-        const idx = intersects[0].object.userData.idx;
-        if (idx !== undefined) {
-          estado.seleccion = idx;
-          buildFurniture();
-          updateUI();
-        }
-      }
-    });
-
-    window.addEventListener('resize', onResize);
-    
-    buildFurniture();
-    updateCamera();
-    animate();
-  }
-
-  function updateCamera() {
-    const x = Math.sin(rotY) * distance * Math.cos(rotX);
-    const z = Math.cos(rotY) * distance * Math.cos(rotX);
-    const y = Math.sin(rotX) * distance + estado.alto / 2;
-    camera.position.set(x, y, z);
-    camera.lookAt(0, estado.alto / 2, 0);
-  }
-
-  function onResize() {
-    const container = document.getElementById('canvas3d').parentElement;
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    renderer.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
-
-  function buildFurniture() {
-    while (muebleGroup.children.length > 0) {
-      muebleGroup.remove(muebleGroup.children[0]);
-    }
-    hitboxes = [];
-
-    const totalW = anchoTotal();
-    const alto = estado.alto;
-    const fondo = estado.fondo;
-    const thick = 0.018;
-    const material = new THREE.MeshStandardMaterial({ color: estado.color, roughness: 0.6 });
-
-    // Panel trasero
-    const back = new THREE.Mesh(new THREE.BoxGeometry(totalW, alto, thick), material);
-    back.position.set(0, alto / 2, -fondo / 2 + thick / 2);
-    back.castShadow = true;
-    muebleGroup.add(back);
-
-    // Techo y piso
-    const top = new THREE.Mesh(new THREE.BoxGeometry(totalW, thick, fondo), material);
-    top.position.set(0, alto - thick / 2, 0);
-    top.castShadow = true;
-    muebleGroup.add(top);
-
-    const bottom = new THREE.Mesh(new THREE.BoxGeometry(totalW, thick, fondo), material);
-    bottom.position.set(0, thick / 2, 0);
-    bottom.castShadow = true;
-    muebleGroup.add(bottom);
-
-    // Laterales
-    const left = new THREE.Mesh(new THREE.BoxGeometry(thick, alto, fondo), material);
-    left.position.set(-totalW / 2 + thick / 2, alto / 2, 0);
-    left.castShadow = true;
-    muebleGroup.add(left);
-
-    const right = new THREE.Mesh(new THREE.BoxGeometry(thick, alto, fondo), material);
-    right.position.set(totalW / 2 - thick / 2, alto / 2, 0);
-    right.castShadow = true;
-    muebleGroup.add(right);
-
-    // Columnas
-    let xPos = -totalW / 2 + thick;
-    estado.columnas.forEach((col, idx) => {
-      const colW = col.ancho;
-      const centerX = xPos + colW / 2;
-
-      // Divider
-      if (idx < estado.columnas.length - 1) {
-        const divider = new THREE.Mesh(new THREE.BoxGeometry(thick, alto - thick * 2, fondo - thick * 2), material);
-        divider.position.set(xPos + colW, alto / 2, 0);
-        divider.castShadow = true;
-        muebleGroup.add(divider);
-      }
-
-      // Hitbox
-      const hitbox = new THREE.Mesh(
-        new THREE.BoxGeometry(colW - thick, alto - thick * 2, fondo - thick * 2),
-        new THREE.MeshBasicMaterial({ visible: false })
-      );
-      hitbox.position.set(centerX, alto / 2, 0);
-      hitbox.userData = { idx: idx };
-      muebleGroup.add(hitbox);
-      hitboxes.push(hitbox);
-
-      // Selección highlight
-      if (idx === estado.seleccion) {
-        const highlight = new THREE.Mesh(
-          new THREE.BoxGeometry(colW - thick, alto - thick * 2, fondo - thick * 2),
-          new THREE.MeshBasicMaterial({ color: 0xC4A46B, wireframe: true, transparent: true, opacity: 0.3 })
-        );
-        highlight.position.set(centerX, alto / 2, 0);
-        muebleGroup.add(highlight);
-      }
-
-      // Estantes
-      const shelfMat = new THREE.MeshStandardMaterial({ color: estado.color, roughness: 0.7 });
-      for (let i = 1; i <= 2; i++) {
-        const shelf = new THREE.Mesh(new THREE.BoxGeometry(colW - thick * 2, 0.015, fondo - thick * 2), shelfMat);
-        shelf.position.set(centerX, i * (alto / 3), 0);
-        shelf.castShadow = true;
-        muebleGroup.add(shelf);
-      }
-
-      xPos += colW;
-    });
-  }
-
-  function updateUI() {
-    const totalCm = (anchoTotal() * 100).toFixed(0);
-    document.getElementById('anchoDisplay').value = totalCm;
-    document.getElementById('resAncho').textContent = totalCm + ' cm';
-    document.getElementById('resAlto').textContent = estado.alto * 100 + ' cm';
-    document.getElementById('resFondo').textContent = estado.fondo * 100 + ' cm';
-    document.getElementById('resCols').textContent = estado.columnas.length;
-
-    // Lista de columnas
-    const container = document.getElementById('colList');
-    container.innerHTML = '';
-    estado.columnas.forEach((col, i) => {
-      const div = document.createElement('div');
-      div.className = 'ci' + (i === estado.seleccion ? ' sel' : '');
-      div.innerHTML = `
-        <span class="clb">${col.nombre}</span>
-        <input class="cwi" type="number" value="${(col.ancho * 100).toFixed(0)}" min="30" max="250" step="5">
-        ${estado.columnas.length > 1 ? '<button class="cdel">×</button>' : ''}
-      `;
-      
-      const input = div.querySelector('.cwi');
-      input.addEventListener('change', (e) => {
-        let val = parseFloat(e.target.value);
-        if (val < 30) val = 30;
-        if (val > 250) val = 250;
-        estado.columnas[i].ancho = val / 100;
-        e.target.value = val;
-        buildFurniture();
-        updateUI();
-      });
-
-      const delBtn = div.querySelector('.cdel');
-      if (delBtn) {
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (estado.columnas.length > 1) {
-            estado.columnas.splice(i, 1);
-            if (estado.seleccion >= estado.columnas.length) {
-              estado.seleccion = estado.columnas.length - 1;
-            }
-            buildFurniture();
-            updateUI();
-          }
-        });
-      }
-
-      div.addEventListener('click', () => {
-        estado.seleccion = i;
-        buildFurniture();
-        updateUI();
-      });
-
-      container.appendChild(div);
-    });
-
-    // Colores
-    const colorContainer = document.getElementById('colorGrid');
-    if (colorContainer.children.length === 0) {
-      colores.forEach((c) => {
-        const div = document.createElement('div');
-        div.className = 'mel' + (c.hex === estado.color ? ' on' : '');
-        div.style.backgroundColor = '#' + c.hex.toString(16).padStart(6, '0');
-        div.style.border = '1px solid rgba(255,255,255,0.1)';
-        div.onclick = () => {
-          document.querySelectorAll('#colorGrid .mel').forEach(el => el.classList.remove('on'));
-          div.classList.add('on');
-          estado.color = c.hex;
-          buildFurniture();
-        };
-        colorContainer.appendChild(div);
-      });
-    }
-  }
-
-  function setView(view) {
-    switch(view) {
-      case 'front':
-        rotY = 0;
-        rotX = 0.1;
-        distance = 3;
-        break;
-      case 'corner':
-        rotY = 0.65;
-        rotX = 0.25;
-        distance = 3.5;
-        break;
-      case 'top':
-        rotY = 0.1;
-        rotX = 1.2;
-        distance = 3;
-        break;
-    }
-    updateCamera();
-  }
-
-  function animate() {
-    requestAnimationFrame(animate);
-    if (renderer && scene && camera) {
-      renderer.render(scene, camera);
-    }
-  }
-
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-  }
-
-  function cotizar() {
-    const totalCm = (anchoTotal() * 100).toFixed(0);
-    const msg = `Hola CR Design Muebles! Me interesa este armario:\n\n📐 Dimensiones:\n- Ancho: ${totalCm} cm\n- Alto: ${estado.alto * 100} cm\n- Fondo: ${estado.fondo * 100} cm\n\n📦 Columnas: ${estado.columnas.length}\n\n¿Podrían darme información y presupuesto?`;
-    window.open(`https://wa.me/573146309609?text=${encodeURIComponent(msg)}`, '_blank');
-    showToast('✓ Abriendo WhatsApp...');
-  }
-
-  // Eventos
-  document.getElementById('altoInput').addEventListener('change', (e) => {
-    estado.alto = parseInt(e.target.value) / 100;
-    buildFurniture();
-    updateUI();
-    updateCamera();
-  });
-
-  document.getElementById('fondoInput').addEventListener('change', (e) => {
-    estado.fondo = parseInt(e.target.value) / 100;
-    buildFurniture();
-    updateUI();
-  });
-
-  document.getElementById('addColBtn').addEventListener('click', () => {
-    const letras = ['D', 'E', 'F', 'G', 'H'];
-    estado.columnas.push({
-      id: nextId++,
-      ancho: 0.60,
-      nombre: `Col ${letras[estado.columnas.length % letras.length]}`
-    });
-    buildFurniture();
-    updateUI();
-  });
-
-  document.querySelectorAll('.vc').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.vc').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      setView(btn.dataset.view);
-    });
-  });
-
-  document.getElementById('whatsappBtn').addEventListener('click', cotizar);
-  document.getElementById('whatsappBtn2').addEventListener('click', cotizar);
-  document.getElementById('citaBtn').addEventListener('click', cotizar);
-  document.getElementById('citaBtn2').addEventListener('click', cotizar);
-
-  // Iniciar
-  init3D();
-</script>
-</body>
-</html>
+      <button class="bwa" onclick="openWA()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 
