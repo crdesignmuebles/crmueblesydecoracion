@@ -52,6 +52,7 @@
   @media (max-width: 900px) { .sidebar-left, .sidebar-right { display: none; } #canvas-container { left: 0; right: 0; } .float-buttons { right: 20px; } }
   
   .grosor-info { background: #2a2a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #C4A46B; text-align: center; }
+  .status-info { background: #1e3a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #8bc34a; text-align: center; }
 </style>
 </head>
 <body>
@@ -80,7 +81,7 @@
   
   <div class="toolbar-group">
     <span style="color:#aaa; font-size:10px; margin-right:5px;">INTERIORES:</span>
-    <button class="btn" onclick="addElement('estante')">📦 Estante</button>
+    <button class="btn btn-primary" onclick="addEstanteInteligente()">📦 Estante (inteligente)</button>
     <button class="btn" onclick="addElement('cajonero')">🗄️ Cajonero</button>
     <button class="btn" onclick="addElement('zapatero')">👟 Zapatero</button>
     <button class="btn" onclick="addElement('luz')">💡 Luz LED</button>
@@ -100,6 +101,9 @@
 <div class="sidebar-left">
   <div class="grosor-info">
     📏 Material: Aglomerado de 15mm (1.5 cm) - Todas las piezas estructurales tienen este grosor
+  </div>
+  <div class="status-info" id="status-info">
+    💡 Selecciona un módulo o haz clic en "Estante inteligente"
   </div>
   
   <div class="section">
@@ -179,7 +183,6 @@
   let nextId = 1;
   let moduloCount = 0;  // Contador de módulos generados
   let lastModuleX = 0;  // Última posición X donde se creó un módulo
-  let moduleSpacing = 0; // Espaciado entre módulos
   
   // Configuración de tipos de elementos con GROSOR estándar de 15mm
   const elementTypes = {
@@ -313,6 +316,102 @@
   }
   
   // ============================================
+  // FUNCIÓN INTELIGENTE PARA ESTANTES
+  // ============================================
+  
+  function findModuleForElement() {
+    // Si hay un elemento seleccionado, buscar el módulo al que pertenece
+    if (selectedElement) {
+      const selectedPos = selectedElement.mesh.position;
+      // Buscar laterales cercanos
+      const laterales = elements.filter(e => e.type === 'lateral');
+      for (let lat of laterales) {
+        const distancia = Math.abs(lat.position.x - selectedPos.x);
+        if (distancia < 0.5) {
+          // Encontrar el par de laterales del mismo módulo
+          const centroX = lat.position.x;
+          const lateralDerecho = laterales.find(l => Math.abs(l.position.x - (centroX + GROSOR + 0.01)) < 0.1);
+          if (lateralDerecho) {
+            const anchoInterior = Math.abs(lateralDerecho.position.x - centroX) - GROSOR;
+            return { 
+              x: (centroX + lateralDerecho.position.x) / 2,
+              ancho: anchoInterior,
+              alto: elements.find(e => e.type === 'techo')?.position.y || 2.2,
+              pisoY: elements.find(e => e.type === 'piso')?.position.y || 0
+            };
+          }
+        }
+      }
+    }
+    
+    // Buscar el primer módulo completo (con dos laterales)
+    const laterales = elements.filter(e => e.type === 'lateral');
+    if (laterales.length >= 2) {
+      // Ordenar laterales por posición X
+      laterales.sort((a, b) => a.position.x - b.position.x);
+      for (let i = 0; i < laterales.length - 1; i++) {
+        const latIzq = laterales[i];
+        const latDer = laterales[i + 1];
+        // Verificar que son del mismo módulo (distancia razonable)
+        const distancia = latDer.position.x - latIzq.position.x;
+        if (distancia > 0.3 && distancia < 1.5) {
+          const anchoInterior = distancia - GROSOR;
+          return { 
+            x: (latIzq.position.x + latDer.position.x) / 2,
+            ancho: anchoInterior,
+            alto: elements.find(e => e.type === 'techo')?.position.y || 2.2,
+            pisoY: elements.find(e => e.type === 'piso')?.position.y || 0
+          };
+        }
+      }
+    }
+    
+    return null;
+  }
+  
+  function addEstanteInteligente() {
+    const modulo = findModuleForElement();
+    
+    if (!modulo) {
+      alert("❌ No se encontró ningún módulo.\n\nPrimero crea un módulo con 'GENERAR MÓDULO' o añade laterales izquierdo y derecho.");
+      return;
+    }
+    
+    // Preguntar altura para el estante (en cm desde el piso)
+    let alturaCm = parseFloat(prompt("Altura del estante desde el piso (cm):", "120"));
+    if (isNaN(alturaCm)) return;
+    
+    const altura = alturaCm / 100;
+    const anchoEstante = modulo.ancho;
+    const fondo = 0.5; // Fondo estándar del estante
+    
+    const id = nextId++;
+    const geometry = new THREE.BoxGeometry(anchoEstante, GROSOR, fondo);
+    const material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.6 });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(modulo.x, altura, 0);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData = { id, type: 'estante', elementType: 'estante' };
+    
+    elementsGroup.add(mesh);
+    
+    elements.push({
+      id: id,
+      type: 'estante',
+      mesh: mesh,
+      position: { x: modulo.x, y: altura, z: 0 },
+      size: { width: anchoEstante, height: GROSOR, depth: fondo }
+    });
+    
+    updateUI();
+    document.getElementById('status-info').innerHTML = `✅ Estante creado a ${alturaCm} cm de altura | Ancho: ${(anchoEstante*100).toFixed(0)} cm`;
+    setTimeout(() => {
+      document.getElementById('status-info').innerHTML = `💡 Estante creado correctamente. Puedes seleccionarlo y ajustarlo.`;
+    }, 3000);
+  }
+  
+  // ============================================
   // CREAR ELEMENTOS
   // ============================================
   
@@ -358,9 +457,8 @@
     updateUI();
   }
   
-  // Generar módulo completo en posición automática (uno al lado del otro)
+  // Generar módulo completo en posición automática
   function generateModule() {
-    // Preguntar dimensiones
     let ancho = parseFloat(prompt("Ancho del módulo (cm):", "80"));
     let alto = parseFloat(prompt("Alto del módulo (cm):", "200"));
     let fondo = parseFloat(prompt("Fondo del módulo (cm):", "60"));
@@ -371,25 +469,19 @@
     alto = alto / 100;
     fondo = fondo / 100;
     
-    // Calcular posición X para el nuevo módulo (uno al lado del otro)
+    // Calcular posición X
     let nuevaX;
     if (moduloCount === 0) {
       nuevaX = 0;
-      moduleSpacing = ancho;
     } else {
-      // Buscar el módulo más a la derecha para colocar el nuevo a su lado
       let maxX = -Infinity;
       elements.forEach(el => {
-        if (el.type === 'lateral' || el.type === 'piso' || el.type === 'techo') {
+        if (el.type === 'lateral') {
           const rightEdge = el.position.x + el.size.width/2;
           if (rightEdge > maxX) maxX = rightEdge;
         }
       });
-      if (maxX > -Infinity) {
-        nuevaX = maxX + ancho/2;
-      } else {
-        nuevaX = lastModuleX + ancho;
-      }
+      nuevaX = maxX + ancho/2;
     }
     
     const y = alto / 2;
@@ -405,23 +497,19 @@
     addElementWithSize('techo', { x: nuevaX, y: alto - GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
     // Espaldar
     addElementWithSize('espaldar', { x: nuevaX, y: alto/2, z: -fondo/2 + GROSOR/2 }, { w: ancho, h: alto, d: GROSOR });
-    
     // Puerta
     addElementWithSize('puerta', { x: nuevaX, y: alto/2, z: fondo/2 + 0.01 }, { w: ancho - 0.02, h: alto - 0.02, d: GROSOR });
-    
-    // Tirador (a la derecha)
+    // Tirador
     addElementWithSize('tirador', { x: nuevaX + ancho/4, y: alto/2, z: fondo/2 + 0.025 }, { w: 0.1, h: 0.02, d: 0.008 });
-    
-    // Estante interior (a mitad de altura)
-    addElementWithSize('estante', { x: nuevaX, y: alto * 0.6, z: 0 }, { w: ancho - GROSOR*2, h: GROSOR, d: fondo - GROSOR*2 });
     
     moduloCount++;
     lastModuleX = nuevaX;
     
     updateUI();
-    
-    // Mostrar confirmación
-    alert(`✅ Módulo #${moduloCount} creado\nDimensiones: ${ancho*100} x ${alto*100} x ${fondo*100} cm\nPosición X: ${(nuevaX*100).toFixed(0)} cm`);
+    document.getElementById('status-info').innerHTML = `✅ Módulo #${moduloCount} creado: ${ancho*100} x ${alto*100} x ${fondo*100} cm`;
+    setTimeout(() => {
+      document.getElementById('status-info').innerHTML = `💡 Usa "Estante (inteligente)" para añadir estantes automáticos dentro de este módulo`;
+    }, 4000);
   }
   
   function addElementWithSize(type, position, size) {
@@ -578,6 +666,7 @@
     lastModuleX = 0;
     selectElement(null);
     updateUI();
+    document.getElementById('status-info').innerHTML = `💡 Espacio limpio. Crea un módulo con "GENERAR MÓDULO"`;
   }
   
   // ============================================
@@ -665,6 +754,7 @@
   
   // Exponer funciones globales
   window.addElement = addElement;
+  window.addEstanteInteligente = addEstanteInteligente;
   window.generateModule = generateModule;
   window.updateElementPosition = updateElementPosition;
   window.updateElementSize = updateElementSize;
