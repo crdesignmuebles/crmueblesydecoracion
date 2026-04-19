@@ -573,4 +573,87 @@ const app = (function() {
         document.getElementById('med-total').innerHTML = elements.length;
         document.getElementById('med-puertas').innerHTML = puertas;
         document.getElementById('med-modulos').innerHTML = modulos;
-        document.getElementById('med-modulos
+        document.getElementById('med-modulos-generados').innerHTML = moduloCount;
+        
+        const infoDiv = document.getElementById('selected-info');
+        if (selectedElement) {
+            const config = elementTypes[selectedElement.type];
+            infoDiv.innerHTML = `<div style="color: #C4A46B;">${config?.nombre || selectedElement.type} #${selectedElement.id}</div>`;
+        } else {
+            infoDiv.innerHTML = `<div style="color: #aaa;">Ninguno seleccionado</div>`;
+        }
+    }
+    
+    function selectElementById(id) {
+        const el = elements.find(e => e.id === id);
+        if (el) selectElement(el);
+    }
+    
+    function setView(view) {
+        switch(view) {
+            case 'front': camera.position.set(0, 1.2, 5); controls.target.set(0, 1.2, 0); break;
+            case 'side': camera.position.set(4, 1.2, 0); controls.target.set(0, 1.2, 0); break;
+            case 'top': camera.position.set(0, 5, 0); controls.target.set(0, 1.2, 0); break;
+            case 'iso': camera.position.set(4, 2.5, 4); controls.target.set(0, 1.2, 0); break;
+        }
+        controls.update();
+    }
+    
+    function resetView() {
+        camera.position.set(4, 2.5, 4);
+        controls.target.set(0, 1.2, 0);
+        controls.update();
+    }
+    
+    function exportPDF() {
+        let summary = `🔷 DISEÑO CR DESIGN 🔷\n`;
+        summary += `📏 Material: Aglomerado 15mm\n\nElementos: ${elements.length}\n`;
+        elements.forEach(e => {
+            const config = elementTypes[e.type];
+            summary += `• ${config?.nombre || e.type}: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
+        });
+        alert('📄 ' + summary);
+    }
+    
+    function sendEmail() {
+        let summary = `Diseño CR Design - Aglomerado 15mm\n\nElementos: ${elements.length}\n`;
+        elements.forEach(e => {
+            const config = elementTypes[e.type];
+            summary += `${config?.nombre || e.type}: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
+        });
+        window.location.href = `mailto:miguel_716@hotmail.com?subject=Diseño CR Design&body=${encodeURIComponent(summary)}`;
+        alert('✉ Abriendo correo...');
+    }
+    
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+    
+    // Cargar Three.js extras
+    async function loadThreeExtras() {
+        const module = await import('three');
+        const OrbitControlsModule = await import('three/addons/controls/OrbitControls.js');
+        const TransformControlsModule = await import('three/addons/controls/TransformControls.js');
+        
+        THREE.OrbitControls = OrbitControlsModule.OrbitControls;
+        THREE.TransformControls = TransformControlsModule.TransformControls;
+        
+        window.THREE = THREE;
+        init();
+    }
+    
+    loadThreeExtras();
+    
+    return {
+        addElement, generateModule, updateElementPosition, updateElementSize,
+        deleteSelectedElement, deleteAllElements, selectElementById,
+        setView, resetView, exportPDF, sendEmail
+    };
+})();
+
+window.app = app;
+</script>
+</body>
+</html>
