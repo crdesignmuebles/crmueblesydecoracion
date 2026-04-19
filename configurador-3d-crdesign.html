@@ -26,7 +26,7 @@ header{background:var(--dark);padding:0 32px;display:flex;align-items:center;jus
 .hero h1{font-family:'Playfair Display',serif;font-size:30px;font-weight:400;color:var(--cream);line-height:1.2;margin-bottom:8px}
 .hero p{font-size:13px;color:#6B685F;font-weight:300}
  
-.app{display:grid;grid-template-columns:270px 1fr 260px;height:calc(100vh - 120px);min-height:580px}
+.app{display:grid;grid-template-columns:270px 1fr 260px;height:calc(100vh - 120px);min-height:580px;position:relative}
  
 /* LEFT PANEL */
 .lpanel{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:20px 16px}
@@ -59,8 +59,8 @@ header{background:var(--dark);padding:0 32px;display:flex;align-items:center;jus
 .mod.active{background:var(--dark);color:var(--cream);border-color:var(--dark)}
  
 /* CENTER 3D */
-.canvas3d{background:#1A1814;position:relative;overflow:hidden}
-#three-canvas{display:block;width:100%;height:100%}
+.canvas3d{background:#1A1814;position:relative;overflow:hidden;min-height:580px}
+#three-canvas{display:block;width:100% !important;height:100% !important;position:absolute;top:0;left:0}
 .view-hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;text-transform:uppercase;pointer-events:none}
 .view-btns{position:absolute;top:14px;right:14px;display:flex;gap:6px}
 .vbtn{padding:5px 10px;font-size:10px;font-family:'DM Sans',sans-serif;letter-spacing:0.06em;text-transform:uppercase;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.12);border-radius:2px;cursor:pointer;transition:all .15s}
@@ -176,9 +176,9 @@ footer a{color:var(--accent);text-decoration:none}
   </div>
  
   <!-- CENTRO 3D -->
-  <div class="canvas3d">
+  <div class="canvas3d" id="canvas3d">
     <div class="brand3d">CR Design</div>
-    <canvas id="three-canvas"></canvas>
+    <canvas id="three-canvas" width="800" height="600"></canvas>
     <div class="view-btns">
       <button class="vbtn active" id="vFront" onclick="setView('front')">Frontal</button>
       <button class="vbtn" id="vCorner" onclick="setView('corner')">Esquina</button>
@@ -273,7 +273,6 @@ let S = {
  
 // ─── THREE.JS SETUP ──────────────────────────────────────
 const canvas = document.getElementById('three-canvas');
-const container = canvas.parentElement;
  
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -491,8 +490,8 @@ function buildWardrobe() {
   // ── ZÓCALO ──
   wardrobeGroup.add(makeBox(W + 0.02, 0.08, D + 0.02, isDark ? '#181510' : '#D0C8B8', 0, 0.04, 0));
  
-  // Centrar verticalmente
-  wardrobeGroup.position.y = -H/2;
+  // Centrar verticalmente — base en el suelo
+  wardrobeGroup.position.y = 0;
 }
  
 // ─── CAMERA VIEWS ────────────────────────────────────────
@@ -503,12 +502,14 @@ function setView(v) {
   document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
   document.getElementById('v'+v.charAt(0).toUpperCase()+v.slice(1)).classList.add('active');
   const H = HV[S.hi];
+  const W = WV[S.wi];
+  const far = Math.max(H, W) * 2.6 + 2.0;
   if (v === 'front') {
-    targetCam = { x:0, y:H*0.45, z:H*2.2, lx:0, ly:H*0.45, lz:0 };
+    targetCam = { x:0, y:H*0.5, z:far, lx:0, ly:H*0.5, lz:0 };
   } else if (v === 'corner') {
-    targetCam = { x:WV[S.wi]*0.9, y:H*0.55, z:H*1.6, lx:0, ly:H*0.4, lz:0 };
+    targetCam = { x:far*0.55, y:H*0.6, z:far*0.85, lx:0, ly:H*0.45, lz:0 };
   } else if (v === 'inside') {
-    targetCam = { x:0, y:H*0.55, z:H*0.5, lx:0, ly:H*0.45, lz:-1 };
+    targetCam = { x:0, y:H*0.55, z:H*0.6, lx:0, ly:H*0.45, lz:-1 };
   }
   animateCamera = true;
 }
@@ -548,7 +549,9 @@ canvas.addEventListener('touchmove', e => {
  
 // ─── RESIZE ──────────────────────────────────────────────
 function resize() {
-  const w = container.clientWidth, h = container.clientHeight;
+  const cont = document.getElementById('canvas3d');
+  const w = cont.offsetWidth || 800;
+  const h = cont.offsetHeight || 580;
   renderer.setSize(w, h);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
@@ -562,14 +565,14 @@ function animate() {
   requestAnimationFrame(animate);
   const H = HV[S.hi];
   const W = WV[S.wi];
-  const lookAt = new THREE.Vector3(0, H * 0.45, 0);
-  const radius = Math.max(H, W) * 1.6 + 1.2;
+  const lookAt = new THREE.Vector3(0, H * 0.5, 0);
+  const radius = Math.max(H, W) * 2.6 + 2.0;
  
   if (autoRotate) {
     autoAngle += 0.003;
     camera.position.x = Math.sin(autoAngle) * radius;
     camera.position.z = Math.cos(autoAngle) * radius;
-    camera.position.y = H * 0.55;
+    camera.position.y = H * 0.65;
   } else if (animateCamera) {
     camera.position.x += (targetCam.x - camera.position.x) * 0.08;
     camera.position.y += (targetCam.y - camera.position.y) * 0.08;
@@ -579,7 +582,7 @@ function animate() {
   } else {
     camera.position.x = Math.sin(rotY) * radius * Math.cos(rotX);
     camera.position.z = Math.cos(rotY) * radius * Math.cos(rotX);
-    camera.position.y = H * 0.5 + radius * Math.sin(rotX);
+    camera.position.y = H * 0.55 + radius * Math.sin(rotX);
   }
  
   camera.lookAt(lookAt);
@@ -703,9 +706,13 @@ ${name}`
 }
  
 // ─── INIT ────────────────────────────────────────────────
-buildWardrobe();
-syncUI();
-setTimeout(() => { autoRotate = false; setView('corner'); }, 1200);
+window.addEventListener('load', () => {
+  resize();
+  buildWardrobe();
+  syncUI();
+  setTimeout(() => { autoRotate = false; setView('corner'); }, 1200);
+ 
+});
 </script>
 </body>
 </html>
