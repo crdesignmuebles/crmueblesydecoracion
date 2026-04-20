@@ -78,6 +78,8 @@
   .loading { display: none; text-align: center; margin-top: 15px; color: #C4A46B; font-size: 12px; }
   .required { color: #C4A46B; }
   .campo-opcional { font-size: 10px; color: #666; margin-left: 5px; }
+  
+  .preview-img { max-width: 100%; margin: 10px 0; border-radius: 5px; display: none; }
 </style>
 </head>
 <body>
@@ -110,7 +112,7 @@
   <div class="separator"></div>
   <div class="toolbar-group">
     <button class="btn btn-danger" onclick="deleteAllElements()">🗑 Limpiar</button>
-    <button class="btn btn-primary" onclick="showSendModal()">✉ ENVIAR</button>
+    <button class="btn btn-primary" onclick="showSendModal()">✉ ENVIAR DISEÑO</button>
     <button class="btn" onclick="resetView()">🎥 Reset</button>
   </div>
 </div>
@@ -185,7 +187,7 @@
     <textarea id="clientRequirement" rows="2" placeholder="Ej: Armario empotrado, cocina, closet..."></textarea>
     <label>Comentarios <span class="campo-opcional">(opcional)</span></label>
     <textarea id="clientNotes" rows="3" placeholder="Colores, materiales, fecha deseada..."></textarea>
-    <div class="loading" id="loadingSpinner">📤 Enviando diseño...</div>
+    <div class="loading" id="loadingSpinner">📤 Capturando diseño y enviando...</div>
     <div class="modal-buttons">
       <button class="btn-cancelar" onclick="closeSendModal()">Cancelar</button>
       <button class="btn-enviar" onclick="sendDesignToEmail()">Enviar diseño</button>
@@ -495,54 +497,111 @@
     
     document.getElementById('loadingSpinner').style.display = 'block';
     
-    let listaPiezas = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 LISTA DE PIEZAS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-    const piezasPorTipo = {};
-    elements.forEach(el => {
-      const nombrePieza = elementTypes[el.type]?.nombre || el.type;
-      if (!piezasPorTipo[nombrePieza]) piezasPorTipo[nombrePieza] = [];
-      piezasPorTipo[nombrePieza].push(el);
-    });
-    for (const [nombrePieza, piezas] of Object.entries(piezasPorTipo)) {
-      listaPiezas += `🔹 ${nombrePieza} (${piezas.length} uds)\n`;
-      piezas.forEach((el, i) => {
-        listaPiezas += `   └─ #${i+1}: ${(el.size.width*100).toFixed(0)}x${(el.size.height*100).toFixed(0)}x${(el.size.depth*100).toFixed(0)} cm\n`;
-      });
-      listaPiezas += `\n`;
-    }
+    // Capturar imagen del diseño 3D
+    // Ajustar cámara para mejor vista antes de capturar
+    const originalPos = camera.position.clone();
+    const originalTarget = controls.target.clone();
     
-    const datosCliente = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 DATOS DEL CLIENTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nNombre: ${nombre}\nTeléfono: ${telefono}\nEmail: ${email || "No"}\nDirección: ${direccion || "No"}\n\n📋 Requiere: ${requerimiento || "No especificado"}\n\n💬 Comentarios: ${notas || "Ninguno"}`;
+    // Posición isométrica para la captura
+    camera.position.set(3, 2, 4);
+    controls.target.set(0, 1.2, 0);
+    controls.update();
     
-    const cuerpoCompleto = listaPiezas + "\n" + datosCliente;
-    
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://formsubmit.co/miguel_716@hotmail.com';
-    form.style.display = 'none';
-    
-    const campos = [
-      { name: 'name', value: nombre },
-      { name: 'email', value: email || 'cliente@sinemail.com' },
-      { name: '_subject', value: `NUEVO DISEÑO - ${nombre}` },
-      { name: 'message', value: cuerpoCompleto },
-      { name: '_captcha', value: 'false' },
-      { name: '_template', value: 'table' }
-    ];
-    campos.forEach(c => { const i = document.createElement('input'); i.type = 'hidden'; i.name = c.name; i.value = c.value; form.appendChild(i); });
-    
-    document.body.appendChild(form);
-    form.submit();
-    
+    // Esperar un frame para que la cámara se actualice
     setTimeout(() => {
-      document.getElementById('loadingSpinner').style.display = 'none';
-      closeSendModal();
-      alert("✅ Diseño enviado a CR Design. Pronto recibirás respuesta.");
-      document.getElementById('clientName').value = '';
-      document.getElementById('clientPhone').value = '';
-      document.getElementById('clientEmail').value = '';
-      document.getElementById('clientAddress').value = '';
-      document.getElementById('clientRequirement').value = '';
-      document.getElementById('clientNotes').value = '';
-    }, 2000);
+      // Capturar canvas como imagen
+      const canvas = renderer.domElement;
+      const imageData = canvas.toDataURL('image/png');
+      
+      // Generar lista de piezas
+      let listaPiezas = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 LISTA DE PIEZAS DEL MUEBLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+      const piezasPorTipo = {};
+      elements.forEach(el => {
+        const nombrePieza = elementTypes[el.type]?.nombre || el.type;
+        if (!piezasPorTipo[nombrePieza]) piezasPorTipo[nombrePieza] = [];
+        piezasPorTipo[nombrePieza].push(el);
+      });
+      for (const [nombrePieza, piezas] of Object.entries(piezasPorTipo)) {
+        listaPiezas += `🔹 ${nombrePieza} (${piezas.length} unidades)\n`;
+        piezas.forEach((el, i) => {
+          listaPiezas += `   └─ Pieza #${i+1}: ${(el.size.width*100).toFixed(0)} x ${(el.size.height*100).toFixed(0)} x ${(el.size.depth*100).toFixed(0)} cm\n`;
+          listaPiezas += `      📍 Posición: X=${(el.position.x*100).toFixed(0)} cm, Y=${(el.position.y*100).toFixed(0)} cm\n`;
+        });
+        listaPiezas += `\n`;
+      }
+      
+      listaPiezas += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 RESUMEN FINAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      listaPiezas += `Total de piezas: ${elements.length}\n`;
+      listaPiezas += `Módulos generados: ${moduloCount}\n`;
+      listaPiezas += `Material estándar: Aglomerado de 15mm\n\n`;
+      
+      const datosCliente = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 DATOS DEL CLIENTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nNombre completo: ${nombre}\nTeléfono móvil: ${telefono}\nCorreo electrónico: ${email || "No especificado"}\nDirección: ${direccion || "No especificada"}\n\n📋 REQUERIMIENTO:\n${requerimiento || "No especificado"}\n\n💬 COMENTARIOS ADICIONALES:\n${notas || "Sin comentarios adicionales"}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📸 CAPTURA DEL DISEÑO 3D\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n[La imagen del diseño se adjunta a este correo]`;
+      
+      const cuerpoCompleto = listaPiezas + "\n" + datosCliente;
+      
+      // Crear formulario con la imagen incrustada
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://formsubmit.co/miguel_716@hotmail.com';
+      form.style.display = 'none';
+      form.enctype = 'multipart/form-data';
+      
+      const campos = [
+        { name: 'name', value: nombre },
+        { name: 'email', value: email || 'cliente@sinemail.com' },
+        { name: '_subject', value: `🎨 NUEVO DISEÑO 3D - ${nombre}` },
+        { name: 'message', value: cuerpoCompleto },
+        { name: '_captcha', value: 'false' },
+        { name: '_template', value: 'table' },
+        { name: '_replyto', value: email || '' }
+      ];
+      
+      campos.forEach(c => { const i = document.createElement('input'); i.type = 'hidden'; i.name = c.name; i.value = c.value; form.appendChild(i); });
+      
+      // Agregar la imagen como archivo adjunto (convertir base64 a blob)
+      fetch(imageData)
+        .then(res => res.blob())
+        .then(blob => {
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.name = 'attachment';
+          const file = new File([blob], `diseno_${nombre.replace(/\s/g, '_')}.png`, { type: 'image/png' });
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInput.files = dataTransfer.files;
+          form.appendChild(fileInput);
+          
+          document.body.appendChild(form);
+          form.submit();
+          
+          // Restaurar cámara
+          camera.position.copy(originalPos);
+          controls.target.copy(originalTarget);
+          controls.update();
+          
+          setTimeout(() => {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            closeSendModal();
+            alert("✅ Diseño enviado correctamente a CR Design.\n\nIncluye la captura 3D y la lista de piezas.\n\nEn breve recibirás respuesta con tu presupuesto.");
+            
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientAddress').value = '';
+            document.getElementById('clientRequirement').value = '';
+            document.getElementById('clientNotes').value = '';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error("Error al capturar imagen:", err);
+          alert("❌ Error al capturar la imagen. Intenta de nuevo.");
+          document.getElementById('loadingSpinner').style.display = 'none';
+          // Restaurar cámara
+          camera.position.copy(originalPos);
+          controls.target.copy(originalTarget);
+          controls.update();
+        });
+    }, 100);
   }
 
   function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
