@@ -154,6 +154,7 @@
       <div>Elementos: <span id="med-total">0</span></div>
       <div>Puertas: <span id="med-puertas">0</span></div>
       <div>Módulos: <span id="med-modulos-generados">0</span></div>
+      <div>Ancho total: <span id="ancho-total">0</span> cm</div>
     </div>
   </div>
 </div>
@@ -229,7 +230,9 @@
   let selectedElement = null;
   let nextId = 1;
   let moduloCount = 0;
-  let modulos = []; // Almacenar información de cada módulo creado
+  
+  // Variable para controlar la posición X del próximo módulo
+  let nextModuleX = 0;
   
   // Historial
   let history = [];
@@ -294,8 +297,26 @@
       elements.push({ ...saved, mesh });
       if (saved.id >= nextId) nextId = saved.id + 1;
     });
+    // Recalcular nextModuleX basado en los módulos existentes
+    recalcularNextModuleX();
     updateUI();
     if (selectedElement) selectElement(null);
+  }
+
+  function recalcularNextModuleX() {
+    // Buscar el lateral más a la derecha para determinar la posición del próximo módulo
+    let maxX = -Infinity;
+    elements.forEach(el => {
+      if (el.type === 'lateral') {
+        const rightEdge = el.position.x + el.size.width/2;
+        if (rightEdge > maxX) maxX = rightEdge;
+      }
+    });
+    if (maxX > -Infinity) {
+      nextModuleX = maxX;
+    } else {
+      nextModuleX = 0;
+    }
   }
 
   function updateVisitorCount() {
@@ -322,7 +343,7 @@
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
     camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
-    camera.position.set(4, 1.8, 4);
+    camera.position.set(5, 2.5, 5);
     renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(width, height);
     renderer.shadowMap.enabled = true;
@@ -342,7 +363,7 @@
     backLight.position.set(-2, 2, 3);
     scene.add(backLight);
     
-    const gridHelper = new THREE.GridHelper(10, 20, 0x555555, 0x333333);
+    const gridHelper = new THREE.GridHelper(15, 30, 0x555555, 0x333333);
     gridHelper.position.y = -0.02;
     scene.add(gridHelper);
     
@@ -390,15 +411,12 @@
     saveToHistory();
   }
 
-  // Encontrar módulo donde está el elemento seleccionado o el más cercano
   function findModuloInfo() {
-    // Buscar laterales para identificar módulos
     const laterales = elements.filter(e => e.type === 'lateral');
     if (laterales.length < 2) return null;
     
     laterales.sort((a, b) => a.position.x - b.position.x);
     
-    // Si hay un elemento seleccionado, encontrar en qué módulo está
     if (selectedElement) {
       const selX = selectedElement.position.x;
       for (let i = 0; i < laterales.length - 1; i++) {
@@ -412,22 +430,34 @@
             x: centroX,
             ancho: anchoModulo,
             alto: altoModulo,
-            fondo: latIzq.size.depth
+            fondo: latIzq.size.depth,
+            izquierda: latIzq.position.x,
+            derecha: latDer.position.x
           };
         }
       }
     }
     
-    // Si no hay seleccionado, usar el último módulo creado o el primero
-    if (modulos.length > 0) {
-      const ultimo = modulos[modulos.length - 1];
-      return ultimo;
+    // Usar el último módulo creado basado en nextModuleX
+    if (moduloCount > 0 && laterales.length >= 2) {
+      const ultimoLatDer = laterales[laterales.length - 1];
+      const ultimoLatIzq = laterales[laterales.length - 2];
+      const anchoModulo = ultimoLatDer.position.x - ultimoLatIzq.position.x;
+      const centroX = (ultimoLatIzq.position.x + ultimoLatDer.position.x) / 2;
+      const altoModulo = elements.filter(e => e.type === 'techo')[0]?.position.y || 2.2;
+      return {
+        x: centroX,
+        ancho: anchoModulo,
+        alto: altoModulo,
+        fondo: ultimoLatIzq.size.depth,
+        izquierda: ultimoLatIzq.position.x,
+        derecha: ultimoLatDer.position.x
+      };
     }
     
     return null;
   }
 
-  // Añadir DOS puertas al módulo (izquierda y derecha, de piso a techo)
   function addPuertasAModulo() {
     const modulo = findModuloInfo();
     if (!modulo) {
@@ -520,12 +550,12 @@
     const id = nextId++;
     let size, position, color, geometry, material, mesh;
     
-    // Valores por defecto según tipo
     switch(type) {
       case 'lateral':
         size = { w: GROSOR, h: 2.2, d: 0.6 };
-        position = { x: -0.9, y: 1.1, z: 0 };
+        position = { x: nextModuleX + 0.5, y: 1.1, z: 0 };
         color = 0xD4BC98;
+        nextModuleX += 1.0;
         break;
       case 'piso':
         size = { w: 2.0, h: GROSOR, d: 0.6 };
@@ -593,7 +623,7 @@
     updateUI();
   }
 
-  // GENERAR MÓDULO - AHORA BIEN POSICIONADO UNO AL LADO DEL OTRO
+  // GENERAR MÓDULO - CORREGIDO: se crea UNO AL LADO DEL OTRO
   function generateModule() {
     let ancho = parseFloat(prompt("Ancho del módulo (cm):", "80")) / 100;
     let alto = parseFloat(prompt("Alto del módulo (cm):", "200")) / 100;
@@ -603,23 +633,8 @@
     
     saveToHistory();
     
-    // Calcular posición X para el nuevo módulo (UNO AL LADO DEL OTRO)
-    let nuevaX = 0;
-    
-    if (modulos.length === 0) {
-      nuevaX = 0;
-    } else {
-      // Buscar el módulo más a la derecha
-      let maxX = -Infinity;
-      elements.forEach(el => {
-        if (el.type === 'lateral') {
-          const rightEdge = el.position.x + el.size.width/2;
-          if (rightEdge > maxX) maxX = rightEdge;
-        }
-      });
-      // El nuevo módulo se coloca a la derecha del más alejado
-      nuevaX = maxX + ancho/2;
-    }
+    // Calcular posición X para el nuevo módulo (USANDO nextModuleX)
+    let nuevaX = nextModuleX + (ancho / 2);
     
     const y = alto / 2;
     const fondoReal = fondo;
@@ -649,19 +664,16 @@
     // Espaldar de 1 cm
     addPieza('espaldar', { x: nuevaX, y: alto/2, z: -fondoReal/2 + GROSOR_ESPALDAR/2 }, { w: ancho, h: alto, d: GROSOR_ESPALDAR });
     
-    // Guardar información del módulo para futuras puertas
-    modulos.push({
-      x: nuevaX,
-      ancho: ancho,
-      alto: alto,
-      fondo: fondoReal,
-      indice: modulos.length + 1
-    });
+    // Actualizar nextModuleX para el próximo módulo (se coloca a la derecha)
+    nextModuleX = nuevaX + ancho/2;
     
     moduloCount++;
     updateUI();
     
-    alert(`✅ Módulo #${moduloCount} creado\nDimensiones: ${(ancho*100).toFixed(0)} x ${(alto*100).toFixed(0)} x ${(fondoReal*100).toFixed(0)} cm\nPosición X: ${(nuevaX*100).toFixed(0)} cm\n\nUsa el botón "Añadir 2 puertas al módulo" para agregar puertas.`);
+    // Calcular ancho total
+    let anchoTotalCm = (nextModuleX * 100).toFixed(0);
+    
+    alert(`✅ Módulo #${moduloCount} creado\nDimensiones: ${(ancho*100).toFixed(0)} x ${(alto*100).toFixed(0)} x ${(fondoReal*100).toFixed(0)} cm\nPosición X: ${(nuevaX*100).toFixed(0)} cm\nAncho total acumulado: ${anchoTotalCm} cm\n\nUsa el botón "Añadir 2 puertas al módulo" para agregar puertas.`);
   }
 
   function selectElement(element) {
@@ -701,6 +713,8 @@
       parseFloat(document.getElementById('pos-z').value)/100
     );
     selectedElement.position = selectedElement.mesh.position.clone();
+    // Recalcular nextModuleX después de mover laterales
+    recalcularNextModuleX();
   }
 
   function updateElementSize() {
@@ -724,6 +738,7 @@
     elements[idx] = { ...elements[idx], mesh: newMesh, size: { width: w, height: h, depth: d } };
     selectElement(elements[idx]);
     updateUI();
+    recalcularNextModuleX();
   }
 
   function deleteSelectedElement() {
@@ -735,6 +750,7 @@
       elements.splice(idx, 1);
       selectElement(null);
       updateUI();
+      recalcularNextModuleX();
     }
   }
 
@@ -743,7 +759,7 @@
     elements.forEach(el => elementsGroup.remove(el.mesh));
     elements = [];
     moduloCount = 0;
-    modulos = [];
+    nextModuleX = 0;
     selectElement(null);
     updateUI();
   }
@@ -762,6 +778,7 @@
     document.getElementById('med-total').innerHTML = elements.length;
     document.getElementById('med-puertas').innerHTML = elements.filter(e => e.type === 'puerta').length;
     document.getElementById('med-modulos-generados').innerHTML = moduloCount;
+    document.getElementById('ancho-total').innerHTML = (nextModuleX * 100).toFixed(0);
     document.getElementById('selected-info').innerHTML = selectedElement ? `<div style="color:#C4A46B;">${elementTypes[selectedElement.type]?.nombre || selectedElement.type} #${selectedElement.id}</div>` : '<div style="color:#aaa;">Ninguno</div>';
   }
 
@@ -771,15 +788,19 @@
 
   function setView(view) {
     switch(view) {
-      case 'front': camera.position.set(0, 1.2, 5); controls.target.set(0, 1.2, 0); break;
-      case 'side': camera.position.set(4, 1.2, 0); controls.target.set(0, 1.2, 0); break;
-      case 'top': camera.position.set(0, 5, 0); controls.target.set(0, 1.2, 0); break;
-      case 'iso': camera.position.set(4, 2.5, 4); controls.target.set(0, 1.2, 0); break;
+      case 'front': camera.position.set(0, 1.5, 6); controls.target.set(nextModuleX/2, 1.2, 0); break;
+      case 'side': camera.position.set(5, 1.5, 0); controls.target.set(nextModuleX/2, 1.2, 0); break;
+      case 'top': camera.position.set(0, 6, 0); controls.target.set(nextModuleX/2, 1.2, 0); break;
+      case 'iso': camera.position.set(5, 3, 5); controls.target.set(nextModuleX/2, 1.2, 0); break;
     }
     controls.update();
   }
 
-  function resetView() { camera.position.set(4, 2.5, 4); controls.target.set(0, 1.2, 0); controls.update(); }
+  function resetView() { 
+    camera.position.set(5, 3, 5); 
+    controls.target.set(nextModuleX/2, 1.2, 0); 
+    controls.update(); 
+  }
 
   function showSendModal() {
     if (elements.length === 0) { alert("❌ No hay elementos para enviar"); return; }
