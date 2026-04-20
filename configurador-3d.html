@@ -41,7 +41,6 @@
 
   .transform-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
   .transform-input { background: #333; border: 1px solid #444; border-radius: 4px; padding: 5px 6px; color: #e0e0e0; font-size: 11px; width: 100%; }
-  .transform-input:focus { outline: none; border-color: #C4A46B; }
 
   .medidas-realtime { background: #333; border-radius: 6px; padding: 10px; margin-top: 10px; font-size: 11px; }
   .medidas-realtime span { color: #C4A46B; font-weight: bold; }
@@ -70,7 +69,6 @@
   .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; }
   .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; }
   .loading { display: none; text-align: center; margin-top: 15px; color: #C4A46B; }
-  .required { color: #C4A46B; }
 
   @media (max-width: 900px) { .sidebar-left, .sidebar-right { display: none; } #canvas-container { left: 0; right: 0; } .float-buttons { right: 20px; } }
 </style>
@@ -78,7 +76,7 @@
 <body>
 
 <div class="toolbar">
-  <div class="logo">🔧 CR DESIGN 3D PRO - SNAPPING INTELIGENTE</div>
+  <div class="logo">🔧 CR DESIGN 3D PRO</div>
   <div class="separator"></div>
   <div class="toolbar-group">
     <button class="btn btn-warning" onclick="rotateSelected(90)">🔄 Girar 90°</button>
@@ -110,7 +108,7 @@
 
 <div class="sidebar-left">
   <div class="grosor-info">📏 Aglomerado 15mm | Snapping automático</div>
-  <div class="status-info" id="status-info">💡 Selección múltiple: Ctrl+Click | Shift+Click</div>
+  <div class="status-info" id="status-info">💡 Selección múltiple: Ctrl+Click</div>
   
   <div class="section">
     <div class="section-title">⚙️ SELECCIÓN</div>
@@ -143,10 +141,7 @@
   <div class="section">
     <div class="section-title">📋 LISTA DE ELEMENTOS</div>
     <div class="element-list" id="elements-list"></div>
-    <div style="margin-top:8px; font-size:9px; color:#666; text-align:center;">
-      💡 Ctrl+Click = selección múltiple<br>
-      Shift+Click = rango
-    </div>
+    <div style="margin-top:8px; font-size:9px; color:#666; text-align:center;">💡 Ctrl+Click = selección múltiple</div>
   </div>
   <div class="section">
     <div class="section-title">🎬 VISTAS</div>
@@ -202,22 +197,18 @@
   let elementsGroup = new THREE.Group();
   let elements = [];
   let selectedElements = new Set();
-  let lastSelectedId = null;
   let nextId = 1;
   let moduloCount = 0;
   let nextModuleX = 0;
 
   const elementTypes = {
-    lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, rotable: false },
-    piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98, rotable: false },
-    techo: { nombre: 'Techo', icon: '📌', color: 0xD4BC98, rotable: false },
-    espaldar: { nombre: 'Espaldar', icon: '📌', color: 0xD4BC98, rotable: false },
-    puerta: { nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4, rotable: true },
-    tirador: { nombre: 'Tirador', icon: '🔘', color: 0xC4A46B, rotable: true },
-    estante: { nombre: 'Estante', icon: '📦', color: 0xE8D8C4, rotable: true },
-    cajonero: { nombre: 'Cajonero', icon: '🗄️', color: 0xE8D8C4, rotable: false },
-    zapatero: { nombre: 'Zapatero', icon: '👟', color: 0xD4BC98, rotable: false },
-    luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, rotable: false }
+    lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, rotable: false, defaultSize: { w: GROSOR, h: 2.2, d: 0.6 } },
+    piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98, rotable: false, defaultSize: { w: 2.0, h: GROSOR, d: 0.6 } },
+    techo: { nombre: 'Techo', icon: '📌', color: 0xD4BC98, rotable: false, defaultSize: { w: 2.0, h: GROSOR, d: 0.6 } },
+    espaldar: { nombre: 'Espaldar', icon: '📌', color: 0xD4BC98, rotable: false, defaultSize: { w: 2.0, h: 2.2, d: GROSOR } },
+    puerta: { nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4, rotable: true, defaultSize: { w: 0.9, h: 2.1, d: GROSOR } },
+    tirador: { nombre: 'Tirador', icon: '🔘', color: 0xC4A46B, rotable: true, defaultSize: { w: 0.1, h: 0.02, d: 0.008 } },
+    estante: { nombre: 'Estante', icon: '📦', color: 0xE8D8C4, rotable: true, defaultSize: { w: 1.6, h: GROSOR, d: 0.5 } }
   };
 
   function init() {
@@ -227,8 +218,11 @@
     
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
-    camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
-    camera.position.set(5, 3, 5);
+    scene.fog = new THREE.Fog(0x1a1a1a, 10, 25);
+    
+    camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 50);
+    camera.position.set(4, 2, 4);
+    
     renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(width, height);
     renderer.shadowMap.enabled = true;
@@ -238,14 +232,21 @@
     controls.enableDamping = true;
     controls.target.set(0, 1.2, 0);
     
+    // Luces
     const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     scene.add(ambientLight);
     const mainLight = new THREE.DirectionalLight(0xffffff, 1);
     mainLight.position.set(5, 8, 3);
     mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 1024;
+    mainLight.shadow.mapSize.height = 1024;
     scene.add(mainLight);
+    const fillLight = new THREE.PointLight(0x88aaff, 0.3);
+    fillLight.position.set(-2, 2, 3);
+    scene.add(fillLight);
     
-    const gridHelper = new THREE.GridHelper(15, 30, 0x555555, 0x333333);
+    // Suelo
+    const gridHelper = new THREE.GridHelper(12, 20, 0x555555, 0x333333);
     gridHelper.position.y = -0.02;
     scene.add(gridHelper);
     
@@ -254,12 +255,10 @@
     transformControls = new TransformControls(camera, renderer.domElement);
     transformControls.addEventListener('dragging-changed', (event) => { 
       controls.enabled = !event.value;
-      if (!event.value && selectedElements.size === 1) {
-        updateUIFromElement();
-      }
     });
     scene.add(transformControls);
     
+    // Click para seleccionar
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     renderer.domElement.addEventListener('click', (event) => {
@@ -273,62 +272,54 @@
         const element = elements.find(e => e.mesh === intersects[0].object);
         if (element) {
           if (event.ctrlKey) {
-            // Ctrl+Click: selección múltiple
             if (selectedElements.has(element)) {
               selectedElements.delete(element);
             } else {
               selectedElements.add(element);
             }
-            updateTransformControls();
-          } else if (event.shiftKey && lastSelectedId !== null) {
-            // Shift+Click: seleccionar rango
-            const lastElement = elements.find(e => e.id === lastSelectedId);
-            if (lastElement) {
-              const lastIdx = elements.findIndex(e => e.id === lastSelectedId);
-              const currentIdx = elements.findIndex(e => e.id === element.id);
-              const start = Math.min(lastIdx, currentIdx);
-              const end = Math.max(lastIdx, currentIdx);
-              for (let i = start; i <= end; i++) {
-                selectedElements.add(elements[i]);
-              }
-            }
           } else {
-            // Click normal: seleccionar solo este
             selectedElements.clear();
             selectedElements.add(element);
           }
-          lastSelectedId = element.id;
-          updateTransformControls();
+          updateSelectionDisplay();
         }
-      } else if (!event.ctrlKey && !event.shiftKey) {
-        clearSelection();
+      } else if (!event.ctrlKey) {
+        selectedElements.clear();
+        updateSelectionDisplay();
       }
       updateUI();
     });
+    
+    // Crear un módulo de ejemplo para mostrar
+    generateModule();
     
     animate();
     updateUI();
   }
 
-  function clearSelection() {
-    selectedElements.clear();
-    lastSelectedId = null;
-    transformControls.detach();
-    document.getElementById('transform-controls').style.display = 'none';
-    updateUI();
-  }
-
-  function updateTransformControls() {
+  function updateSelectionDisplay() {
     if (selectedElements.size === 1) {
       const element = Array.from(selectedElements)[0];
       transformControls.attach(element.mesh);
       document.getElementById('transform-controls').style.display = 'block';
-      updateUIFromElement();
+      const pos = element.mesh.position;
+      const size = element.size;
+      document.getElementById('pos-x').value = (pos.x*100).toFixed(1);
+      document.getElementById('pos-y').value = (pos.y*100).toFixed(1);
+      document.getElementById('pos-z').value = (pos.z*100).toFixed(1);
+      document.getElementById('size-x').value = (size.width*100).toFixed(1);
+      document.getElementById('size-y').value = (size.height*100).toFixed(1);
+      document.getElementById('size-z').value = (size.depth*100).toFixed(1);
     } else {
       transformControls.detach();
-      document.getElementById('transform-controls').style.display = selectedElements.size > 0 ? 'block' : 'none';
+      document.getElementById('transform-controls').style.display = 'none';
     }
     updateUI();
+  }
+
+  function clearSelection() {
+    selectedElements.clear();
+    updateSelectionDisplay();
   }
 
   function rotateSelected(degrees) {
@@ -336,7 +327,6 @@
     selectedElements.forEach(el => {
       if (elementTypes[el.type]?.rotable) {
         el.mesh.rotation.y += rad;
-        el.rotation = (el.rotation || 0) + rad;
       }
     });
     updateUI();
@@ -344,7 +334,7 @@
 
   function editMultipleDimensions() {
     if (selectedElements.size === 0) {
-      alert("Selecciona al menos un elemento");
+      alert("Selecciona al menos un elemento (Ctrl+Click)");
       return;
     }
     
@@ -352,164 +342,92 @@
     const nuevoAlto = prompt("Nuevo alto (cm):", "200");
     const nuevoFondo = prompt("Nuevo fondo (cm):", "60");
     
-    if (nuevoAncho && !isNaN(nuevoAncho)) {
-      const w = parseFloat(nuevoAncho) / 100;
-      selectedElements.forEach(el => {
-        el.size.width = w;
-        actualizarMesh(el);
-      });
-    }
-    if (nuevoAlto && !isNaN(nuevoAlto)) {
-      const h = parseFloat(nuevoAlto) / 100;
-      selectedElements.forEach(el => {
-        el.size.height = h;
-        actualizarMesh(el);
-      });
-    }
-    if (nuevoFondo && !isNaN(nuevoFondo)) {
-      const d = parseFloat(nuevoFondo) / 100;
-      selectedElements.forEach(el => {
-        el.size.depth = d;
-        actualizarMesh(el);
-      });
+    selectedElements.forEach(el => {
+      if (nuevoAncho && !isNaN(nuevoAncho)) {
+        el.size.width = parseFloat(nuevoAncho) / 100;
+      }
+      if (nuevoAlto && !isNaN(nuevoAlto)) {
+        el.size.height = parseFloat(nuevoAlto) / 100;
+      }
+      if (nuevoFondo && !isNaN(nuevoFondo)) {
+        el.size.depth = parseFloat(nuevoFondo) / 100;
+      }
+      // Recrear mesh
+      const oldPos = el.mesh.position.clone();
+      const oldType = el.type;
+      const oldId = el.id;
+      const oldRot = el.mesh.rotation.y;
+      
+      elementsGroup.remove(el.mesh);
+      const geometry = new THREE.BoxGeometry(el.size.width, el.size.height, el.size.depth);
+      const material = new THREE.MeshStandardMaterial({ color: elementTypes[oldType].color, roughness: 0.6 });
+      const newMesh = new THREE.Mesh(geometry, material);
+      newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
+      newMesh.rotation.y = oldRot;
+      newMesh.castShadow = true;
+      newMesh.userData = { id: oldId, type: oldType };
+      elementsGroup.add(newMesh);
+      el.mesh = newMesh;
+    });
+    
+    if (selectedElements.size === 1) {
+      updateSelectionDisplay();
     }
     updateUI();
-  }
-
-  function actualizarMesh(elemento) {
-    const oldPos = elemento.mesh.position.clone();
-    const oldType = elemento.type;
-    const oldId = elemento.id;
-    const oldRot = elemento.mesh.rotation.y;
-    
-    elementsGroup.remove(elemento.mesh);
-    const geometry = new THREE.BoxGeometry(elemento.size.width, elemento.size.height, elemento.size.depth);
-    const material = new THREE.MeshStandardMaterial({ color: elementTypes[oldType].color, roughness: 0.6 });
-    const newMesh = new THREE.Mesh(geometry, material);
-    newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
-    newMesh.rotation.y = oldRot;
-    newMesh.castShadow = true;
-    newMesh.userData = { id: oldId, type: oldType };
-    elementsGroup.add(newMesh);
-    
-    elemento.mesh = newMesh;
-    if (selectedElements.has(elemento)) {
-      transformControls.detach();
-      if (selectedElements.size === 1) transformControls.attach(newMesh);
-    }
-  }
-
-  // Función de snapping inteligente - coloca laterales sobre el piso
-  function snapToFloor(mesh, type, position) {
-    if (type === 'lateral') {
-      // Buscar el piso más cercano
-      const pisos = elements.filter(e => e.type === 'piso');
-      if (pisos.length > 0) {
-        const pisoMasCercano = pisos.reduce((prev, curr) => {
-          return Math.abs(curr.position.x - position.x) < Math.abs(prev.position.x - position.x) ? curr : prev;
-        });
-        // Colocar lateral SOBRE el piso (Y = piso + GROSOR)
-        mesh.position.y = pisoMasCercano.position.y + GROSOR;
-        // Alinear borde interior con el borde del piso (margen de 15mm hacia adentro)
-        mesh.position.x = position.x;
-        mesh.position.z = pisoMasCercano.position.z;
-      }
-    } else if (type === 'techo') {
-      // Buscar laterales para alinear techo arriba
-      const laterales = elements.filter(e => e.type === 'lateral');
-      if (laterales.length > 0) {
-        const alturaMaxima = Math.max(...laterales.map(l => l.position.y + l.size.height/2));
-        mesh.position.y = alturaMaxima - GROSOR/2;
-        mesh.position.x = position.x;
-        mesh.position.z = position.z;
-      }
-    }
-    return mesh;
   }
 
   function addElement(type) {
     const config = elementTypes[type];
     if (!config) return;
-    const id = nextId++;
-    let geometry, material, mesh;
     
-    // Dimensiones por defecto según tipo
-    let size, position;
+    const id = nextId++;
+    const size = { ...config.defaultSize };
+    let position;
+    
     switch(type) {
       case 'lateral':
-        size = { w: GROSOR, h: 2.2, d: 0.6 };
         position = { x: nextModuleX + 0.5, y: 1.1, z: 0 };
         break;
       case 'piso':
-        size = { w: 2.0, h: GROSOR, d: 0.6 };
         position = { x: 0, y: GROSOR/2, z: 0 };
         break;
       case 'techo':
-        size = { w: 2.0, h: GROSOR, d: 0.6 };
         position = { x: 0, y: 2.2 - GROSOR/2, z: 0 };
         break;
       case 'espaldar':
-        size = { w: 2.0, h: 2.2, d: GROSOR };
         position = { x: 0, y: 1.1, z: -0.6/2 + GROSOR/2 };
         break;
       case 'puerta':
-        size = { w: 0.9, h: 2.1, d: GROSOR };
         position = { x: -0.45, y: 1.05, z: 0.31 };
         break;
       case 'tirador':
-        size = { w: 0.1, h: 0.02, d: 0.008 };
         position = { x: -0.45, y: 1.1, z: 0.32 };
-        geometry = new THREE.CylinderGeometry(0.008, 0.008, size.w, 8);
-        material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.z = Math.PI/2;
-        mesh.position.set(position.x, position.y, position.z);
-        mesh.castShadow = true;
-        mesh.userData = { id, type };
-        elementsGroup.add(mesh);
-        elements.push({ id, type, mesh, position, size, rotation: 0 });
+        const tiradorGeo = new THREE.CylinderGeometry(0.008, 0.008, size.w, 8);
+        const tiradorMat = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
+        const tiradorMesh = new THREE.Mesh(tiradorGeo, tiradorMat);
+        tiradorMesh.rotation.z = Math.PI/2;
+        tiradorMesh.position.set(position.x, position.y, position.z);
+        tiradorMesh.castShadow = true;
+        tiradorMesh.userData = { id, type };
+        elementsGroup.add(tiradorMesh);
+        elements.push({ id, type, mesh: tiradorMesh, position, size, rotation: 0 });
         updateUI();
         return;
       case 'estante':
-        size = { w: 1.6, h: GROSOR, d: 0.5 };
         position = { x: 0, y: 1.2, z: 0 };
         break;
-      case 'cajonero':
-        size = { w: 0.5, h: 0.6, d: 0.45 };
-        position = { x: 0, y: 0.3, z: 0 };
-        break;
-      case 'zapatero':
-        size = { w: 0.7, h: 0.15, d: 0.4 };
-        position = { x: 0, y: 0.15, z: 0 };
-        break;
-      case 'luz':
-        size = { w: 0.4, h: 0.03, d: 0.03 };
-        position = { x: 0, y: 2.15, z: 0.2 };
-        material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
-        geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
-        mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(position.x, position.y, position.z);
-        mesh.castShadow = true;
-        mesh.userData = { id, type };
-        elementsGroup.add(mesh);
-        elements.push({ id, type, mesh, position, size, rotation: 0 });
-        updateUI();
-        return;
-      default: return;
+      default:
+        position = { x: 0, y: 0, z: 0 };
     }
     
-    geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
-    material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
-    mesh = new THREE.Mesh(geometry, material);
+    const geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+    const material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
+    const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(position.x, position.y, position.z);
     mesh.castShadow = true;
     mesh.userData = { id, type };
-    
-    // Aplicar snapping inteligente
-    snapToFloor(mesh, type, position);
-    
     elementsGroup.add(mesh);
-    elements.push({ id, type, mesh, position: mesh.position.clone(), size, rotation: 0 });
+    elements.push({ id, type, mesh, position, size, rotation: 0 });
     
     if (type === 'lateral') {
       nextModuleX = Math.max(nextModuleX, mesh.position.x + size.w/2);
@@ -540,49 +458,34 @@
       elements.push({ id, type, mesh, position: pos, size, rotation: 0 });
     };
     
-    // Lateral izquierdo - con snapping al piso
-    const latIzqPos = { x: nuevaX - ancho/2 + GROSOR/2, y: y, z: 0 };
-    addPieza('lateral', latIzqPos, { w: GROSOR, h: alto, d: fondo });
-    
+    // Lateral izquierdo
+    addPieza('lateral', { x: nuevaX - ancho/2 + GROSOR/2, y: y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
     // Lateral derecho
-    const latDerPos = { x: nuevaX + ancho/2 - GROSOR/2, y: y, z: 0 };
-    addPieza('lateral', latDerPos, { w: GROSOR, h: alto, d: fondo });
-    
+    addPieza('lateral', { x: nuevaX + ancho/2 - GROSOR/2, y: y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
     // Piso
     addPieza('piso', { x: nuevaX, y: GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
-    
-    // Techo - se alinea automáticamente arriba
+    // Techo
     addPieza('techo', { x: nuevaX, y: alto - GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
-    
     // Espaldar
     addPieza('espaldar', { x: nuevaX, y: alto/2, z: -fondo/2 + GROSOR/2 }, { w: ancho, h: alto, d: GROSOR });
     
-    // Aplicar snapping a laterales (colocar sobre piso)
+    // Aplicar snapping: colocar laterales sobre el piso
+    const laterales = elements.filter(e => e.type === 'lateral' && e.id >= nextId - 4);
     const pisos = elements.filter(e => e.type === 'piso');
-    const lateralesNuevos = elements.filter(e => e.type === 'lateral' && e.id >= nextId - 4);
-    lateralesNuevos.forEach(lat => {
+    laterales.forEach(lat => {
       if (pisos.length > 0) {
-        const pisoMasCercano = pisos.reduce((prev, curr) => {
+        const pisoCercano = pisos.reduce((prev, curr) => {
           return Math.abs(curr.position.x - lat.position.x) < Math.abs(prev.position.x - lat.position.x) ? curr : prev;
         });
-        lat.mesh.position.y = pisoMasCercano.position.y + GROSOR;
+        lat.mesh.position.y = pisoCercano.position.y + GROSOR;
         lat.position.y = lat.mesh.position.y;
       }
-    });
-    
-    // Ajustar techo a la altura de los laterales
-    const techosNuevos = elements.filter(e => e.type === 'techo' && e.id >= nextId - 2);
-    const lateralesActualizados = elements.filter(e => e.type === 'lateral');
-    techosNuevos.forEach(techo => {
-      const alturaMaxima = Math.max(...lateralesActualizados.map(l => l.position.y + l.size.height/2));
-      techo.mesh.position.y = alturaMaxima - GROSOR/2;
-      techo.position.y = techo.mesh.position.y;
     });
     
     nextModuleX = nuevaX + ancho/2;
     moduloCount++;
     updateUI();
-    alert(`✅ Módulo #${moduloCount} creado\nDimensiones: ${(ancho*100).toFixed(0)} x ${(alto*100).toFixed(0)} x ${(fondo*100).toFixed(0)} cm\nLos laterales se han colocado automáticamente sobre el piso`);
+    alert(`✅ Módulo #${moduloCount} creado\nDimensiones: ${(ancho*100).toFixed(0)} x ${(alto*100).toFixed(0)} x ${(fondo*100).toFixed(0)} cm`);
   }
 
   function deleteSelectedElements() {
@@ -594,29 +497,9 @@
         elements.splice(idx, 1);
       }
     });
-    clearSelection();
-    updateUI();
-  }
-
-  function selectElement(element) {
     selectedElements.clear();
-    selectedElements.add(element);
-    lastSelectedId = element.id;
-    updateTransformControls();
+    updateSelectionDisplay();
     updateUI();
-  }
-
-  function updateUIFromElement() {
-    if (selectedElements.size !== 1) return;
-    const element = Array.from(selectedElements)[0];
-    const pos = element.mesh.position;
-    const size = element.size;
-    document.getElementById('pos-x').value = (pos.x*100).toFixed(1);
-    document.getElementById('pos-y').value = (pos.y*100).toFixed(1);
-    document.getElementById('pos-z').value = (pos.z*100).toFixed(1);
-    document.getElementById('size-x').value = (size.width*100).toFixed(1);
-    document.getElementById('size-y').value = (size.height*100).toFixed(1);
-    document.getElementById('size-z').value = (size.depth*100).toFixed(1);
   }
 
   function updateElementPosition() {
@@ -652,8 +535,9 @@
     newMesh.userData = { id: oldId, type: oldType };
     elementsGroup.add(newMesh);
     
-    elements[idx] = { ...elements[idx], mesh: newMesh, size: { width: w, height: h, depth: d } };
-    selectElement(elements[idx]);
+    element.mesh = newMesh;
+    element.size = { width: w, height: h, depth: d };
+    updateSelectionDisplay();
     updateUI();
   }
 
@@ -665,27 +549,17 @@
       const isSelected = selectedElements.has(el);
       div.className = 'element-item' + (isSelected ? (selectedElements.size === 1 ? ' selected' : ' selected-multi') : '');
       const config = elementTypes[el.type];
-      div.innerHTML = `<span>${config?.icon || '📦'} ${config?.nombre || el.type} #${el.id}</span><button class="btn" style="padding:2px 6px;" onclick="event.stopPropagation(); selectElementById(${el.id})">✏️</button>`;
+      div.innerHTML = `<span>${config?.icon || '📦'} ${config?.nombre || el.type} #${el.id}</span><button class="btn" style="padding:2px 6px;" onclick="event.stopPropagation(); selectSingleElement(${el.id})">✏️</button>`;
       div.onclick = (e) => {
         if (e.ctrlKey) {
           if (selectedElements.has(el)) selectedElements.delete(el);
           else selectedElements.add(el);
-          updateTransformControls();
-        } else if (e.shiftKey && lastSelectedId !== null) {
-          const lastElement = elements.find(e => e.id === lastSelectedId);
-          if (lastElement) {
-            const lastIdx = elements.findIndex(e => e.id === lastSelectedId);
-            const currentIdx = elements.findIndex(e => e.id === el.id);
-            const start = Math.min(lastIdx, currentIdx);
-            const end = Math.max(lastIdx, currentIdx);
-            for (let i = start; i <= end; i++) selectedElements.add(elements[i]);
-          }
+          updateSelectionDisplay();
         } else {
           selectedElements.clear();
           selectedElements.add(el);
-          updateTransformControls();
+          updateSelectionDisplay();
         }
-        lastSelectedId = el.id;
         updateUI();
       };
       container.appendChild(div);
@@ -707,32 +581,31 @@
     }
   }
 
-  window.selectElementById = (id) => { const el = elements.find(e => e.id === id); if (el) selectElement(el); };
-  window.clearSelection = clearSelection;
-  window.rotateSelected = rotateSelected;
-  window.editMultipleDimensions = editMultipleDimensions;
-  window.deleteSelectedElements = deleteSelectedElements;
-  window.addElement = addElement;
-  window.generateModule = generateModule;
-  window.updateElementPosition = updateElementPosition;
-  window.updateElementSize = updateElementSize;
+  function selectSingleElement(id) {
+    const el = elements.find(e => e.id === id);
+    if (el) {
+      selectedElements.clear();
+      selectedElements.add(el);
+      updateSelectionDisplay();
+      updateUI();
+    }
+  }
 
   function setView(view) {
     const centro = nextModuleX / 2;
     switch(view) {
-      case 'front': camera.position.set(centro, 1.5, 6); controls.target.set(centro, 1.2, 0); break;
-      case 'side': camera.position.set(5, 1.5, 0); controls.target.set(centro, 1.2, 0); break;
-      case 'top': camera.position.set(centro, 6, 0); controls.target.set(centro, 1.2, 0); break;
-      case 'iso': camera.position.set(5, 3, 5); controls.target.set(centro, 1.2, 0); break;
+      case 'front': camera.position.set(centro, 1.5, 5); controls.target.set(centro, 1.2, 0); break;
+      case 'side': camera.position.set(4, 1.5, 0); controls.target.set(centro, 1.2, 0); break;
+      case 'top': camera.position.set(centro, 5, 0); controls.target.set(centro, 1.2, 0); break;
+      case 'iso': camera.position.set(4, 2.5, 4); controls.target.set(centro, 1.2, 0); break;
     }
     controls.update();
   }
 
   function resetView() { setView('iso'); }
 
-  // Modal functions
   function showSendModal() {
-    if (elements.length === 0) { alert("❌ No hay elementos"); return; }
+    if (elements.length === 0) { alert("❌ No hay elementos para enviar"); return; }
     document.getElementById('sendModal').classList.add('show');
   }
   function closeSendModal() { document.getElementById('sendModal').classList.remove('show'); }
@@ -747,11 +620,11 @@
     
     setTimeout(() => {
       const img = renderer.domElement.toDataURL('image/png');
-      let lista = "📋 LISTA DE PIEZAS\n\n";
+      let lista = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 LISTA DE PIEZAS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
       elements.forEach(e => {
         lista += `${elementTypes[e.type]?.nombre || e.type}: ${(e.size.width*100).toFixed(0)}x${(e.size.height*100).toFixed(0)}x${(e.size.depth*100).toFixed(0)} cm\n`;
       });
-      const datos = `Nombre: ${nombre}\nTeléfono: ${telefono}\nEmail: ${document.getElementById('clientEmail').value}\nDirección: ${document.getElementById('clientAddress').value}\n\nRequerimiento: ${document.getElementById('clientRequirement').value}\n\nComentarios: ${document.getElementById('clientNotes').value}`;
+      const datos = `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 DATOS DEL CLIENTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nNombre: ${nombre}\nTeléfono: ${telefono}\nEmail: ${document.getElementById('clientEmail').value || "No"}\nDirección: ${document.getElementById('clientAddress').value || "No"}\n\n📋 Requiere: ${document.getElementById('clientRequirement').value || "No"}\n\n💬 Comentarios: ${document.getElementById('clientNotes').value || "Ninguno"}`;
       
       const form = document.createElement('form');
       form.method = 'POST';
@@ -762,8 +635,9 @@
         { n: 'name', v: nombre },
         { n: 'email', v: document.getElementById('clientEmail').value || 'cliente@email.com' },
         { n: '_subject', v: `DISEÑO 3D - ${nombre}` },
-        { n: 'message', v: lista + "\n" + datos },
-        { n: '_captcha', v: 'false' }
+        { n: 'message', v: lista + datos },
+        { n: '_captcha', v: 'false' },
+        { n: '_template', v: 'table' }
       ];
       campos.forEach(c => { const i = document.createElement('input'); i.type = 'hidden'; i.name = c.n; i.value = c.v; form.appendChild(i); });
       
@@ -782,12 +656,33 @@
         setTimeout(() => {
           document.getElementById('loadingSpinner').style.display = 'none';
           closeSendModal();
-          alert("✅ Diseño enviado");
+          alert("✅ Diseño enviado a CR Design");
+          document.getElementById('clientName').value = '';
+          document.getElementById('clientPhone').value = '';
+          document.getElementById('clientEmail').value = '';
+          document.getElementById('clientAddress').value = '';
+          document.getElementById('clientRequirement').value = '';
+          document.getElementById('clientNotes').value = '';
         }, 2000);
       });
     }, 200);
   }
 
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  window.addElement = addElement;
+  window.generateModule = generateModule;
+  window.rotateSelected = rotateSelected;
+  window.clearSelection = clearSelection;
+  window.editMultipleDimensions = editMultipleDimensions;
+  window.deleteSelectedElements = deleteSelectedElements;
+  window.updateElementPosition = updateElementPosition;
+  window.updateElementSize = updateElementSize;
+  window.selectSingleElement = selectSingleElement;
   window.setView = setView;
   window.resetView = resetView;
   window.showSendModal = showSendModal;
