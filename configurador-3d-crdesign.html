@@ -22,6 +22,7 @@
   .btn-primary { background: #C4A46B; color: #1a1a1a; }
   .btn-danger { background: #8B3A3A; color: #fff; }
   .btn-success { background: #2D6A4F; color: #fff; }
+  .btn-warning { background: #D4A017; color: #1a1a1a; }
   .separator { width: 1px; height: 25px; background: #555; margin: 0 5px; }
   .toolbar-group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 
@@ -33,7 +34,7 @@
   .section { margin-bottom: 20px; border-bottom: 1px solid #3a3a3a; padding-bottom: 15px; }
   .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #C4A46B; margin-bottom: 12px; font-weight: 600; }
 
-  .element-list { max-height: 280px; overflow-y: auto; }
+  .element-list { max-height: 250px; overflow-y: auto; }
   .element-item { background: #333; margin-bottom: 5px; padding: 7px 8px; border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; font-size: 11px; }
   .element-item:hover { background: #3d3d3d; }
   .element-item.selected { border-color: #C4A46B; background: #3a3a3a; }
@@ -49,10 +50,14 @@
   .float-btn { width: 38px; height: 38px; background: #2c2c2c; border: 1px solid #555; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
   .float-btn:hover { background: #C4A46B; }
 
-  @media (max-width: 900px) { .sidebar-left, .sidebar-right { display: none; } #canvas-container { left: 0; right: 0; } .float-buttons { right: 20px; } }
-  
-  .grosor-info { background: #2a2a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #C4A46B; text-align: center; }
-  .status-info { background: #1e3a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #8bc34a; text-align: center; }
+  .color-picker-panel { background: #333; border-radius: 8px; padding: 10px; margin-top: 10px; display: none; }
+  .color-picker-panel.show { display: block; }
+  .color-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .color-opt { width: 35px; height: 35px; border-radius: 8px; cursor: pointer; border: 2px solid #555; transition: all 0.2s; }
+  .color-opt:hover { transform: scale(1.1); border-color: #C4A46B; }
+
+  .visitor-counter { background: #1e3a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; text-align: center; font-size: 12px; color: #8bc34a; }
+  .visitor-counter span { font-size: 18px; font-weight: bold; color: #C4A46B; }
 
   .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -69,23 +74,22 @@
     width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #3a3a3a;
     border: 1px solid #555; border-radius: 5px; color: white; font-size: 13px;
   }
-  .modal-content input:focus, .modal-content textarea:focus { outline: none; border-color: #C4A46B; }
-  .modal-content label { font-size: 12px; color: #aaa; display: block; margin-top: 5px; }
   .modal-buttons { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
-  .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
-  .btn-enviar:hover { background: #40916C; }
-  .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
-  .loading { display: none; text-align: center; margin-top: 15px; color: #C4A46B; font-size: 12px; }
+  .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; }
+  .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; }
+  .loading { display: none; text-align: center; margin-top: 15px; color: #C4A46B; }
   .required { color: #C4A46B; }
-  .campo-opcional { font-size: 10px; color: #666; margin-left: 5px; }
-  
-  .preview-img { max-width: 100%; margin: 10px 0; border-radius: 5px; display: none; }
 </style>
 </head>
 <body>
 
 <div class="toolbar">
   <div class="logo">🧱 CR DESIGN CONSTRUCTOR | AGLOMERADO 15mm</div>
+  <div class="separator"></div>
+  <div class="toolbar-group">
+    <button class="btn btn-warning" onclick="undo()">↩️ Deshacer</button>
+    <button class="btn btn-warning" onclick="redo()">↪️ Rehacer</button>
+  </div>
   <div class="separator"></div>
   <div class="toolbar-group">
     <span style="color:#aaa; font-size:10px;">ESTRUCTURA:</span>
@@ -118,8 +122,11 @@
 </div>
 
 <div class="sidebar-left">
+  <div class="visitor-counter" id="visitorCounter">
+    👥 Visitantes: <span id="visitCount">0</span>
+  </div>
   <div class="grosor-info">📏 Material: Aglomerado de 15mm (1.5 cm)</div>
-  <div class="status-info" id="status-info">💡 Crea módulos y añade estantes</div>
+  <div class="status-info" id="status-info" style="background:#1e3a2a; border-radius:5px; padding:8px; margin-bottom:10px; font-size:10px; color:#8bc34a; text-align:center;">💡 Haz clic en una pieza para editarla</div>
   
   <div class="section">
     <div class="section-title">⚙️ ELEMENTO SELECCIONADO</div>
@@ -132,6 +139,10 @@
         <div><label>Ancho (cm)</label><input type="number" id="size-x" class="transform-input" step="5" onchange="updateElementSize()"></div>
         <div><label>Alto (cm)</label><input type="number" id="size-y" class="transform-input" step="5" onchange="updateElementSize()"></div>
         <div><label>Fondo (cm)</label><input type="number" id="size-z" class="transform-input" step="5" onchange="updateElementSize()"></div>
+      </div>
+      <div class="color-picker-panel" id="colorPickerPanel">
+        <div style="font-size:10px; color:#aaa;">🎨 Cambiar color:</div>
+        <div class="color-options" id="colorOptions"></div>
       </div>
       <button class="btn btn-danger" style="width: 100%; margin-top: 8px;" onclick="deleteSelectedElement()">🗑 ELIMINAR</button>
     </div>
@@ -151,6 +162,7 @@
   <div class="section">
     <div class="section-title">📋 LISTA DE ELEMENTOS</div>
     <div class="element-list" id="elements-list"></div>
+    <div style="margin-top:8px; font-size:9px; color:#666; text-align:center;">💡 Haz clic en un elemento para seleccionarlo</div>
   </div>
   <div class="section">
     <div class="section-title">🎬 VISTAS</div>
@@ -178,14 +190,14 @@
     <input type="text" id="clientName" placeholder="Ej: Carlos Ramírez">
     <label>Teléfono móvil <span class="required">*</span></label>
     <input type="tel" id="clientPhone" placeholder="Ej: 300 123 4567">
-    <label>Correo electrónico <span class="campo-opcional">(opcional)</span></label>
+    <label>Correo electrónico <span style="font-size:10px; color:#666;">(opcional)</span></label>
     <input type="email" id="clientEmail" placeholder="correo@ejemplo.com">
-    <label>Dirección <span class="campo-opcional">(opcional)</span></label>
+    <label>Dirección <span style="font-size:10px; color:#666;">(opcional)</span></label>
     <input type="text" id="clientAddress" placeholder="Ciudad, barrio, dirección">
     <h4>📋 DETALLE DEL PROYECTO</h4>
-    <label>¿Qué necesitas? <span class="campo-opcional">(opcional)</span></label>
+    <label>¿Qué necesitas? <span style="font-size:10px; color:#666;">(opcional)</span></label>
     <textarea id="clientRequirement" rows="2" placeholder="Ej: Armario empotrado, cocina, closet..."></textarea>
-    <label>Comentarios <span class="campo-opcional">(opcional)</span></label>
+    <label>Comentarios <span style="font-size:10px; color:#666;">(opcional)</span></label>
     <textarea id="clientNotes" rows="3" placeholder="Colores, materiales, fecha deseada..."></textarea>
     <div class="loading" id="loadingSpinner">📤 Capturando diseño y enviando...</div>
     <div class="modal-buttons">
@@ -216,6 +228,25 @@
   let selectedElement = null;
   let nextId = 1;
   let moduloCount = 0;
+  
+  // Historial para deshacer/rehacer
+  let history = [];
+  let historyIndex = -1;
+  const MAX_HISTORY = 50;
+  
+  // Colores disponibles
+  const coloresDisponibles = [
+    { nombre: 'Blanco', valor: 0xF5F0E8 },
+    { nombre: 'Roble', valor: 0xD4BC98 },
+    { nombre: 'Nogal', valor: 0xC4A882 },
+    { nombre: 'Wengué', valor: 0x8B7355 },
+    { nombre: 'Gris', valor: 0x9A9890 },
+    { nombre: 'Negro', valor: 0x2a2a2a },
+    { nombre: 'Azul', valor: 0x5B7A8B },
+    { nombre: 'Verde', valor: 0x6B8E6B },
+    { nombre: 'Cerezo', valor: 0xA0522D },
+    { nombre: 'Dorado', valor: 0xC4A46B }
+  ];
 
   const elementTypes = {
     lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, defaultSize: { w: GROSOR, h: 2.2, d: 0.6 }, defaultPos: { x: -0.9, y: 1.1, z: 0 } },
@@ -230,6 +261,93 @@
     luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, defaultSize: { w: 0.4, h: 0.03, d: 0.03 }, defaultPos: { x: 0, y: 2.15, z: 0.2 } }
   };
 
+  // Guardar estado en historial
+  function saveToHistory() {
+    const state = JSON.parse(JSON.stringify(elements.map(el => ({
+      id: el.id,
+      type: el.type,
+      position: el.position,
+      size: el.size,
+      color: el.color || elementTypes[el.type]?.color
+    }))));
+    
+    // Eliminar estados futuros
+    history = history.slice(0, historyIndex + 1);
+    history.push(state);
+    if (history.length > MAX_HISTORY) history.shift();
+    historyIndex = history.length - 1;
+  }
+  
+  function undo() {
+    if (historyIndex > 0) {
+      historyIndex--;
+      restoreState(history[historyIndex]);
+    }
+  }
+  
+  function redo() {
+    if (historyIndex < history.length - 1) {
+      historyIndex++;
+      restoreState(history[historyIndex]);
+    }
+  }
+  
+  function restoreState(state) {
+    // Limpiar elementos actuales
+    elements.forEach(el => elementsGroup.remove(el.mesh));
+    elements = [];
+    
+    // Restaurar desde estado guardado
+    state.forEach(saved => {
+      const config = elementTypes[saved.type];
+      if (!config) return;
+      
+      const geometry = new THREE.BoxGeometry(saved.size.width, saved.size.height, saved.size.depth);
+      const material = new THREE.MeshStandardMaterial({ color: saved.color || config.color, roughness: 0.6 });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(saved.position.x, saved.position.y, saved.position.z);
+      mesh.castShadow = true;
+      mesh.userData = { id: saved.id, type: saved.type };
+      
+      elementsGroup.add(mesh);
+      elements.push({
+        id: saved.id,
+        type: saved.type,
+        mesh: mesh,
+        position: saved.position,
+        size: saved.size,
+        color: saved.color
+      });
+      
+      if (saved.id >= nextId) nextId = saved.id + 1;
+    });
+    
+    updateUI();
+    if (selectedElement) selectElement(null);
+  }
+
+  // Contador de visitas (usando localStorage)
+  function updateVisitorCount() {
+    let count = localStorage.getItem('crdesign_visits');
+    if (count === null) {
+      count = 1;
+    } else {
+      count = parseInt(count) + 1;
+    }
+    localStorage.setItem('crdesign_visits', count);
+    document.getElementById('visitCount').innerText = count;
+  }
+
+  // Cambiar color del elemento seleccionado
+  function changeElementColor(colorHex) {
+    if (!selectedElement) return;
+    saveToHistory();
+    const colorNum = parseInt(colorHex.replace('#', ''), 16);
+    selectedElement.mesh.material.color.setHex(colorNum);
+    selectedElement.color = colorNum;
+    updateUI();
+  }
+
   function init() {
     const container = document.getElementById('canvas-container');
     const width = container.clientWidth;
@@ -239,7 +357,7 @@
     scene.background = new THREE.Color(0x1a1a1a);
     camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
     camera.position.set(4, 1.8, 4);
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); // preserveDrawingBuffer para captura
     renderer.setSize(width, height);
     renderer.shadowMap.enabled = true;
     container.appendChild(renderer.domElement);
@@ -254,6 +372,9 @@
     mainLight.position.set(5, 8, 3);
     mainLight.castShadow = true;
     scene.add(mainLight);
+    const backLight = new THREE.PointLight(0x88aaff, 0.3);
+    backLight.position.set(-2, 2, 3);
+    scene.add(backLight);
     
     const gridHelper = new THREE.GridHelper(10, 20, 0x555555, 0x333333);
     gridHelper.position.y = -0.02;
@@ -262,7 +383,13 @@
     scene.add(elementsGroup);
     
     transformControls = new TransformControls(camera, renderer.domElement);
-    transformControls.addEventListener('dragging-changed', (event) => { controls.enabled = !event.value; });
+    transformControls.addEventListener('dragging-changed', (event) => { 
+      controls.enabled = !event.value;
+      if (!event.value && selectedElement) {
+        saveToHistory();
+        updateUIFromElement();
+      }
+    });
     scene.add(transformControls);
     
     const raycaster = new THREE.Raycaster();
@@ -276,11 +403,26 @@
       if (intersects.length > 0) {
         const element = elements.find(e => e.mesh === intersects[0].object);
         if (element) selectElement(element);
-      } else selectElement(null);
+      } else {
+        selectElement(null);
+      }
     });
     
+    // Construir opciones de colores
+    const colorContainer = document.getElementById('colorOptions');
+    coloresDisponibles.forEach(c => {
+      const colorDiv = document.createElement('div');
+      colorDiv.className = 'color-opt';
+      colorDiv.style.backgroundColor = '#' + c.valor.toString(16).padStart(6, '0');
+      colorDiv.title = c.nombre;
+      colorDiv.onclick = () => changeElementColor('#' + c.valor.toString(16).padStart(6, '0'));
+      colorContainer.appendChild(colorDiv);
+    });
+    
+    updateVisitorCount();
     animate();
     updateUI();
+    saveToHistory(); // Estado inicial
   }
 
   function findModuleForElement() {
@@ -306,6 +448,7 @@
     let alturaCm = parseFloat(prompt("Altura del estante desde el piso (cm):", "120"));
     if (isNaN(alturaCm)) return;
     const altura = alturaCm/100;
+    saveToHistory();
     const id = nextId++;
     const geometry = new THREE.BoxGeometry(modulo.ancho, GROSOR, 0.5);
     const material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.6 });
@@ -321,6 +464,7 @@
   function addElement(type) {
     const config = elementTypes[type];
     if (!config) return;
+    saveToHistory();
     const id = nextId++;
     let geometry, material, mesh;
     if (type === 'tirador') {
@@ -346,6 +490,7 @@
     let alto = parseFloat(prompt("Alto (cm):", "200"))/100;
     let fondo = parseFloat(prompt("Fondo (cm):", "60"))/100;
     if (isNaN(ancho) || isNaN(alto) || isNaN(fondo)) return;
+    saveToHistory();
     let nuevaX = 0;
     if (moduloCount > 0) {
       let maxX = -Infinity;
@@ -380,23 +525,31 @@
     if (element) {
       transformControls.attach(element.mesh);
       document.getElementById('transform-controls').style.display = 'block';
-      const pos = element.mesh.position;
-      const size = element.size;
-      document.getElementById('pos-x').value = (pos.x*100).toFixed(1);
-      document.getElementById('pos-y').value = (pos.y*100).toFixed(1);
-      document.getElementById('pos-z').value = (pos.z*100).toFixed(1);
-      document.getElementById('size-x').value = (size.width*100).toFixed(1);
-      document.getElementById('size-y').value = (size.height*100).toFixed(1);
-      document.getElementById('size-z').value = (size.depth*100).toFixed(1);
+      document.getElementById('colorPickerPanel').classList.add('show');
+      updateUIFromElement();
     } else {
       transformControls.detach();
       document.getElementById('transform-controls').style.display = 'none';
+      document.getElementById('colorPickerPanel').classList.remove('show');
     }
     updateUI();
   }
 
+  function updateUIFromElement() {
+    if (!selectedElement) return;
+    const pos = selectedElement.mesh.position;
+    const size = selectedElement.size;
+    document.getElementById('pos-x').value = (pos.x*100).toFixed(1);
+    document.getElementById('pos-y').value = (pos.y*100).toFixed(1);
+    document.getElementById('pos-z').value = (pos.z*100).toFixed(1);
+    document.getElementById('size-x').value = (size.width*100).toFixed(1);
+    document.getElementById('size-y').value = (size.height*100).toFixed(1);
+    document.getElementById('size-z').value = (size.depth*100).toFixed(1);
+  }
+
   function updateElementPosition() {
     if (!selectedElement) return;
+    saveToHistory();
     selectedElement.mesh.position.set(
       parseFloat(document.getElementById('pos-x').value)/100,
       parseFloat(document.getElementById('pos-y').value)/100,
@@ -414,9 +567,10 @@
     const oldType = selectedElement.type;
     const idx = elements.findIndex(e => e.id === selectedElement.id);
     if (idx === -1) return;
+    saveToHistory();
     elementsGroup.remove(selectedElement.mesh);
     const geometry = new THREE.BoxGeometry(w, h, d);
-    const material = new THREE.MeshStandardMaterial({ color: elementTypes[oldType].color, roughness: 0.6 });
+    const material = new THREE.MeshStandardMaterial({ color: selectedElement.color || elementTypes[oldType].color, roughness: 0.6 });
     const newMesh = new THREE.Mesh(geometry, material);
     newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
     newMesh.castShadow = true;
@@ -429,6 +583,7 @@
 
   function deleteSelectedElement() {
     if (!selectedElement) return;
+    saveToHistory();
     const idx = elements.findIndex(e => e.id === selectedElement.id);
     if (idx !== -1) {
       elementsGroup.remove(selectedElement.mesh);
@@ -439,6 +594,7 @@
   }
 
   function deleteAllElements() {
+    saveToHistory();
     elements.forEach(el => elementsGroup.remove(el.mesh));
     elements = [];
     moduloCount = 0;
@@ -453,7 +609,7 @@
       const div = document.createElement('div');
       div.className = 'element-item' + (selectedElement === el ? ' selected' : '');
       const config = elementTypes[el.type];
-      div.innerHTML = `<span>${config?.icon || '📦'} ${config?.nombre || el.type} #${el.id}</span><button class="btn" style="padding:2px 6px;" onclick="window.selectElementById(${el.id})">✏️</button>`;
+      div.innerHTML = `<span>${config?.icon || '📦'} ${config?.nombre || el.type} #${el.id}</span><button class="btn" style="padding:2px 6px;" onclick="event.stopPropagation(); window.selectElementById(${el.id})">✏️</button>`;
       div.onclick = () => selectElement(el);
       container.appendChild(div);
     });
@@ -464,6 +620,8 @@
   }
 
   window.selectElementById = (id) => { const el = elements.find(e => e.id === id); if (el) selectElement(el); };
+  window.undo = undo;
+  window.redo = redo;
 
   function setView(view) {
     switch(view) {
@@ -497,23 +655,14 @@
     
     document.getElementById('loadingSpinner').style.display = 'block';
     
-    // Capturar imagen del diseño 3D
-    // Ajustar cámara para mejor vista antes de capturar
-    const originalPos = camera.position.clone();
-    const originalTarget = controls.target.clone();
+    // Forzar renderizado antes de capturar
+    renderer.render(scene, camera);
     
-    // Posición isométrica para la captura
-    camera.position.set(3, 2, 4);
-    controls.target.set(0, 1.2, 0);
-    controls.update();
-    
-    // Esperar un frame para que la cámara se actualice
+    // Esperar a que termine el renderizado
     setTimeout(() => {
-      // Capturar canvas como imagen
       const canvas = renderer.domElement;
       const imageData = canvas.toDataURL('image/png');
       
-      // Generar lista de piezas
       let listaPiezas = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 LISTA DE PIEZAS DEL MUEBLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
       const piezasPorTipo = {};
       elements.forEach(el => {
@@ -522,43 +671,33 @@
         piezasPorTipo[nombrePieza].push(el);
       });
       for (const [nombrePieza, piezas] of Object.entries(piezasPorTipo)) {
-        listaPiezas += `🔹 ${nombrePieza} (${piezas.length} unidades)\n`;
+        listaPiezas += `🔹 ${nombrePieza} (${piezas.length} uds)\n`;
         piezas.forEach((el, i) => {
-          listaPiezas += `   └─ Pieza #${i+1}: ${(el.size.width*100).toFixed(0)} x ${(el.size.height*100).toFixed(0)} x ${(el.size.depth*100).toFixed(0)} cm\n`;
-          listaPiezas += `      📍 Posición: X=${(el.position.x*100).toFixed(0)} cm, Y=${(el.position.y*100).toFixed(0)} cm\n`;
+          listaPiezas += `   └─ #${i+1}: ${(el.size.width*100).toFixed(0)}x${(el.size.height*100).toFixed(0)}x${(el.size.depth*100).toFixed(0)} cm\n`;
         });
         listaPiezas += `\n`;
       }
       
-      listaPiezas += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 RESUMEN FINAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-      listaPiezas += `Total de piezas: ${elements.length}\n`;
-      listaPiezas += `Módulos generados: ${moduloCount}\n`;
-      listaPiezas += `Material estándar: Aglomerado de 15mm\n\n`;
-      
-      const datosCliente = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 DATOS DEL CLIENTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nNombre completo: ${nombre}\nTeléfono móvil: ${telefono}\nCorreo electrónico: ${email || "No especificado"}\nDirección: ${direccion || "No especificada"}\n\n📋 REQUERIMIENTO:\n${requerimiento || "No especificado"}\n\n💬 COMENTARIOS ADICIONALES:\n${notas || "Sin comentarios adicionales"}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📸 CAPTURA DEL DISEÑO 3D\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n[La imagen del diseño se adjunta a este correo]`;
+      const datosCliente = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 DATOS DEL CLIENTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nNombre: ${nombre}\nTeléfono: ${telefono}\nEmail: ${email || "No"}\nDirección: ${direccion || "No"}\n\n📋 Requiere: ${requerimiento || "No"}\n\n💬 Comentarios: ${notas || "Ninguno"}\n\n📸 Se adjunta imagen del diseño 3D`;
       
       const cuerpoCompleto = listaPiezas + "\n" + datosCliente;
       
-      // Crear formulario con la imagen incrustada
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = 'https://formsubmit.co/miguel_716@hotmail.com';
       form.style.display = 'none';
-      form.enctype = 'multipart/form-data';
       
       const campos = [
         { name: 'name', value: nombre },
         { name: 'email', value: email || 'cliente@sinemail.com' },
-        { name: '_subject', value: `🎨 NUEVO DISEÑO 3D - ${nombre}` },
+        { name: '_subject', value: `🎨 DISEÑO 3D - ${nombre}` },
         { name: 'message', value: cuerpoCompleto },
         { name: '_captcha', value: 'false' },
-        { name: '_template', value: 'table' },
-        { name: '_replyto', value: email || '' }
+        { name: '_template', value: 'table' }
       ];
-      
       campos.forEach(c => { const i = document.createElement('input'); i.type = 'hidden'; i.name = c.name; i.value = c.value; form.appendChild(i); });
       
-      // Agregar la imagen como archivo adjunto (convertir base64 a blob)
+      // Convertir imagen base64 a blob para adjuntar
       fetch(imageData)
         .then(res => res.blob())
         .then(blob => {
@@ -574,15 +713,10 @@
           document.body.appendChild(form);
           form.submit();
           
-          // Restaurar cámara
-          camera.position.copy(originalPos);
-          controls.target.copy(originalTarget);
-          controls.update();
-          
           setTimeout(() => {
             document.getElementById('loadingSpinner').style.display = 'none';
             closeSendModal();
-            alert("✅ Diseño enviado correctamente a CR Design.\n\nIncluye la captura 3D y la lista de piezas.\n\nEn breve recibirás respuesta con tu presupuesto.");
+            alert("✅ Diseño enviado a CR Design.\n\nIncluye la imagen 3D y lista de piezas.\n\nEn breve recibirás respuesta.");
             
             document.getElementById('clientName').value = '';
             document.getElementById('clientPhone').value = '';
@@ -591,17 +725,8 @@
             document.getElementById('clientRequirement').value = '';
             document.getElementById('clientNotes').value = '';
           }, 2000);
-        })
-        .catch(err => {
-          console.error("Error al capturar imagen:", err);
-          alert("❌ Error al capturar la imagen. Intenta de nuevo.");
-          document.getElementById('loadingSpinner').style.display = 'none';
-          // Restaurar cámara
-          camera.position.copy(originalPos);
-          controls.target.copy(originalTarget);
-          controls.update();
         });
-    }, 100);
+    }, 200);
   }
 
   function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
@@ -620,7 +745,6 @@
   window.sendDesignToEmail = sendDesignToEmail;
 
   init();
-  animate();
   window.addEventListener('resize', () => { const w = document.getElementById('canvas-container').clientWidth, h = document.getElementById('canvas-container').clientHeight; camera.aspect = w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); });
 </script>
 </body>
