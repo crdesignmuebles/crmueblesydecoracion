@@ -54,7 +54,6 @@
   .grosor-info { background: #2a2a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #C4A46B; text-align: center; }
   .status-info { background: #1e3a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #8bc34a; text-align: center; }
 
-  /* Modal de envío */
   .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center;
@@ -66,7 +65,7 @@
   }
   .modal-content h3 { color: #C4A46B; margin-bottom: 15px; text-align: center; }
   .modal-content h4 { color: #aaa; font-size: 12px; margin: 15px 0 8px 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
-  .modal-content input, .modal-content textarea, .modal-content select {
+  .modal-content input, .modal-content textarea {
     width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #3a3a3a;
     border: 1px solid #555; border-radius: 5px; color: white; font-size: 13px;
   }
@@ -76,11 +75,11 @@
   .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
   .btn-enviar:hover { background: #40916C; }
   .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
-  .btn-cancelar:hover { background: #666; }
   .loading { display: none; text-align: center; margin-top: 15px; color: #C4A46B; font-size: 12px; }
-  .required { color: #C4A46B; font-size: 10px; }
-  
+  .required { color: #C4A46B; }
   .campo-opcional { font-size: 10px; color: #666; margin-left: 5px; }
+  
+  .preview-img { max-width: 100%; margin: 10px 0; border-radius: 5px; display: none; }
 </style>
 </head>
 <body>
@@ -88,64 +87,52 @@
 <div class="toolbar">
   <div class="logo">🧱 CR DESIGN CONSTRUCTOR | AGLOMERADO 15mm</div>
   <div class="separator"></div>
-  
   <div class="toolbar-group">
-    <span style="color:#aaa; font-size:10px; margin-right:5px;">ESTRUCTURA:</span>
+    <span style="color:#aaa; font-size:10px;">ESTRUCTURA:</span>
     <button class="btn" onclick="addElement('lateral')">🧱 Lateral</button>
     <button class="btn" onclick="addElement('piso')">📌 Piso</button>
     <button class="btn" onclick="addElement('techo')">📌 Techo</button>
     <button class="btn" onclick="addElement('espaldar')">📌 Espaldar</button>
   </div>
-  
   <div class="separator"></div>
-  
   <div class="toolbar-group">
-    <span style="color:#aaa; font-size:10px; margin-right:5px;">PUERTAS:</span>
+    <span style="color:#aaa; font-size:10px;">PUERTAS:</span>
     <button class="btn" onclick="addElement('puerta')">🚪 Puerta</button>
     <button class="btn" onclick="addElement('tirador')">🔘 Tirador</button>
   </div>
-  
   <div class="separator"></div>
-  
   <div class="toolbar-group">
-    <span style="color:#aaa; font-size:10px; margin-right:5px;">INTERIORES:</span>
-    <button class="btn btn-primary" onclick="addEstanteInteligente()">📦 Estante (inteligente)</button>
+    <span style="color:#aaa; font-size:10px;">INTERIORES:</span>
+    <button class="btn btn-primary" onclick="addEstanteInteligente()">📦 Estante</button>
     <button class="btn" onclick="addElement('cajonero')">🗄️ Cajonero</button>
     <button class="btn" onclick="addElement('zapatero')">👟 Zapatero</button>
     <button class="btn" onclick="addElement('luz')">💡 Luz LED</button>
     <button class="btn btn-success" onclick="generateModule()">✨ GENERAR MÓDULO</button>
   </div>
-  
   <div class="separator"></div>
-  
   <div class="toolbar-group">
-    <button class="btn btn-danger" onclick="deleteAllElements()">🗑 Limpiar todo</button>
+    <button class="btn btn-danger" onclick="deleteAllElements()">🗑 Limpiar</button>
     <button class="btn btn-primary" onclick="showSendModal()">✉ ENVIAR DISEÑO</button>
-    <button class="btn" onclick="resetView()">🎥 Reset vista</button>
+    <button class="btn" onclick="resetView()">🎥 Reset</button>
   </div>
 </div>
 
 <div class="sidebar-left">
-  <div class="grosor-info">
-    📏 Material: Aglomerado de 15mm (1.5 cm) - Todas las piezas estructurales tienen este grosor
-  </div>
-  <div class="status-info" id="status-info">
-    💡 Crea módulos y añade estantes inteligentes
-  </div>
+  <div class="grosor-info">📏 Material: Aglomerado de 15mm (1.5 cm)</div>
+  <div class="status-info" id="status-info">💡 Crea módulos y añade estantes</div>
   
   <div class="section">
     <div class="section-title">⚙️ ELEMENTO SELECCIONADO</div>
     <div id="selected-info" style="color: #aaa; font-size: 12px; margin-bottom: 8px;">Ninguno</div>
     <div id="transform-controls" style="display: none;">
       <div class="transform-controls">
-        <div><label style="font-size: 9px;">X (cm)</label><input type="number" id="pos-x" class="transform-input" step="1" onchange="updateElementPosition()"></div>
-        <div><label style="font-size: 9px;">Y (cm)</label><input type="number" id="pos-y" class="transform-input" step="1" onchange="updateElementPosition()"></div>
-        <div><label style="font-size: 9px;">Z (cm)</label><input type="number" id="pos-z" class="transform-input" step="1" onchange="updateElementPosition()"></div>
-        <div><label style="font-size: 9px;">Ancho (cm)</label><input type="number" id="size-x" class="transform-input" step="5" onchange="updateElementSize()"></div>
-        <div><label style="font-size: 9px;">Alto (cm)</label><input type="number" id="size-y" class="transform-input" step="5" onchange="updateElementSize()"></div>
-        <div><label style="font-size: 9px;">Fondo (cm)</label><input type="number" id="size-z" class="transform-input" step="5" onchange="updateElementSize()"></div>
+        <div><label>X (cm)</label><input type="number" id="pos-x" class="transform-input" step="1" onchange="updateElementPosition()"></div>
+        <div><label>Y (cm)</label><input type="number" id="pos-y" class="transform-input" step="1" onchange="updateElementPosition()"></div>
+        <div><label>Z (cm)</label><input type="number" id="pos-z" class="transform-input" step="1" onchange="updateElementPosition()"></div>
+        <div><label>Ancho (cm)</label><input type="number" id="size-x" class="transform-input" step="5" onchange="updateElementSize()"></div>
+        <div><label>Alto (cm)</label><input type="number" id="size-y" class="transform-input" step="5" onchange="updateElementSize()"></div>
+        <div><label>Fondo (cm)</label><input type="number" id="size-z" class="transform-input" step="5" onchange="updateElementSize()"></div>
       </div>
-      <div id="extra-controls" style="margin-top: 8px;"></div>
       <button class="btn btn-danger" style="width: 100%; margin-top: 8px;" onclick="deleteSelectedElement()">🗑 ELIMINAR</button>
     </div>
   </div>
@@ -153,9 +140,9 @@
   <div class="section">
     <div class="section-title">📊 RESUMEN</div>
     <div class="medidas-realtime">
-      <div>Elementos totales: <span id="med-total">0</span></div>
+      <div>Elementos: <span id="med-total">0</span></div>
       <div>Puertas: <span id="med-puertas">0</span></div>
-      <div>Módulos generados: <span id="med-modulos-generados">0</span></div>
+      <div>Módulos: <span id="med-modulos-generados">0</span></div>
     </div>
   </div>
 </div>
@@ -164,9 +151,6 @@
   <div class="section">
     <div class="section-title">📋 LISTA DE ELEMENTOS</div>
     <div class="element-list" id="elements-list"></div>
-    <div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
-      Haz clic en cualquier elemento para seleccionarlo y editarlo
-    </div>
   </div>
   <div class="section">
     <div class="section-title">🎬 VISTAS</div>
@@ -186,34 +170,24 @@
   <div class="float-btn" onclick="resetView()">⟳</div>
 </div>
 
-<!-- Modal de envío con todos los campos -->
 <div id="sendModal" class="modal-overlay">
   <div class="modal-content">
     <h3>📧 Enviar diseño a CR Design</h3>
-    <p style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px;">Completa tus datos para recibir tu presupuesto</p>
-    
     <h4>📝 DATOS PERSONALES</h4>
     <label>Nombre completo <span class="required">*</span></label>
-    <input type="text" id="clientName" placeholder="Ej: Carlos Ramírez González" required>
-    
+    <input type="text" id="clientName" placeholder="Ej: Carlos Ramírez">
     <label>Teléfono móvil <span class="required">*</span></label>
-    <input type="tel" id="clientPhone" placeholder="Ej: 300 123 4567" required>
-    
+    <input type="tel" id="clientPhone" placeholder="Ej: 300 123 4567">
     <label>Correo electrónico <span class="campo-opcional">(opcional)</span></label>
     <input type="email" id="clientEmail" placeholder="correo@ejemplo.com">
-    
-    <label>Dirección de residencia <span class="campo-opcional">(opcional)</span></label>
+    <label>Dirección <span class="campo-opcional">(opcional)</span></label>
     <input type="text" id="clientAddress" placeholder="Ciudad, barrio, dirección">
-    
     <h4>📋 DETALLE DEL PROYECTO</h4>
-    <label>¿Qué tipo de mueble necesitas? <span class="campo-opcional">(opcional)</span></label>
-    <textarea id="clientRequirement" rows="2" placeholder="Ej: Armario empotrado, cocina, closet, vestier, etc."></textarea>
-    
-    <label>Mensaje o comentarios adicionales <span class="campo-opcional">(opcional)</span></label>
-    <textarea id="clientNotes" rows="3" placeholder="Medidas especiales, colores, materiales, fecha deseada, etc."></textarea>
-    
-    <div class="loading" id="loadingSpinner">📤 Enviando diseño... Por favor espera</div>
-    
+    <label>¿Qué necesitas? <span class="campo-opcional">(opcional)</span></label>
+    <textarea id="clientRequirement" rows="2" placeholder="Ej: Armario empotrado, cocina, closet..."></textarea>
+    <label>Comentarios <span class="campo-opcional">(opcional)</span></label>
+    <textarea id="clientNotes" rows="3" placeholder="Colores, materiales, fecha deseada..."></textarea>
+    <div class="loading" id="loadingSpinner">📤 Capturando diseño y enviando...</div>
     <div class="modal-buttons">
       <button class="btn-cancelar" onclick="closeSendModal()">Cancelar</button>
       <button class="btn-enviar" onclick="sendDesignToEmail()">Enviar diseño</button>
@@ -235,20 +209,14 @@
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
-  // ============================================
-  // CONSTANTES
-  // ============================================
-  
-  const GROSOR = 0.015;  // 15 mm en metros
+  const GROSOR = 0.015;
   let scene, camera, renderer, controls, transformControls;
   let elementsGroup = new THREE.Group();
   let elements = [];
   let selectedElement = null;
   let nextId = 1;
   let moduloCount = 0;
-  let lastModuleX = 0;
-  
-  // Configuración de tipos de elementos
+
   const elementTypes = {
     lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, defaultSize: { w: GROSOR, h: 2.2, d: 0.6 }, defaultPos: { x: -0.9, y: 1.1, z: 0 } },
     piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: GROSOR, d: 0.6 }, defaultPos: { x: 0, y: GROSOR/2, z: 0 } },
@@ -261,11 +229,7 @@
     zapatero: { nombre: 'Zapatero', icon: '👟', color: 0xD4BC98, defaultSize: { w: 0.7, h: 0.15, d: 0.4 }, defaultPos: { x: 0, y: 0.15, z: 0 } },
     luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, defaultSize: { w: 0.4, h: 0.03, d: 0.03 }, defaultPos: { x: 0, y: 2.15, z: 0.2 } }
   };
-  
-  // ============================================
-  // INICIALIZACIÓN
-  // ============================================
-  
+
   function init() {
     const container = document.getElementById('canvas-container');
     const width = container.clientWidth;
@@ -273,11 +237,8 @@
     
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
-    scene.fog = new THREE.FogExp2(0x1a1a1a, 0.008);
-    
-    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
     camera.position.set(4, 1.8, 4);
-    
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
     renderer.shadowMap.enabled = true;
@@ -287,16 +248,12 @@
     controls.enableDamping = true;
     controls.target.set(0, 1.2, 0);
     
-    // Luces
     const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     scene.add(ambientLight);
     const mainLight = new THREE.DirectionalLight(0xffffff, 1);
     mainLight.position.set(5, 8, 3);
     mainLight.castShadow = true;
     scene.add(mainLight);
-    const fillLight = new THREE.PointLight(0x88aaff, 0.3);
-    fillLight.position.set(-2, 2, 3);
-    scene.add(fillLight);
     
     const gridHelper = new THREE.GridHelper(10, 20, 0x555555, 0x333333);
     gridHelper.position.y = -0.02;
@@ -305,56 +262,28 @@
     scene.add(elementsGroup);
     
     transformControls = new TransformControls(camera, renderer.domElement);
-    transformControls.addEventListener('dragging-changed', (event) => {
-      controls.enabled = !event.value;
-    });
-    transformControls.addEventListener('objectChange', () => {
-      if (selectedElement) updateUIFromElement();
-    });
+    transformControls.addEventListener('dragging-changed', (event) => { controls.enabled = !event.value; });
     scene.add(transformControls);
     
-    // Click para seleccionar
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     renderer.domElement.addEventListener('click', (event) => {
       const rect = renderer.domElement.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      mouse.x = ((event.clientX - rect.left)/rect.width)*2 - 1;
+      mouse.y = -((event.clientY - rect.top)/rect.height)*2 + 1;
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(elements.map(e => e.mesh));
       if (intersects.length > 0) {
-        const hit = intersects[0].object;
-        const element = elements.find(e => e.mesh === hit);
+        const element = elements.find(e => e.mesh === intersects[0].object);
         if (element) selectElement(element);
-      } else {
-        selectElement(null);
-      }
+      } else selectElement(null);
     });
     
     animate();
     updateUI();
   }
-  
-  // ============================================
-  // FUNCIÓN INTELIGENTE PARA ESTANTES
-  // ============================================
-  
+
   function findModuleForElement() {
-    if (selectedElement) {
-      const selectedPos = selectedElement.mesh.position;
-      const laterales = elements.filter(e => e.type === 'lateral');
-      for (let lat of laterales) {
-        const distancia = Math.abs(lat.position.x - selectedPos.x);
-        if (distancia < 0.5) {
-          const lateralDerecho = laterales.find(l => Math.abs(l.position.x - (lat.position.x + GROSOR + 0.5)) < 0.3);
-          if (lateralDerecho) {
-            const anchoInterior = Math.abs(lateralDerecho.position.x - lat.position.x) - GROSOR;
-            return { x: (lat.position.x + lateralDerecho.position.x) / 2, ancho: anchoInterior };
-          }
-        }
-      }
-    }
-    
     const laterales = elements.filter(e => e.type === 'lateral');
     if (laterales.length >= 2) {
       laterales.sort((a, b) => a.position.x - b.position.x);
@@ -364,248 +293,140 @@
         const distancia = latDer.position.x - latIzq.position.x;
         if (distancia > 0.3 && distancia < 1.5) {
           const anchoInterior = distancia - GROSOR;
-          return { x: (latIzq.position.x + latDer.position.x) / 2, ancho: anchoInterior };
+          return { x: (latIzq.position.x + latDer.position.x)/2, ancho: anchoInterior };
         }
       }
     }
     return null;
   }
-  
+
   function addEstanteInteligente() {
     const modulo = findModuleForElement();
-    if (!modulo) {
-      alert("❌ No se encontró ningún módulo. Crea un módulo primero.");
-      return;
-    }
-    
+    if (!modulo) { alert("❌ No se encontró ningún módulo"); return; }
     let alturaCm = parseFloat(prompt("Altura del estante desde el piso (cm):", "120"));
     if (isNaN(alturaCm)) return;
-    
-    const altura = alturaCm / 100;
-    const anchoEstante = modulo.ancho;
-    const fondo = 0.5;
-    
+    const altura = alturaCm/100;
     const id = nextId++;
-    const geometry = new THREE.BoxGeometry(anchoEstante, GROSOR, fondo);
+    const geometry = new THREE.BoxGeometry(modulo.ancho, GROSOR, 0.5);
     const material = new THREE.MeshStandardMaterial({ color: 0xE8D8C4, roughness: 0.6 });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(modulo.x, altura, 0);
     mesh.castShadow = true;
-    mesh.userData = { id, type: 'estante', elementType: 'estante' };
-    
+    mesh.userData = { id, type: 'estante' };
     elementsGroup.add(mesh);
-    elements.push({
-      id: id, type: 'estante', mesh: mesh,
-      position: { x: modulo.x, y: altura, z: 0 },
-      size: { width: anchoEstante, height: GROSOR, depth: fondo }
-    });
-    
+    elements.push({ id, type: 'estante', mesh, position: { x: modulo.x, y: altura, z: 0 }, size: { width: modulo.ancho, height: GROSOR, depth: 0.5 } });
     updateUI();
-    document.getElementById('status-info').innerHTML = `✅ Estante creado a ${alturaCm} cm | Ancho: ${(anchoEstante*100).toFixed(0)} cm`;
   }
-  
-  // ============================================
-  // CREAR ELEMENTOS
-  // ============================================
-  
+
   function addElement(type) {
     const config = elementTypes[type];
     if (!config) return;
-    
     const id = nextId++;
     let geometry, material, mesh;
-    
     if (type === 'tirador') {
       geometry = new THREE.CylinderGeometry(0.008, 0.008, config.defaultSize.w, 8);
       material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
       mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.z = Math.PI / 2;
-    } else if (type === 'luz') {
-      geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
-      material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
-      mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.z = Math.PI/2;
     } else {
       geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
       material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
       mesh = new THREE.Mesh(geometry, material);
     }
-    
     mesh.position.set(config.defaultPos.x, config.defaultPos.y, config.defaultPos.z);
     mesh.castShadow = true;
-    mesh.userData = { id, type, elementType: type };
-    
+    mesh.userData = { id, type };
     elementsGroup.add(mesh);
-    elements.push({
-      id: id, type: type, mesh: mesh,
-      position: { x: config.defaultPos.x, y: config.defaultPos.y, z: config.defaultPos.z },
-      size: { width: config.defaultSize.w, height: config.defaultSize.h, depth: config.defaultSize.d }
-    });
-    
+    elements.push({ id, type, mesh, position: { ...config.defaultPos }, size: { ...config.defaultSize } });
     updateUI();
   }
-  
+
   function generateModule() {
-    let ancho = parseFloat(prompt("Ancho del módulo (cm):", "80"));
-    let alto = parseFloat(prompt("Alto del módulo (cm):", "200"));
-    let fondo = parseFloat(prompt("Fondo del módulo (cm):", "60"));
-    
+    let ancho = parseFloat(prompt("Ancho (cm):", "80"))/100;
+    let alto = parseFloat(prompt("Alto (cm):", "200"))/100;
+    let fondo = parseFloat(prompt("Fondo (cm):", "60"))/100;
     if (isNaN(ancho) || isNaN(alto) || isNaN(fondo)) return;
-    
-    ancho = ancho / 100;
-    alto = alto / 100;
-    fondo = fondo / 100;
-    
-    let nuevaX;
-    if (moduloCount === 0) {
-      nuevaX = 0;
-    } else {
+    let nuevaX = 0;
+    if (moduloCount > 0) {
       let maxX = -Infinity;
-      elements.forEach(el => {
-        if (el.type === 'lateral') {
-          const rightEdge = el.position.x + el.size.width/2;
-          if (rightEdge > maxX) maxX = rightEdge;
-        }
-      });
+      elements.forEach(el => { if (el.type === 'lateral') maxX = Math.max(maxX, el.position.x + el.size.width/2); });
       nuevaX = maxX + ancho/2;
     }
-    
-    const y = alto / 2;
-    
-    addElementWithSize('lateral', { x: nuevaX - ancho/2 + GROSOR/2, y: y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
-    addElementWithSize('lateral', { x: nuevaX + ancho/2 - GROSOR/2, y: y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
-    addElementWithSize('piso', { x: nuevaX, y: GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
-    addElementWithSize('techo', { x: nuevaX, y: alto - GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
-    addElementWithSize('espaldar', { x: nuevaX, y: alto/2, z: -fondo/2 + GROSOR/2 }, { w: ancho, h: alto, d: GROSOR });
-    addElementWithSize('puerta', { x: nuevaX, y: alto/2, z: fondo/2 + 0.01 }, { w: ancho - 0.02, h: alto - 0.02, d: GROSOR });
-    addElementWithSize('tirador', { x: nuevaX + ancho/4, y: alto/2, z: fondo/2 + 0.025 }, { w: 0.1, h: 0.02, d: 0.008 });
-    
+    const y = alto/2;
+    const addPieza = (type, pos, size) => {
+      const id = nextId++;
+      const geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+      const material = new THREE.MeshStandardMaterial({ color: elementTypes[type].color, roughness: 0.6 });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(pos.x, pos.y, pos.z);
+      mesh.castShadow = true;
+      mesh.userData = { id, type };
+      elementsGroup.add(mesh);
+      elements.push({ id, type, mesh, position: pos, size });
+    };
+    addPieza('lateral', { x: nuevaX - ancho/2 + GROSOR/2, y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
+    addPieza('lateral', { x: nuevaX + ancho/2 - GROSOR/2, y, z: 0 }, { w: GROSOR, h: alto, d: fondo });
+    addPieza('piso', { x: nuevaX, y: GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
+    addPieza('techo', { x: nuevaX, y: alto - GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondo });
+    addPieza('espaldar', { x: nuevaX, y: alto/2, z: -fondo/2 + GROSOR/2 }, { w: ancho, h: alto, d: GROSOR });
+    addPieza('puerta', { x: nuevaX, y: alto/2, z: fondo/2 + 0.01 }, { w: ancho - 0.02, h: alto - 0.02, d: GROSOR });
     moduloCount++;
-    lastModuleX = nuevaX;
     updateUI();
   }
-  
-  function addElementWithSize(type, position, size) {
-    const config = elementTypes[type];
-    if (!config) return;
-    
-    const id = nextId++;
-    let geometry, material, mesh;
-    
-    if (type === 'tirador') {
-      geometry = new THREE.CylinderGeometry(0.008, 0.008, size.w, 8);
-      material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
-      mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.z = Math.PI / 2;
-    } else if (type === 'luz') {
-      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
-      material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
-      mesh = new THREE.Mesh(geometry, material);
-    } else {
-      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
-      material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
-      mesh = new THREE.Mesh(geometry, material);
-    }
-    
-    mesh.position.set(position.x, position.y, position.z);
-    mesh.castShadow = true;
-    mesh.userData = { id, type, elementType: type };
-    
-    elementsGroup.add(mesh);
-    elements.push({
-      id: id, type: type, mesh: mesh,
-      position: { x: position.x, y: position.y, z: position.z },
-      size: { width: size.w, height: size.h, depth: size.d }
-    });
-    
-    updateUI();
-  }
-  
-  // ============================================
-  // SELECCIÓN Y MANIPULACIÓN
-  // ============================================
-  
+
   function selectElement(element) {
     if (selectedElement === element) return;
     selectedElement = element;
-    
     if (element) {
       transformControls.attach(element.mesh);
       document.getElementById('transform-controls').style.display = 'block';
-      updateUIFromElement();
+      const pos = element.mesh.position;
+      const size = element.size;
+      document.getElementById('pos-x').value = (pos.x*100).toFixed(1);
+      document.getElementById('pos-y').value = (pos.y*100).toFixed(1);
+      document.getElementById('pos-z').value = (pos.z*100).toFixed(1);
+      document.getElementById('size-x').value = (size.width*100).toFixed(1);
+      document.getElementById('size-y').value = (size.height*100).toFixed(1);
+      document.getElementById('size-z').value = (size.depth*100).toFixed(1);
     } else {
       transformControls.detach();
       document.getElementById('transform-controls').style.display = 'none';
     }
     updateUI();
   }
-  
-  function updateUIFromElement() {
-    if (!selectedElement) return;
-    const pos = selectedElement.mesh.position;
-    const size = selectedElement.size;
-    document.getElementById('pos-x').value = (pos.x * 100).toFixed(1);
-    document.getElementById('pos-y').value = (pos.y * 100).toFixed(1);
-    document.getElementById('pos-z').value = (pos.z * 100).toFixed(1);
-    document.getElementById('size-x').value = (size.width * 100).toFixed(1);
-    document.getElementById('size-y').value = (size.height * 100).toFixed(1);
-    document.getElementById('size-z').value = (size.depth * 100).toFixed(1);
-  }
-  
+
   function updateElementPosition() {
     if (!selectedElement) return;
-    const x = parseFloat(document.getElementById('pos-x').value) / 100;
-    const y = parseFloat(document.getElementById('pos-y').value) / 100;
-    const z = parseFloat(document.getElementById('pos-z').value) / 100;
-    selectedElement.mesh.position.set(x, y, z);
-    selectedElement.position = { x, y, z };
+    selectedElement.mesh.position.set(
+      parseFloat(document.getElementById('pos-x').value)/100,
+      parseFloat(document.getElementById('pos-y').value)/100,
+      parseFloat(document.getElementById('pos-z').value)/100
+    );
+    selectedElement.position = selectedElement.mesh.position.clone();
   }
-  
+
   function updateElementSize() {
     if (!selectedElement) return;
-    const w = parseFloat(document.getElementById('size-x').value) / 100;
-    const h = parseFloat(document.getElementById('size-y').value) / 100;
-    const d = parseFloat(document.getElementById('size-z').value) / 100;
-    
+    const w = parseFloat(document.getElementById('size-x').value)/100;
+    const h = parseFloat(document.getElementById('size-y').value)/100;
+    const d = parseFloat(document.getElementById('size-z').value)/100;
     const oldPos = selectedElement.mesh.position.clone();
     const oldType = selectedElement.type;
-    const oldId = selectedElement.id;
-    const idx = elements.findIndex(e => e.id === oldId);
+    const idx = elements.findIndex(e => e.id === selectedElement.id);
     if (idx === -1) return;
-    
     elementsGroup.remove(selectedElement.mesh);
-    const config = elementTypes[oldType];
-    let geometry, material, newMesh;
-    
-    if (oldType === 'tirador') {
-      geometry = new THREE.CylinderGeometry(0.008, 0.008, w, 8);
-      material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
-      newMesh = new THREE.Mesh(geometry, material);
-      newMesh.rotation.z = Math.PI / 2;
-    } else if (oldType === 'luz') {
-      geometry = new THREE.BoxGeometry(w, h, d);
-      material = new THREE.MeshStandardMaterial({ color: config.color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
-      newMesh = new THREE.Mesh(geometry, material);
-    } else {
-      geometry = new THREE.BoxGeometry(w, h, d);
-      material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
-      newMesh = new THREE.Mesh(geometry, material);
-    }
-    
+    const geometry = new THREE.BoxGeometry(w, h, d);
+    const material = new THREE.MeshStandardMaterial({ color: elementTypes[oldType].color, roughness: 0.6 });
+    const newMesh = new THREE.Mesh(geometry, material);
     newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
     newMesh.castShadow = true;
-    newMesh.userData = { id: oldId, type: oldType, elementType: oldType };
-    
+    newMesh.userData = { id: selectedElement.id, type: oldType };
     elementsGroup.add(newMesh);
-    elements[idx] = {
-      id: oldId, type: oldType, mesh: newMesh,
-      position: { x: oldPos.x, y: oldPos.y, z: oldPos.z },
-      size: { width: w, height: h, depth: d }
-    };
-    
+    elements[idx] = { ...elements[idx], mesh: newMesh, size: { width: w, height: h, depth: d } };
     selectElement(elements[idx]);
     updateUI();
   }
-  
+
   function deleteSelectedElement() {
     if (!selectedElement) return;
     const idx = elements.findIndex(e => e.id === selectedElement.id);
@@ -616,7 +437,7 @@
       updateUI();
     }
   }
-  
+
   function deleteAllElements() {
     elements.forEach(el => elementsGroup.remove(el.mesh));
     elements = [];
@@ -624,148 +445,26 @@
     selectElement(null);
     updateUI();
   }
-  
-  // ============================================
-  // ENVÍO DE DISEÑO POR EMAIL CON TODOS LOS DATOS
-  // ============================================
-  
-  function showSendModal() {
-    if (elements.length === 0) {
-      alert("❌ No hay ningún elemento en el diseño. Crea al menos un módulo o pieza antes de enviar.");
-      return;
-    }
-    document.getElementById('sendModal').classList.add('show');
-  }
-  
-  function closeSendModal() {
-    document.getElementById('sendModal').classList.remove('show');
-    document.getElementById('loadingSpinner').style.display = 'none';
-  }
-  
-  function sendDesignToEmail() {
-    const nombre = document.getElementById('clientName').value.trim();
-    const telefono = document.getElementById('clientPhone').value.trim();
-    const email = document.getElementById('clientEmail').value.trim();
-    const direccion = document.getElementById('clientAddress').value.trim();
-    const requerimiento = document.getElementById('clientRequirement').value.trim();
-    const notas = document.getElementById('clientNotes').value.trim();
-    
-    // Validar campos obligatorios
-    if (!nombre) {
-      alert("❌ Por favor ingresa tu nombre completo");
-      return;
-    }
-    if (!telefono) {
-      alert("❌ Por favor ingresa tu número de teléfono móvil");
-      return;
-    }
-    
-    document.getElementById('loadingSpinner').style.display = 'block';
-    
-    // Generar lista de piezas
-    let listaPiezas = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-    listaPiezas += "📋 LISTA DE PIEZAS DEL MUEBLE\n";
-    listaPiezas += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-    
-    // Agrupar por tipo de pieza
-    const piezasPorTipo = {};
-    elements.forEach(el => {
-      const config = elementTypes[el.type];
-      const nombrePieza = config ? config.nombre : el.type;
-      if (!piezasPorTipo[nombrePieza]) piezasPorTipo[nombrePieza] = [];
-      piezasPorTipo[nombrePieza].push(el);
-    });
-    
-    for (const [nombrePieza, piezas] of Object.entries(piezasPorTipo)) {
-      listaPiezas += `🔹 ${nombrePieza} (${piezas.length} unidades)\n`;
-      piezas.forEach((el, idx) => {
-        listaPiezas += `   └─ Pieza #${idx + 1}:\n`;
-        listaPiezas += `      📏 Ancho: ${(el.size.width * 100).toFixed(0)} cm\n`;
-        listaPiezas += `      📐 Alto: ${(el.size.height * 100).toFixed(0)} cm\n`;
-        listaPiezas += `      📏 Fondo: ${(el.size.depth * 100).toFixed(0)} cm\n`;
-        listaPiezas += `      📍 Posición: X=${(el.position.x * 100).toFixed(0)} cm, Y=${(el.position.y * 100).toFixed(0)} cm\n`;
-      });
-      listaPiezas += `\n`;
-    }
-    
-    listaPiezas += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    listaPiezas += `📊 RESUMEN FINAL\n`;
-    listaPiezas += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-    listaPiezas += `Total de piezas: ${elements.length}\n`;
-    listaPiezas += `Módulos generados: ${moduloCount}\n`;
-    listaPiezas += `Material estándar: Aglomerado de 15mm\n`;
-    
-    // Datos del cliente
-    let datosCliente = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-    datosCliente += "👤 DATOS DEL CLIENTE\n";
-    datosCliente += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-    datosCliente += `Nombre completo: ${nombre}\n`;
-    datosCliente += `Teléfono móvil: ${telefono}\n`;
-    datosCliente += `Correo electrónico: ${email || "No especificado"}\n`;
-    datosCliente += `Dirección: ${direccion || "No especificada"}\n\n`;
-    
-    datosCliente += `📋 REQUERIMIENTO DEL CLIENTE:\n${requerimiento || "No especificado"}\n\n`;
-    datosCliente += `💬 COMENTARIOS ADICIONALES:\n${notas || "Sin comentarios adicionales"}\n\n`;
-    
-    // Crear el cuerpo del correo
-    const subject = `NUEVO DISEÑO DE MUEBLE - Cliente: ${nombre}`;
-    const body = `${listaPiezas}\n\n${datosCliente}`;
-    
-    // Abrir el cliente de correo
-    window.location.href = `mailto:miguel_716@hotmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    setTimeout(() => {
-      document.getElementById('loadingSpinner').style.display = 'none';
-      closeSendModal();
-      alert("✅ Diseño enviado correctamente a CR Design.\n\nEn breve recibirás respuesta con tu presupuesto.");
-      
-      // Limpiar formulario
-      document.getElementById('clientName').value = '';
-      document.getElementById('clientPhone').value = '';
-      document.getElementById('clientEmail').value = '';
-      document.getElementById('clientAddress').value = '';
-      document.getElementById('clientRequirement').value = '';
-      document.getElementById('clientNotes').value = '';
-    }, 1000);
-  }
-  
-  // ============================================
-  // UTILIDADES
-  // ============================================
-  
+
   function updateUI() {
-    const listContainer = document.getElementById('elements-list');
-    listContainer.innerHTML = '';
-    
+    const container = document.getElementById('elements-list');
+    container.innerHTML = '';
     elements.forEach(el => {
       const div = document.createElement('div');
       div.className = 'element-item' + (selectedElement === el ? ' selected' : '');
       const config = elementTypes[el.type];
-      const icon = config ? config.icon : '📦';
-      div.innerHTML = `<div class="element-name">${icon} ${config?.nombre || el.type} #${el.id}</div><button class="btn" style="padding: 2px 6px;" onclick="window.selectElementById(${el.id})">✏️</button>`;
+      div.innerHTML = `<span>${config?.icon || '📦'} ${config?.nombre || el.type} #${el.id}</span><button class="btn" style="padding:2px 6px;" onclick="window.selectElementById(${el.id})">✏️</button>`;
       div.onclick = () => selectElement(el);
-      listContainer.appendChild(div);
+      container.appendChild(div);
     });
-    
-    const puertas = elements.filter(e => e.type === 'puerta').length;
     document.getElementById('med-total').innerHTML = elements.length;
-    document.getElementById('med-puertas').innerHTML = puertas;
+    document.getElementById('med-puertas').innerHTML = elements.filter(e => e.type === 'puerta').length;
     document.getElementById('med-modulos-generados').innerHTML = moduloCount;
-    
-    const infoDiv = document.getElementById('selected-info');
-    if (selectedElement) {
-      const config = elementTypes[selectedElement.type];
-      infoDiv.innerHTML = `<div style="color: #C4A46B;">${config?.nombre || selectedElement.type} #${selectedElement.id}</div>`;
-    } else {
-      infoDiv.innerHTML = `<div style="color: #aaa;">Ninguno seleccionado</div>`;
-    }
+    document.getElementById('selected-info').innerHTML = selectedElement ? `<div style="color:#C4A46B;">${elementTypes[selectedElement.type]?.nombre || selectedElement.type} #${selectedElement.id}</div>` : '<div style="color:#aaa;">Ninguno</div>';
   }
-  
-  window.selectElementById = (id) => {
-    const el = elements.find(e => e.id === id);
-    if (el) selectElement(el);
-  };
-  
+
+  window.selectElementById = (id) => { const el = elements.find(e => e.id === id); if (el) selectElement(el); };
+
   function setView(view) {
     switch(view) {
       case 'front': camera.position.set(0, 1.2, 5); controls.target.set(0, 1.2, 0); break;
@@ -775,20 +474,138 @@
     }
     controls.update();
   }
-  
-  function resetView() {
-    camera.position.set(4, 2.5, 4);
+
+  function resetView() { camera.position.set(4, 2.5, 4); controls.target.set(0, 1.2, 0); controls.update(); }
+
+  function showSendModal() {
+    if (elements.length === 0) { alert("❌ No hay elementos para enviar"); return; }
+    document.getElementById('sendModal').classList.add('show');
+  }
+
+  function closeSendModal() { document.getElementById('sendModal').classList.remove('show'); }
+
+  function sendDesignToEmail() {
+    const nombre = document.getElementById('clientName').value.trim();
+    const telefono = document.getElementById('clientPhone').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    const direccion = document.getElementById('clientAddress').value.trim();
+    const requerimiento = document.getElementById('clientRequirement').value.trim();
+    const notas = document.getElementById('clientNotes').value.trim();
+    
+    if (!nombre) { alert("❌ Ingresa tu nombre"); return; }
+    if (!telefono) { alert("❌ Ingresa tu teléfono"); return; }
+    
+    document.getElementById('loadingSpinner').style.display = 'block';
+    
+    // Capturar imagen del diseño 3D
+    // Ajustar cámara para mejor vista antes de capturar
+    const originalPos = camera.position.clone();
+    const originalTarget = controls.target.clone();
+    
+    // Posición isométrica para la captura
+    camera.position.set(3, 2, 4);
     controls.target.set(0, 1.2, 0);
     controls.update();
+    
+    // Esperar un frame para que la cámara se actualice
+    setTimeout(() => {
+      // Capturar canvas como imagen
+      const canvas = renderer.domElement;
+      const imageData = canvas.toDataURL('image/png');
+      
+      // Generar lista de piezas
+      let listaPiezas = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 LISTA DE PIEZAS DEL MUEBLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+      const piezasPorTipo = {};
+      elements.forEach(el => {
+        const nombrePieza = elementTypes[el.type]?.nombre || el.type;
+        if (!piezasPorTipo[nombrePieza]) piezasPorTipo[nombrePieza] = [];
+        piezasPorTipo[nombrePieza].push(el);
+      });
+      for (const [nombrePieza, piezas] of Object.entries(piezasPorTipo)) {
+        listaPiezas += `🔹 ${nombrePieza} (${piezas.length} unidades)\n`;
+        piezas.forEach((el, i) => {
+          listaPiezas += `   └─ Pieza #${i+1}: ${(el.size.width*100).toFixed(0)} x ${(el.size.height*100).toFixed(0)} x ${(el.size.depth*100).toFixed(0)} cm\n`;
+          listaPiezas += `      📍 Posición: X=${(el.position.x*100).toFixed(0)} cm, Y=${(el.position.y*100).toFixed(0)} cm\n`;
+        });
+        listaPiezas += `\n`;
+      }
+      
+      listaPiezas += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📊 RESUMEN FINAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      listaPiezas += `Total de piezas: ${elements.length}\n`;
+      listaPiezas += `Módulos generados: ${moduloCount}\n`;
+      listaPiezas += `Material estándar: Aglomerado de 15mm\n\n`;
+      
+      const datosCliente = `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n👤 DATOS DEL CLIENTE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nNombre completo: ${nombre}\nTeléfono móvil: ${telefono}\nCorreo electrónico: ${email || "No especificado"}\nDirección: ${direccion || "No especificada"}\n\n📋 REQUERIMIENTO:\n${requerimiento || "No especificado"}\n\n💬 COMENTARIOS ADICIONALES:\n${notas || "Sin comentarios adicionales"}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📸 CAPTURA DEL DISEÑO 3D\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n[La imagen del diseño se adjunta a este correo]`;
+      
+      const cuerpoCompleto = listaPiezas + "\n" + datosCliente;
+      
+      // Crear formulario con la imagen incrustada
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://formsubmit.co/miguel_716@hotmail.com';
+      form.style.display = 'none';
+      form.enctype = 'multipart/form-data';
+      
+      const campos = [
+        { name: 'name', value: nombre },
+        { name: 'email', value: email || 'cliente@sinemail.com' },
+        { name: '_subject', value: `🎨 NUEVO DISEÑO 3D - ${nombre}` },
+        { name: 'message', value: cuerpoCompleto },
+        { name: '_captcha', value: 'false' },
+        { name: '_template', value: 'table' },
+        { name: '_replyto', value: email || '' }
+      ];
+      
+      campos.forEach(c => { const i = document.createElement('input'); i.type = 'hidden'; i.name = c.name; i.value = c.value; form.appendChild(i); });
+      
+      // Agregar la imagen como archivo adjunto (convertir base64 a blob)
+      fetch(imageData)
+        .then(res => res.blob())
+        .then(blob => {
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.name = 'attachment';
+          const file = new File([blob], `diseno_${nombre.replace(/\s/g, '_')}.png`, { type: 'image/png' });
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInput.files = dataTransfer.files;
+          form.appendChild(fileInput);
+          
+          document.body.appendChild(form);
+          form.submit();
+          
+          // Restaurar cámara
+          camera.position.copy(originalPos);
+          controls.target.copy(originalTarget);
+          controls.update();
+          
+          setTimeout(() => {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            closeSendModal();
+            alert("✅ Diseño enviado correctamente a CR Design.\n\nIncluye la captura 3D y la lista de piezas.\n\nEn breve recibirás respuesta con tu presupuesto.");
+            
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientAddress').value = '';
+            document.getElementById('clientRequirement').value = '';
+            document.getElementById('clientNotes').value = '';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error("Error al capturar imagen:", err);
+          alert("❌ Error al capturar la imagen. Intenta de nuevo.");
+          document.getElementById('loadingSpinner').style.display = 'none';
+          // Restaurar cámara
+          camera.position.copy(originalPos);
+          controls.target.copy(originalTarget);
+          controls.update();
+        });
+    }, 100);
   }
-  
-  function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
-  }
-  
-  // Exponer funciones globales
+
+  function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+
   window.addElement = addElement;
   window.addEstanteInteligente = addEstanteInteligente;
   window.generateModule = generateModule;
@@ -801,18 +618,10 @@
   window.showSendModal = showSendModal;
   window.closeSendModal = closeSendModal;
   window.sendDesignToEmail = sendDesignToEmail;
-  
+
   init();
   animate();
-  
-  window.addEventListener('resize', () => {
-    const container = document.getElementById('canvas-container');
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
-  });
+  window.addEventListener('resize', () => { const w = document.getElementById('canvas-container').clientWidth, h = document.getElementById('canvas-container').clientHeight; camera.aspect = w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); });
 </script>
 </body>
 </html>
