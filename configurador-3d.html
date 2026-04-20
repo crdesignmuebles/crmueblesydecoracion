@@ -369,7 +369,6 @@ textarea.form-inp{resize:vertical;min-height:72px;line-height:1.5}
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.128.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.128.0/examples/jsm/"}}</script>
 <script type="module">
 'use strict';
-// Anti-copy protection
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('keydown',e=>{
   if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))||(e.ctrlKey&&e.key==='U'))
@@ -588,35 +587,80 @@ function setView(v){
   cam.position.set(vd[0],vd[1],vd[2]);oc.target.set(vd[3],vd[4],vd[5]);oc.update();
 }
 
+// ========== ENVÍO MEJORADO con imagen adjunta directa a correo ==========
 function doSend(){
   const nm=document.getElementById('fn').value.trim();
   const ph=document.getElementById('fp').value.trim();
   if(!nm||!ph){alert('Nombre y teléfono son requeridos');return;}
-  document.getElementById('fspin').style.display='block';
+  
+  const spin=document.getElementById('fspin');
+  spin.style.display='block';
+  
+  // Capturar la imagen actual del canvas (diseño 3D)
   ren.render(sc,cam);
-  setTimeout(()=>{
-    const img=ren.domElement.toDataURL('image/png');
-    let lista='━━━━ LISTA DE PIEZAS ━━━━\n\n';
-    els.forEach(e=>{lista+=`${ET[e.t]?.n||e.t}: ${(e.s.w*100).toFixed(0)}×${(e.s.h*100).toFixed(0)}×${(e.s.d*100).toFixed(0)} cm\n`;});
-    lista+=`\n━━━━ CLIENTE ━━━━\nNombre: ${nm}\nTeléfono: ${ph}\nEmail: ${document.getElementById('fe').value||'-'}\nDirección: ${document.getElementById('fa').value||'-'}\nNecesita: ${document.getElementById('fq').value||'-'}\nComentarios: ${document.getElementById('fc').value||'-'}`;
-    const frm=document.createElement('form');
-    frm.method='POST';frm.action='https://formsubmit.co/miguel_716@hotmail.com';frm.style.display='none';
-    [{n:'name',v:nm},{n:'email',v:document.getElementById('fe').value||'cliente@crdesign.com'},{n:'_subject',v:`Diseño 3D - ${nm}`},{n:'message',v:lista},{n:'_captcha',v:'false'},{n:'_template',v:'table'}]
-    .forEach(c=>{const i=document.createElement('input');i.type='hidden';i.name=c.n;i.value=c.v;frm.appendChild(i);});
-    fetch(img).then(r=>r.blob()).then(b=>{
-      const f=new File([b],`diseno_${nm.replace(/\s/g,'_')}.png`,{type:'image/png'});
-      const inp=document.createElement('input');inp.type='file';inp.name='attachment';
-      const dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;
-      frm.appendChild(inp);document.body.appendChild(frm);frm.submit();
+  const imgDataURL=ren.domElement.toDataURL('image/png');
+  
+  // Construir lista de piezas
+  let lista='━━━━ LISTA DE PIEZAS ━━━━\n\n';
+  els.forEach(e=>{
+    lista+=`${ET[e.t]?.n||e.t}: ${(e.s.w*100).toFixed(0)}×${(e.s.h*100).toFixed(0)}×${(e.s.d*100).toFixed(0)} cm\n`;
+  });
+  lista+=`\n━━━━ CLIENTE ━━━━\nNombre: ${nm}\nTeléfono: ${ph}\nEmail: ${document.getElementById('fe').value||'-'}\nDirección: ${document.getElementById('fa').value||'-'}\nNecesita: ${document.getElementById('fq').value||'-'}\nComentarios: ${document.getElementById('fc').value||'-'}`;
+  
+  // Crear formulario dinámico con FormSubmit y adjuntar la imagen como archivo
+  const form=document.createElement('form');
+  form.method='POST';
+  form.action='https://formsubmit.co/miguel_716@hotmail.com';
+  form.style.display='none';
+  form.enctype='multipart/form-data';
+  
+  // Datos básicos
+  const fields=[
+    {name:'name',value:nm},
+    {name:'email',value:document.getElementById('fe').value || 'cliente@crdesign.com'},
+    {name:'_subject',value:`Diseño 3D - ${nm}`},
+    {name:'message',value:lista},
+    {name:'_captcha',value:'false'},
+    {name:'_template',value:'table'}
+  ];
+  fields.forEach(f=>{
+    const inp=document.createElement('input');
+    inp.type='hidden';
+    inp.name=f.name;
+    inp.value=f.value;
+    form.appendChild(inp);
+  });
+  
+  // Convertir dataURL a Blob y luego a File para adjuntar
+  fetch(imgDataURL)
+    .then(res=>res.blob())
+    .then(blob=>{
+      const file=new File([blob],`diseno_${nm.replace(/\s/g,'_')}.png`,{type:'image/png'});
+      const fileInput=document.createElement('input');
+      fileInput.type='file';
+      fileInput.name='attachment';
+      const dt=new DataTransfer();
+      dt.items.add(file);
+      fileInput.files=dt.files;
+      form.appendChild(fileInput);
+      document.body.appendChild(form);
+      form.submit();
+      
+      // Limpiar y cerrar después del envío
       setTimeout(()=>{
-        document.getElementById('fspin').style.display='none';
+        spin.style.display='none';
         W.closeSend();
-        alert('✓ Diseño enviado correctamente a CR Design');
+        alert('✓ Diseño enviado correctamente a CR Design (incluye captura 3D)');
         ['fn','fp','fe','fa','fq','fc'].forEach(id=>document.getElementById(id).value='');
       },2000);
+    })
+    .catch(err=>{
+      console.error(err);
+      spin.style.display='none';
+      alert('Error al generar la imagen. Inténtalo de nuevo.');
     });
-  },200);
 }
+// =====================================================
 
 function animate(){requestAnimationFrame(animate);oc.update();ren.render(sc,cam);}
 
@@ -657,7 +701,8 @@ window.W={
   },
   showSend:()=>{if(els.length===0){alert('No hay elementos para enviar');return;}document.getElementById('modal-wrap').classList.add('show');},
   closeSend:()=>document.getElementById('modal-wrap').classList.remove('show'),
-  doSend,setView,resetView:()=>setView('iso'),
+  doSend,
+  setView,resetView:()=>setView('iso'),
   selById:(id)=>{const el=els.find(x=>x.id===id);if(el){sel.clear();sel.add(el);updSel();updUI();}},
   updPos,updSize
 };
