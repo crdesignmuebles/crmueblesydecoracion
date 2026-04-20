@@ -57,22 +57,30 @@
   /* Modal de envío */
   .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center;
   }
   .modal-overlay.show { display: flex; }
   .modal-content {
-    background: #2c2c2c; border-radius: 10px; padding: 25px; width: 90%; max-width: 400px;
-    border: 1px solid #C4A46B; text-align: center;
+    background: #2c2c2c; border-radius: 10px; padding: 25px; width: 90%; max-width: 450px;
+    border: 1px solid #C4A46B; max-height: 90vh; overflow-y: auto;
   }
-  .modal-content h3 { color: #C4A46B; margin-bottom: 15px; }
-  .modal-content input, .modal-content textarea {
-    width: 100%; padding: 10px; margin: 8px 0; background: #3a3a3a;
-    border: 1px solid #555; border-radius: 5px; color: white;
+  .modal-content h3 { color: #C4A46B; margin-bottom: 15px; text-align: center; }
+  .modal-content h4 { color: #aaa; font-size: 12px; margin: 15px 0 8px 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
+  .modal-content input, .modal-content textarea, .modal-content select {
+    width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #3a3a3a;
+    border: 1px solid #555; border-radius: 5px; color: white; font-size: 13px;
   }
-  .modal-content button { margin: 10px 5px; padding: 10px 20px; cursor: pointer; }
-  .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; }
-  .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; }
-  .loading { display: none; text-align: center; margin-top: 10px; color: #C4A46B; }
+  .modal-content input:focus, .modal-content textarea:focus { outline: none; border-color: #C4A46B; }
+  .modal-content label { font-size: 12px; color: #aaa; display: block; margin-top: 5px; }
+  .modal-buttons { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
+  .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
+  .btn-enviar:hover { background: #40916C; }
+  .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
+  .btn-cancelar:hover { background: #666; }
+  .loading { display: none; text-align: center; margin-top: 15px; color: #C4A46B; font-size: 12px; }
+  .required { color: #C4A46B; font-size: 10px; }
+  
+  .campo-opcional { font-size: 10px; color: #666; margin-left: 5px; }
 </style>
 </head>
 <body>
@@ -178,17 +186,35 @@
   <div class="float-btn" onclick="resetView()">⟳</div>
 </div>
 
-<!-- Modal de envío -->
+<!-- Modal de envío con todos los campos -->
 <div id="sendModal" class="modal-overlay">
   <div class="modal-content">
     <h3>📧 Enviar diseño a CR Design</h3>
-    <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">Tus datos para que podamos contactarte</p>
-    <input type="text" id="clientName" placeholder="Tu nombre completo" required>
-    <input type="email" id="clientEmail" placeholder="Tu correo electrónico" required>
-    <input type="tel" id="clientPhone" placeholder="Tu teléfono (opcional)">
-    <textarea id="clientNotes" rows="2" placeholder="Comentarios adicionales..."></textarea>
+    <p style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px;">Completa tus datos para recibir tu presupuesto</p>
+    
+    <h4>📝 DATOS PERSONALES</h4>
+    <label>Nombre completo <span class="required">*</span></label>
+    <input type="text" id="clientName" placeholder="Ej: Carlos Ramírez González" required>
+    
+    <label>Teléfono móvil <span class="required">*</span></label>
+    <input type="tel" id="clientPhone" placeholder="Ej: 300 123 4567" required>
+    
+    <label>Correo electrónico <span class="campo-opcional">(opcional)</span></label>
+    <input type="email" id="clientEmail" placeholder="correo@ejemplo.com">
+    
+    <label>Dirección de residencia <span class="campo-opcional">(opcional)</span></label>
+    <input type="text" id="clientAddress" placeholder="Ciudad, barrio, dirección">
+    
+    <h4>📋 DETALLE DEL PROYECTO</h4>
+    <label>¿Qué tipo de mueble necesitas? <span class="campo-opcional">(opcional)</span></label>
+    <textarea id="clientRequirement" rows="2" placeholder="Ej: Armario empotrado, cocina, closet, vestier, etc."></textarea>
+    
+    <label>Mensaje o comentarios adicionales <span class="campo-opcional">(opcional)</span></label>
+    <textarea id="clientNotes" rows="3" placeholder="Medidas especiales, colores, materiales, fecha deseada, etc."></textarea>
+    
     <div class="loading" id="loadingSpinner">📤 Enviando diseño... Por favor espera</div>
-    <div>
+    
+    <div class="modal-buttons">
       <button class="btn-cancelar" onclick="closeSendModal()">Cancelar</button>
       <button class="btn-enviar" onclick="sendDesignToEmail()">Enviar diseño</button>
     </div>
@@ -600,7 +626,7 @@
   }
   
   // ============================================
-  // ENVÍO DE DISEÑO POR EMAIL (SOLO A TI)
+  // ENVÍO DE DISEÑO POR EMAIL CON TODOS LOS DATOS
   // ============================================
   
   function showSendModal() {
@@ -616,77 +642,77 @@
     document.getElementById('loadingSpinner').style.display = 'none';
   }
   
-  async function sendDesignToEmail() {
+  function sendDesignToEmail() {
     const nombre = document.getElementById('clientName').value.trim();
-    const email = document.getElementById('clientEmail').value.trim();
     const telefono = document.getElementById('clientPhone').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    const direccion = document.getElementById('clientAddress').value.trim();
+    const requerimiento = document.getElementById('clientRequirement').value.trim();
     const notas = document.getElementById('clientNotes').value.trim();
     
-    if (!nombre || !email) {
-      alert("Por favor ingresa tu nombre y correo electrónico");
+    // Validar campos obligatorios
+    if (!nombre) {
+      alert("❌ Por favor ingresa tu nombre completo");
+      return;
+    }
+    if (!telefono) {
+      alert("❌ Por favor ingresa tu número de teléfono móvil");
       return;
     }
     
     document.getElementById('loadingSpinner').style.display = 'block';
     
     // Generar lista de piezas
-    let listaPiezas = "📋 LISTA DE PIEZAS DEL MUEBLE\n";
-    listaPiezas += "══════════════════════════════════════\n\n";
+    let listaPiezas = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+    listaPiezas += "📋 LISTA DE PIEZAS DEL MUEBLE\n";
+    listaPiezas += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
     
+    // Agrupar por tipo de pieza
+    const piezasPorTipo = {};
     elements.forEach(el => {
       const config = elementTypes[el.type];
       const nombrePieza = config ? config.nombre : el.type;
-      listaPiezas += `🔹 ${nombrePieza} #${el.id}\n`;
-      listaPiezas += `   📏 Ancho: ${(el.size.width * 100).toFixed(0)} cm\n`;
-      listaPiezas += `   📐 Alto: ${(el.size.height * 100).toFixed(0)} cm\n`;
-      listaPiezas += `   📏 Fondo: ${(el.size.depth * 100).toFixed(0)} cm\n`;
-      listaPiezas += `   📍 Posición: X=${(el.position.x * 100).toFixed(0)} cm, Y=${(el.position.y * 100).toFixed(0)} cm, Z=${(el.position.z * 100).toFixed(0)} cm\n`;
-      listaPiezas += `   ${el.type === 'lateral' ? '🧱 Material: Aglomerado 15mm' : ''}\n`;
-      listaPiezas += `   ${el.type === 'estante' ? '📦 Material: Aglomerado 15mm' : ''}\n`;
-      listaPiezas += `   ${el.type === 'puerta' ? '🚪 Material: Aglomerado 15mm + acabado' : ''}\n`;
-      listaPiezas += `\n`;
+      if (!piezasPorTipo[nombrePieza]) piezasPorTipo[nombrePieza] = [];
+      piezasPorTipo[nombrePieza].push(el);
     });
     
-    listaPiezas += `\n📊 RESUMEN FINAL\n`;
-    listaPiezas += `══════════════════════════════════════\n`;
+    for (const [nombrePieza, piezas] of Object.entries(piezasPorTipo)) {
+      listaPiezas += `🔹 ${nombrePieza} (${piezas.length} unidades)\n`;
+      piezas.forEach((el, idx) => {
+        listaPiezas += `   └─ Pieza #${idx + 1}:\n`;
+        listaPiezas += `      📏 Ancho: ${(el.size.width * 100).toFixed(0)} cm\n`;
+        listaPiezas += `      📐 Alto: ${(el.size.height * 100).toFixed(0)} cm\n`;
+        listaPiezas += `      📏 Fondo: ${(el.size.depth * 100).toFixed(0)} cm\n`;
+        listaPiezas += `      📍 Posición: X=${(el.position.x * 100).toFixed(0)} cm, Y=${(el.position.y * 100).toFixed(0)} cm\n`;
+      });
+      listaPiezas += `\n`;
+    }
+    
+    listaPiezas += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    listaPiezas += `📊 RESUMEN FINAL\n`;
+    listaPiezas += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     listaPiezas += `Total de piezas: ${elements.length}\n`;
     listaPiezas += `Módulos generados: ${moduloCount}\n`;
     listaPiezas += `Material estándar: Aglomerado de 15mm\n`;
     
-    // Tomar captura de pantalla del canvas 3D
-    const canvas = renderer.domElement;
-    const dataURL = canvas.toDataURL('image/png');
+    // Datos del cliente
+    let datosCliente = "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+    datosCliente += "👤 DATOS DEL CLIENTE\n";
+    datosCliente += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+    datosCliente += `Nombre completo: ${nombre}\n`;
+    datosCliente += `Teléfono móvil: ${telefono}\n`;
+    datosCliente += `Correo electrónico: ${email || "No especificado"}\n`;
+    datosCliente += `Dirección: ${direccion || "No especificada"}\n\n`;
+    
+    datosCliente += `📋 REQUERIMIENTO DEL CLIENTE:\n${requerimiento || "No especificado"}\n\n`;
+    datosCliente += `💬 COMENTARIOS ADICIONALES:\n${notas || "Sin comentarios adicionales"}\n\n`;
     
     // Crear el cuerpo del correo
     const subject = `NUEVO DISEÑO DE MUEBLE - Cliente: ${nombre}`;
-    const body = `
-${listaPiezas}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-DATOS DEL CLIENTE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Nombre: ${nombre}
-Email: ${email}
-Teléfono: ${telefono || "No especificado"}
-
-NOTAS ADICIONALES:
-${notas || "Sin comentarios adicionales"}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Este diseño fue creado con el configurador 3D de CR Design.
-Las dimensiones están en centímetros (cm).
-Material estándar: Aglomerado de 15mm.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    `;
-    
-    // Crear un enlace mailto con la imagen (la imagen va como adjunto simulada)
-    const mailtoLink = `mailto:miguel_716@hotmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // También guardar la imagen localmente para adjuntar (simulación)
-    // En un entorno real, necesitarías un servidor, pero esto funciona para enviar el enlace
+    const body = `${listaPiezas}\n\n${datosCliente}`;
     
     // Abrir el cliente de correo
-    window.location.href = mailtoLink;
+    window.location.href = `mailto:miguel_716@hotmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
     setTimeout(() => {
       document.getElementById('loadingSpinner').style.display = 'none';
@@ -695,8 +721,10 @@ Material estándar: Aglomerado de 15mm.
       
       // Limpiar formulario
       document.getElementById('clientName').value = '';
-      document.getElementById('clientEmail').value = '';
       document.getElementById('clientPhone').value = '';
+      document.getElementById('clientEmail').value = '';
+      document.getElementById('clientAddress').value = '';
+      document.getElementById('clientRequirement').value = '';
       document.getElementById('clientNotes').value = '';
     }, 1000);
   }
