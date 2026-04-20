@@ -5,7 +5,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>CR Design 3D Constructor - Crea tu mueble</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #1a1a1a; overflow: hidden; height: 100vh; }
+
+  .toolbar {
+    position: fixed; top: 0; left: 0; right: 0; height: auto;
+    background: #2c2c2c; border-bottom: 1px solid #444;
+    display: flex; flex-wrap: wrap; align-items: center;
+    padding: 8px 15px; gap: 6px;
+    z-index: 100;
+  }
+  .logo { font-size: 13px; font-weight: 700; background: linear-gradient(135deg, #C4A46B, #E8D8B0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-right: 10px; }
+  .btn { padding: 5px 10px; background: #3a3a3a; border: none; border-radius: 5px; color: #e0e0e0; cursor: pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+  .btn:hover { background: #4a4a4a; transform: translateY(-1px); }
+  .btn-primary { background: #C4A46B; color: #1a1a1a; }
+  .btn-danger { background: #8B3A3A; color: #fff; }
+  .btn-success { background: #2D6A4F; color: #fff; }
+  .separator { width: 1px; height: 25px; background: #555; margin: 0 5px; }
+  .toolbar-group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+
+  .sidebar-left { position: fixed; left: 0; top: 85px; bottom: 0; width: 320px; background: #252525; border-right: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
+  .sidebar-right { position: fixed; right: 0; top: 85px; bottom: 0; width: 280px; background: #252525; border-left: 1px solid #444; overflow-y: auto; padding: 15px; z-index: 90; }
+  #canvas-container { position: fixed; top: 85px; left: 320px; right: 280px; bottom: 0; background: #1a1a1a; }
+  canvas { width: 100%; height: 100%; display: block; }
+
+  .section { margin-bottom: 20px; border-bottom: 1px solid #3a3a3a; padding-bottom: 15px; }
+  .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #C4A46B; margin-bottom: 12px; font-weight: 600; }
+
+  .element-list { max-height: 280px; overflow-y: auto; }
+  .element-item { background: #333; margin-bottom: 5px; padding: 7px 8px; border-radius: 5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; font-size: 11px; }
+  .element-item:hover { background: #3d3d3d; }
+  .element-item.selected { border-color: #C4A46B; background: #3a3a3a; }
+
+  .transform-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px; }
+  .transform-input { background: #333; border: 1px solid #444; border-radius: 4px; padding: 5px 6px; color: #e0e0e0; font-size: 11px; width: 100%; }
+  .transform-input:focus { outline: none; border-color: #C4A46B; }
+
+  .medidas-realtime { background: #333; border-radius: 6px; padding: 10px; margin-top: 10px; font-size: 11px; }
+  .medidas-realtime span { color: #C4A46B; font-weight: bold; }
+
+  .float-buttons { position: fixed; bottom: 20px; right: 300px; display: flex; gap: 8px; z-index: 95; }
+  .float-btn { width: 38px; height: 38px; background: #2c2c2c; border: 1px solid #555; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .float-btn:hover { background: #C4A46B; }
+
+  @media (max-width: 900px) { .sidebar-left, .sidebar-right { display: none; } #canvas-container { left: 0; right: 0; } .float-buttons { right: 20px; } }
+  
+  .grosor-info { background: #2a2a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #C4A46B; text-align: center; }
+  .status-info { background: #1e3a2a; border-radius: 5px; padding: 8px; margin-bottom: 10px; font-size: 10px; color: #8bc34a; text-align: center; }
+
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-content {
+    background: #2c2c2c; border-radius: 10px; padding: 25px; width: 90%; max-width: 450px;
+    border: 1px solid #C4A46B; max-height: 90vh; overflow-y: auto;
+  }
+  .modal-content h3 { color: #C4A46B; margin-bottom: 15px; text-align: center; }
+  .modal-content h4 { color: #aaa; font-size: 12px; margin: 15px 0 8px 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
+  .modal-content input, .modal-content textarea {
+    width: 100%; padding: 10px; margin: 5px 0 10px 0; background: #3a3a3a;
+    border: 1px solid #555; border-radius: 5px; color: white; font-size: 13px;
+  }
+  .modal-content input:focus, .modal-content textarea:focus { outline: none; border-color: #C4A46B; }
+  .modal-content label { font-size: 12px; color: #aaa; display: block; margin-top: 5px; }
+  .modal-buttons { display: flex; gap: 10px; margin-top: 20px; justify-content: center; }
+  .btn-enviar { background: #2D6A4F; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
+  .btn-enviar:hover { background: #40916C; }
+  .btn-cancelar { background: #555; color: white; border: none; border-radius: 5px; padding: 12px 25px; cursor: pointer; font-size: 14px; }
+  .loading { display: none; text-align: center; margin-top: 15px; color: #C4A46B; font-size: 12px; }
+  .required { color: #C4A46B; }
+  .campo-opcional { font-size: 10px; color: #666; margin-left: 5px; }
+  
+  .preview-img { max-width: 100%; margin: 10px 0; border-radius: 5px; display: none; }
+</style>
 </head>
 <body>
 
