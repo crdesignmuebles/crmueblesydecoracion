@@ -101,13 +101,13 @@
   <div class="separator"></div>
   <div class="toolbar-group">
     <span style="color:#aaa; font-size:10px;">PUERTAS:</span>
-    <button class="btn" onclick="addElement('puerta')">🚪 Puerta</button>
+    <button class="btn btn-primary" onclick="addPuertasAModulo()">🚪 Añadir 2 puertas al módulo</button>
     <button class="btn" onclick="addElement('tirador')">🔘 Tirador</button>
   </div>
   <div class="separator"></div>
   <div class="toolbar-group">
     <span style="color:#aaa; font-size:10px;">INTERIORES:</span>
-    <button class="btn btn-primary" onclick="addEstanteInteligente()">📦 Estante</button>
+    <button class="btn" onclick="addEstanteInteligente()">📦 Estante</button>
     <button class="btn" onclick="addElement('cajonero')">🗄️ Cajonero</button>
     <button class="btn" onclick="addElement('zapatero')">👟 Zapatero</button>
     <button class="btn" onclick="addElement('luz')">💡 Luz LED</button>
@@ -221,16 +221,17 @@
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
-  const GROSOR = 0.015;  // 15 mm para laterales, pisos, techos
-  const GROSOR_ESPALDAR = 0.010;  // 10 mm (1 cm) para espaldar
+  const GROSOR = 0.015;  // 15 mm
+  const GROSOR_ESPALDAR = 0.010;  // 10 mm (1 cm)
   let scene, camera, renderer, controls, transformControls;
   let elementsGroup = new THREE.Group();
   let elements = [];
   let selectedElement = null;
   let nextId = 1;
   let moduloCount = 0;
+  let modulos = []; // Almacenar información de cada módulo creado
   
-  // Historial para deshacer/rehacer
+  // Historial
   let history = [];
   let historyIndex = -1;
   const MAX_HISTORY = 50;
@@ -250,19 +251,18 @@
   ];
 
   const elementTypes = {
-    lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98, defaultSize: { w: GROSOR, h: 2.2, d: 0.6 }, defaultPos: { x: -0.9, y: 1.1, z: 0 } },
-    piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: GROSOR, d: 0.6 }, defaultPos: { x: 0, y: GROSOR/2, z: 0 } },
-    techo: { nombre: 'Techo', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: GROSOR, d: 0.6 }, defaultPos: { x: 0, y: 2.2 - GROSOR/2, z: 0 } },
-    espaldar: { nombre: 'Espaldar', icon: '📌', color: 0xD4BC98, defaultSize: { w: 2.0, h: 2.2, d: GROSOR_ESPALDAR }, defaultPos: { x: 0, y: 1.1, z: -0.6/2 + GROSOR_ESPALDAR/2 } },
-    puerta: { nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4, defaultSize: { w: 0.9, h: 2.1, d: GROSOR }, defaultPos: { x: -0.45, y: 1.05, z: 0.31 } },
-    tirador: { nombre: 'Tirador', icon: '🔘', color: 0xC4A46B, defaultSize: { w: 0.1, h: 0.02, d: 0.008 }, defaultPos: { x: -0.45, y: 1.1, z: 0.32 } },
-    estante: { nombre: 'Estante', icon: '📦', color: 0xE8D8C4, defaultSize: { w: 1.6, h: GROSOR, d: 0.5 }, defaultPos: { x: 0, y: 1.2, z: 0 } },
-    cajonero: { nombre: 'Cajonero', icon: '🗄️', color: 0xE8D8C4, defaultSize: { w: 0.5, h: 0.6, d: 0.45 }, defaultPos: { x: 0, y: 0.3, z: 0 } },
-    zapatero: { nombre: 'Zapatero', icon: '👟', color: 0xD4BC98, defaultSize: { w: 0.7, h: 0.15, d: 0.4 }, defaultPos: { x: 0, y: 0.15, z: 0 } },
-    luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA, defaultSize: { w: 0.4, h: 0.03, d: 0.03 }, defaultPos: { x: 0, y: 2.15, z: 0.2 } }
+    lateral: { nombre: 'Lateral', icon: '🧱', color: 0xD4BC98 },
+    piso: { nombre: 'Piso', icon: '📌', color: 0xD4BC98 },
+    techo: { nombre: 'Techo', icon: '📌', color: 0xD4BC98 },
+    espaldar: { nombre: 'Espaldar', icon: '📌', color: 0xD4BC98 },
+    puerta: { nombre: 'Puerta', icon: '🚪', color: 0xE8D8C4 },
+    tirador: { nombre: 'Tirador', icon: '🔘', color: 0xC4A46B },
+    estante: { nombre: 'Estante', icon: '📦', color: 0xE8D8C4 },
+    cajonero: { nombre: 'Cajonero', icon: '🗄️', color: 0xE8D8C4 },
+    zapatero: { nombre: 'Zapatero', icon: '👟', color: 0xD4BC98 },
+    luz: { nombre: 'Luz LED', icon: '💡', color: 0xFFEEAA }
   };
 
-  // Guardar estado en historial
   function saveToHistory() {
     const state = JSON.parse(JSON.stringify(elements.map(el => ({
       id: el.id,
@@ -271,72 +271,40 @@
       size: el.size,
       color: el.color || elementTypes[el.type]?.color
     }))));
-    
     history = history.slice(0, historyIndex + 1);
     history.push(state);
     if (history.length > MAX_HISTORY) history.shift();
     historyIndex = history.length - 1;
   }
   
-  function undo() {
-    if (historyIndex > 0) {
-      historyIndex--;
-      restoreState(history[historyIndex]);
-    }
-  }
-  
-  function redo() {
-    if (historyIndex < history.length - 1) {
-      historyIndex++;
-      restoreState(history[historyIndex]);
-    }
-  }
+  function undo() { if (historyIndex > 0) { historyIndex--; restoreState(history[historyIndex]); } }
+  function redo() { if (historyIndex < history.length - 1) { historyIndex++; restoreState(history[historyIndex]); } }
   
   function restoreState(state) {
     elements.forEach(el => elementsGroup.remove(el.mesh));
     elements = [];
-    
     state.forEach(saved => {
-      const config = elementTypes[saved.type];
-      if (!config) return;
-      
       const geometry = new THREE.BoxGeometry(saved.size.width, saved.size.height, saved.size.depth);
-      const material = new THREE.MeshStandardMaterial({ color: saved.color || config.color, roughness: 0.6 });
+      const material = new THREE.MeshStandardMaterial({ color: saved.color, roughness: 0.6 });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(saved.position.x, saved.position.y, saved.position.z);
       mesh.castShadow = true;
       mesh.userData = { id: saved.id, type: saved.type };
-      
       elementsGroup.add(mesh);
-      elements.push({
-        id: saved.id,
-        type: saved.type,
-        mesh: mesh,
-        position: saved.position,
-        size: saved.size,
-        color: saved.color
-      });
-      
+      elements.push({ ...saved, mesh });
       if (saved.id >= nextId) nextId = saved.id + 1;
     });
-    
     updateUI();
     if (selectedElement) selectElement(null);
   }
 
-  // Contador de visitas
   function updateVisitorCount() {
     let count = localStorage.getItem('crdesign_visits');
-    if (count === null) {
-      count = 1;
-    } else {
-      count = parseInt(count) + 1;
-    }
+    count = count ? parseInt(count) + 1 : 1;
     localStorage.setItem('crdesign_visits', count);
     document.getElementById('visitCount').innerText = count;
   }
 
-  // Cambiar color del elemento seleccionado
   function changeElementColor(colorHex) {
     if (!selectedElement) return;
     saveToHistory();
@@ -406,7 +374,6 @@
       }
     });
     
-    // Construir opciones de colores
     const colorContainer = document.getElementById('colorOptions');
     coloresDisponibles.forEach(c => {
       const colorDiv = document.createElement('div');
@@ -421,6 +388,95 @@
     animate();
     updateUI();
     saveToHistory();
+  }
+
+  // Encontrar módulo donde está el elemento seleccionado o el más cercano
+  function findModuloInfo() {
+    // Buscar laterales para identificar módulos
+    const laterales = elements.filter(e => e.type === 'lateral');
+    if (laterales.length < 2) return null;
+    
+    laterales.sort((a, b) => a.position.x - b.position.x);
+    
+    // Si hay un elemento seleccionado, encontrar en qué módulo está
+    if (selectedElement) {
+      const selX = selectedElement.position.x;
+      for (let i = 0; i < laterales.length - 1; i++) {
+        const latIzq = laterales[i];
+        const latDer = laterales[i + 1];
+        const centroX = (latIzq.position.x + latDer.position.x) / 2;
+        if (Math.abs(selX - centroX) < (latDer.position.x - latIzq.position.x) / 2) {
+          const anchoModulo = latDer.position.x - latIzq.position.x;
+          const altoModulo = elements.filter(e => e.type === 'techo')[0]?.position.y || 2.2;
+          return {
+            x: centroX,
+            ancho: anchoModulo,
+            alto: altoModulo,
+            fondo: latIzq.size.depth
+          };
+        }
+      }
+    }
+    
+    // Si no hay seleccionado, usar el último módulo creado o el primero
+    if (modulos.length > 0) {
+      const ultimo = modulos[modulos.length - 1];
+      return ultimo;
+    }
+    
+    return null;
+  }
+
+  // Añadir DOS puertas al módulo (izquierda y derecha, de piso a techo)
+  function addPuertasAModulo() {
+    const modulo = findModuloInfo();
+    if (!modulo) {
+      alert("❌ No se encontró ningún módulo. Crea un módulo primero con 'GENERAR MÓDULO'");
+      return;
+    }
+    
+    saveToHistory();
+    
+    const anchoTotal = modulo.ancho;
+    const alto = modulo.alto;
+    const fondo = modulo.fondo || 0.6;
+    const centroX = modulo.x;
+    const anchoPuerta = (anchoTotal - GROSOR) / 2;
+    const grosorPuerta = 0.018;
+    const colorPuerta = 0xE8D8C4;
+    
+    // Puerta izquierda
+    const puertaIzqId = nextId++;
+    const geoIzq = new THREE.BoxGeometry(anchoPuerta, alto, grosorPuerta);
+    const matIzq = new THREE.MeshStandardMaterial({ color: colorPuerta, roughness: 0.5 });
+    const puertaIzq = new THREE.Mesh(geoIzq, matIzq);
+    puertaIzq.position.set(centroX - anchoPuerta/2 - GROSOR/2, alto/2, fondo/2 + 0.01);
+    puertaIzq.castShadow = true;
+    puertaIzq.userData = { id: puertaIzqId, type: 'puerta' };
+    elementsGroup.add(puertaIzq);
+    elements.push({
+      id: puertaIzqId, type: 'puerta', mesh: puertaIzq,
+      position: { x: centroX - anchoPuerta/2 - GROSOR/2, y: alto/2, z: fondo/2 + 0.01 },
+      size: { width: anchoPuerta, height: alto, depth: grosorPuerta }
+    });
+    
+    // Puerta derecha
+    const puertaDerId = nextId++;
+    const geoDer = new THREE.BoxGeometry(anchoPuerta, alto, grosorPuerta);
+    const matDer = new THREE.MeshStandardMaterial({ color: colorPuerta, roughness: 0.5 });
+    const puertaDer = new THREE.Mesh(geoDer, matDer);
+    puertaDer.position.set(centroX + anchoPuerta/2 + GROSOR/2, alto/2, fondo/2 + 0.01);
+    puertaDer.castShadow = true;
+    puertaDer.userData = { id: puertaDerId, type: 'puerta' };
+    elementsGroup.add(puertaDer);
+    elements.push({
+      id: puertaDerId, type: 'puerta', mesh: puertaDer,
+      position: { x: centroX + anchoPuerta/2 + GROSOR/2, y: alto/2, z: fondo/2 + 0.01 },
+      size: { width: anchoPuerta, height: alto, depth: grosorPuerta }
+    });
+    
+    updateUI();
+    alert(`✅ Se añadieron 2 puertas al módulo\nPuerta izquierda y derecha\nAltura: ${(alto*100).toFixed(0)} cm (de piso a techo)`);
   }
 
   function findModuleForElement() {
@@ -460,30 +516,84 @@
   }
 
   function addElement(type) {
-    const config = elementTypes[type];
-    if (!config) return;
     saveToHistory();
     const id = nextId++;
-    let geometry, material, mesh;
-    if (type === 'tirador') {
-      geometry = new THREE.CylinderGeometry(0.008, 0.008, config.defaultSize.w, 8);
-      material = new THREE.MeshStandardMaterial({ color: config.color, metalness: 0.85 });
-      mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.z = Math.PI/2;
-    } else {
-      geometry = new THREE.BoxGeometry(config.defaultSize.w, config.defaultSize.h, config.defaultSize.d);
-      material = new THREE.MeshStandardMaterial({ color: config.color, roughness: 0.6 });
-      mesh = new THREE.Mesh(geometry, material);
+    let size, position, color, geometry, material, mesh;
+    
+    // Valores por defecto según tipo
+    switch(type) {
+      case 'lateral':
+        size = { w: GROSOR, h: 2.2, d: 0.6 };
+        position = { x: -0.9, y: 1.1, z: 0 };
+        color = 0xD4BC98;
+        break;
+      case 'piso':
+        size = { w: 2.0, h: GROSOR, d: 0.6 };
+        position = { x: 0, y: GROSOR/2, z: 0 };
+        color = 0xD4BC98;
+        break;
+      case 'techo':
+        size = { w: 2.0, h: GROSOR, d: 0.6 };
+        position = { x: 0, y: 2.2 - GROSOR/2, z: 0 };
+        color = 0xD4BC98;
+        break;
+      case 'espaldar':
+        size = { w: 2.0, h: 2.2, d: GROSOR_ESPALDAR };
+        position = { x: 0, y: 1.1, z: -0.6/2 + GROSOR_ESPALDAR/2 };
+        color = 0xD4BC98;
+        break;
+      case 'puerta':
+        size = { w: 0.9, h: 2.1, d: GROSOR };
+        position = { x: -0.45, y: 1.05, z: 0.31 };
+        color = 0xE8D8C4;
+        break;
+      case 'tirador':
+        geometry = new THREE.CylinderGeometry(0.008, 0.008, 0.1, 8);
+        material = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.85 });
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.z = Math.PI/2;
+        mesh.position.set(-0.45, 1.1, 0.32);
+        mesh.castShadow = true;
+        mesh.userData = { id, type };
+        elementsGroup.add(mesh);
+        elements.push({ id, type, mesh, position: { x: -0.45, y: 1.1, z: 0.32 }, size: { width: 0.1, height: 0.02, depth: 0.008 } });
+        updateUI();
+        return;
+      case 'cajonero':
+        size = { w: 0.5, h: 0.6, d: 0.45 };
+        position = { x: 0, y: 0.3, z: 0 };
+        color = 0xE8D8C4;
+        break;
+      case 'zapatero':
+        size = { w: 0.7, h: 0.15, d: 0.4 };
+        position = { x: 0, y: 0.15, z: 0 };
+        color = 0xD4BC98;
+        break;
+      case 'luz':
+        size = { w: 0.4, h: 0.03, d: 0.03 };
+        position = { x: 0, y: 2.15, z: 0.2 };
+        color = 0xFFEEAA;
+        break;
+      default: return;
     }
-    mesh.position.set(config.defaultPos.x, config.defaultPos.y, config.defaultPos.z);
+    
+    if (type === 'luz') {
+      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+      material = new THREE.MeshStandardMaterial({ color: color, emissive: 0xFFAA66, emissiveIntensity: 0.8 });
+    } else {
+      geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
+      material = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+    }
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(position.x, position.y, position.z);
     mesh.castShadow = true;
     mesh.userData = { id, type };
     elementsGroup.add(mesh);
-    elements.push({ id, type, mesh, position: { ...config.defaultPos }, size: { ...config.defaultSize } });
+    elements.push({ id, type, mesh, position, size });
     updateUI();
   }
 
-  // NUEVA FUNCIÓN: Generar módulo SIN puerta y con espaldar de 1 cm
+  // GENERAR MÓDULO - AHORA BIEN POSICIONADO UNO AL LADO DEL OTRO
   function generateModule() {
     let ancho = parseFloat(prompt("Ancho del módulo (cm):", "80")) / 100;
     let alto = parseFloat(prompt("Alto del módulo (cm):", "200")) / 100;
@@ -493,27 +603,32 @@
     
     saveToHistory();
     
-    // Calcular posición X para el nuevo módulo (uno al lado del otro)
+    // Calcular posición X para el nuevo módulo (UNO AL LADO DEL OTRO)
     let nuevaX = 0;
-    if (moduloCount > 0) {
+    
+    if (modulos.length === 0) {
+      nuevaX = 0;
+    } else {
+      // Buscar el módulo más a la derecha
       let maxX = -Infinity;
-      elements.forEach(el => { 
+      elements.forEach(el => {
         if (el.type === 'lateral') {
           const rightEdge = el.position.x + el.size.width/2;
           if (rightEdge > maxX) maxX = rightEdge;
         }
       });
+      // El nuevo módulo se coloca a la derecha del más alejado
       nuevaX = maxX + ancho/2;
     }
     
     const y = alto / 2;
     const fondoReal = fondo;
     
-    // Función auxiliar para añadir piezas
+    // Función para añadir pieza
     const addPieza = (type, pos, size, color = null) => {
       const id = nextId++;
       const geometry = new THREE.BoxGeometry(size.w, size.h, size.d);
-      const materialColor = color || elementTypes[type].color;
+      const materialColor = color || (type === 'puerta' ? 0xE8D8C4 : 0xD4BC98);
       const material = new THREE.MeshStandardMaterial({ color: materialColor, roughness: 0.6 });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(pos.x, pos.y, pos.z);
@@ -531,16 +646,22 @@
     addPieza('piso', { x: nuevaX, y: GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondoReal });
     // Techo
     addPieza('techo', { x: nuevaX, y: alto - GROSOR/2, z: 0 }, { w: ancho, h: GROSOR, d: fondoReal });
-    // Espaldar de 1 cm (GROSOR_ESPALDAR = 0.010)
+    // Espaldar de 1 cm
     addPieza('espaldar', { x: nuevaX, y: alto/2, z: -fondoReal/2 + GROSOR_ESPALDAR/2 }, { w: ancho, h: alto, d: GROSOR_ESPALDAR });
     
-    // NOTA: NO se añade puerta automáticamente
-    // El cliente puede añadir puertas manualmente con el botón "🚪 Puerta"
+    // Guardar información del módulo para futuras puertas
+    modulos.push({
+      x: nuevaX,
+      ancho: ancho,
+      alto: alto,
+      fondo: fondoReal,
+      indice: modulos.length + 1
+    });
     
     moduloCount++;
     updateUI();
     
-    alert(`✅ Módulo #${moduloCount} creado sin puerta\nDimensiones: ${(ancho*100).toFixed(0)} x ${(alto*100).toFixed(0)} x ${(fondoReal*100).toFixed(0)} cm\nEspaldar de 1 cm\n\nPuedes añadir puertas manualmente con el botón "🚪 Puerta"`);
+    alert(`✅ Módulo #${moduloCount} creado\nDimensiones: ${(ancho*100).toFixed(0)} x ${(alto*100).toFixed(0)} x ${(fondoReal*100).toFixed(0)} cm\nPosición X: ${(nuevaX*100).toFixed(0)} cm\n\nUsa el botón "Añadir 2 puertas al módulo" para agregar puertas.`);
   }
 
   function selectElement(element) {
@@ -594,7 +715,7 @@
     saveToHistory();
     elementsGroup.remove(selectedElement.mesh);
     const geometry = new THREE.BoxGeometry(w, h, d);
-    const material = new THREE.MeshStandardMaterial({ color: selectedElement.color || elementTypes[oldType].color, roughness: 0.6 });
+    const material = new THREE.MeshStandardMaterial({ color: selectedElement.color || elementTypes[oldType]?.color || 0xD4BC98, roughness: 0.6 });
     const newMesh = new THREE.Mesh(geometry, material);
     newMesh.position.set(oldPos.x, oldPos.y, oldPos.z);
     newMesh.castShadow = true;
@@ -622,6 +743,7 @@
     elements.forEach(el => elementsGroup.remove(el.mesh));
     elements = [];
     moduloCount = 0;
+    modulos = [];
     selectElement(null);
     updateUI();
   }
@@ -678,7 +800,6 @@
     if (!telefono) { alert("❌ Ingresa tu teléfono"); return; }
     
     document.getElementById('loadingSpinner').style.display = 'block';
-    
     renderer.render(scene, camera);
     
     setTimeout(() => {
@@ -738,7 +859,6 @@
             document.getElementById('loadingSpinner').style.display = 'none';
             closeSendModal();
             alert("✅ Diseño enviado a CR Design.\n\nIncluye la imagen 3D y lista de piezas.\n\nEn breve recibirás respuesta.");
-            
             document.getElementById('clientName').value = '';
             document.getElementById('clientPhone').value = '';
             document.getElementById('clientEmail').value = '';
@@ -755,6 +875,7 @@
   window.addElement = addElement;
   window.addEstanteInteligente = addEstanteInteligente;
   window.generateModule = generateModule;
+  window.addPuertasAModulo = addPuertasAModulo;
   window.updateElementPosition = updateElementPosition;
   window.updateElementSize = updateElementSize;
   window.deleteSelectedElement = deleteSelectedElement;
