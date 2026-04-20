@@ -1,1 +1,24 @@
-
+<script>
+    // Deshabilitar clic derecho
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    // Deshabilitar atajos de teclado (Ctrl+C, Ctrl+U, Ctrl+S, F12)
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+C, Ctrl+U, Ctrl+S, Ctrl+Shift+I, F12
+        if ((e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's' || e.key === 'i')) ||
+            (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+            e.key === 'F12') {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Deshabilitar selección de texto
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+        return false;
+    });
+</script>
