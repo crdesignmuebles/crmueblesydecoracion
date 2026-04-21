@@ -190,143 +190,288 @@ textarea.form-inp{resize:vertical;min-height:72px;line-height:1.5}
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div id="topbar">
   <div class="logo"><div class="logo-dot"></div>CR Design</div>
   <div class="sep"></div>
-  <div class="tb-group"><span class="tb-label">Piezas</span>
-    <button class="tbtn ghost" data-act="lateral">▮ Lateral</button>
-    <button class="tbtn ghost" data-act="piso">▬ Piso</button>
-    <button class="tbtn ghost" data-act="techo">▀ Techo</button>
-    <button class="tbtn ghost" data-act="espaldar">◻ Espaldar</button>
-    <button class="tbtn ghost" data-act="puerta">🚪 Puerta</button>
-    <button class="tbtn ghost" data-act="estante">▭ Estante</button>
-    <button class="tbtn ghost" data-act="tirador">○ Tirador</button>
+  <div class="tb-group">
+    <span class="tb-label">Piezas</span>
+    <button class="tbtn ghost" onclick="W.addEl('lateral')">▮ Lateral</button>
+    <button class="tbtn ghost" onclick="W.addEl('piso')">▬ Piso</button>
+    <button class="tbtn ghost" onclick="W.addEl('techo')">▀ Techo</button>
+    <button class="tbtn ghost" onclick="W.addEl('espaldar')">◻ Espaldar</button>
+    <button class="tbtn ghost" onclick="W.addEl('puerta')">🚪 Puerta</button>
+    <button class="tbtn ghost" onclick="W.addEl('estante')">▭ Estante</button>
+    <button class="tbtn ghost" onclick="W.addEl('tirador')">○ Tirador</button>
   </div>
   <div class="sep"></div>
-  <div class="tb-group"><button class="tbtn gold" id="genModuleBtn">✦ Generar módulo</button></div>
+  <div class="tb-group">
+    <button class="tbtn gold" onclick="W.openGenModule()">✦ Generar módulo</button>
+  </div>
   <div class="sep"></div>
   <div class="tb-group">
-    <button class="tbtn ghost" id="rotateBtn">↻ 90°</button>
-    <button class="tbtn ghost" id="editMultiBtn">⊞ Editar múlt.</button>
-    <button class="tbtn ghost" id="clearSelBtn">✕ Desel.</button>
-    <button class="tbtn danger" id="deleteBtn">🗑 Eliminar</button>
+    <button class="tbtn ghost" onclick="W.rotateSelected(90)">↻ 90°</button>
+    <button class="tbtn ghost" onclick="W.editMultiple()">⊞ Editar múlt.</button>
+    <button class="tbtn ghost" onclick="W.clearSel()">✕ Desel.</button>
+    <button class="tbtn danger" onclick="W.deleteSelected()">🗑 Eliminar</button>
   </div>
   <div class="tb-spacer"></div>
   <div class="tb-group">
-    <button class="tbtn success" id="sendBtn">↗ Enviar diseño</button>
+    <button class="tbtn success" onclick="W.showSend()">↗ Enviar diseño</button>
     <a href="index.html" class="tbtn ghost">← Volver</a>
   </div>
 </div>
 
+<!-- SIDEBAR IZQUIERDO -->
 <div id="sidebar-l">
-  <div class="sec"><div class="sec-label">Añadir piezas</div>
+  <div class="sec">
+    <div class="sec-label">Añadir piezas</div>
     <div class="piece-grid">
-      <div class="pbtn" data-act="lateral"><span class="pbtn-icon">▮</span><span class="pbtn-label">Lateral</span></div>
-      <div class="pbtn" data-act="piso"><span class="pbtn-icon">▬</span><span class="pbtn-label">Piso</span></div>
-      <div class="pbtn" data-act="techo"><span class="pbtn-icon">▀</span><span class="pbtn-label">Techo</span></div>
-      <div class="pbtn" data-act="espaldar"><span class="pbtn-icon">◻</span><span class="pbtn-label">Espaldar</span></div>
-      <div class="pbtn" data-act="puerta"><span class="pbtn-icon">🚪</span><span class="pbtn-label">Puerta</span></div>
-      <div class="pbtn" data-act="estante"><span class="pbtn-icon">▭</span><span class="pbtn-label">Estante</span></div>
-      <div class="pbtn" data-act="tirador"><span class="pbtn-icon">○</span><span class="pbtn-label">Tirador</span></div>
-      <div class="pbtn featured" id="genModulePbtn"><span class="pbtn-icon">✦</span><span class="pbtn-label">Módulo</span></div>
+      <div class="pbtn" onclick="W.addEl('lateral')"><span class="pbtn-icon">▮</span><span class="pbtn-label">Lateral</span></div>
+      <div class="pbtn" onclick="W.addEl('piso')"><span class="pbtn-icon">▬</span><span class="pbtn-label">Piso</span></div>
+      <div class="pbtn" onclick="W.addEl('techo')"><span class="pbtn-icon">▀</span><span class="pbtn-label">Techo</span></div>
+      <div class="pbtn" onclick="W.addEl('espaldar')"><span class="pbtn-icon">◻</span><span class="pbtn-label">Espaldar</span></div>
+      <div class="pbtn" onclick="W.addEl('puerta')"><span class="pbtn-icon">🚪</span><span class="pbtn-label">Puerta</span></div>
+      <div class="pbtn" onclick="W.addEl('estante')"><span class="pbtn-icon">▭</span><span class="pbtn-label">Estante</span></div>
+      <div class="pbtn" onclick="W.addEl('tirador')"><span class="pbtn-icon">○</span><span class="pbtn-label">Tirador</span></div>
+      <div class="pbtn featured" onclick="W.openGenModule()"><span class="pbtn-icon">✦</span><span class="pbtn-label">Módulo</span></div>
     </div>
   </div>
-  <div class="sec"><div class="sec-label">Selección activa</div>
+
+  <div class="sec">
+    <div class="sec-label">Selección activa</div>
     <div id="sel-info" style="color:var(--textMuted);font-size:11px;margin-bottom:9px;font-weight:700">Ningún elemento seleccionado</div>
     <div id="multi-badge" style="margin-bottom:9px;display:none"><span class="badge green" id="multi-count-lbl">0 seleccionados</span></div>
     <div id="transform-panel" style="display:none">
-      <div style="margin-bottom:9px"><div class="input-lbl" style="margin-bottom:6px">Posición (cm)</div>
+      <div style="margin-bottom:9px">
+        <div class="input-lbl" style="margin-bottom:6px">Posición (cm)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
-          <div><span class="input-lbl">X</span><input type="number" id="px" class="num-input" step="1"></div>
-          <div><span class="input-lbl">Y</span><input type="number" id="py" class="num-input" step="1"></div>
-          <div><span class="input-lbl">Z</span><input type="number" id="pz" class="num-input" step="1"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span class="input-lbl">X</span><input type="number" id="px" class="num-input" step="1" onchange="W.updPos()"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span class="input-lbl">Y</span><input type="number" id="py" class="num-input" step="1" onchange="W.updPos()"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span class="input-lbl">Z</span><input type="number" id="pz" class="num-input" step="1" onchange="W.updPos()"></div>
         </div>
       </div>
-      <div><div class="input-lbl" style="margin-bottom:6px">Dimensiones (cm)</div>
+      <div>
+        <div class="input-lbl" style="margin-bottom:6px">Dimensiones (cm)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
-          <div><span class="input-lbl">Ancho</span><input type="number" id="sw" class="num-input" step="5"></div>
-          <div><span class="input-lbl">Alto</span><input type="number" id="sh" class="num-input" step="5"></div>
-          <div><span class="input-lbl">Fondo</span><input type="number" id="sd" class="num-input" step="5"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span class="input-lbl">Ancho</span><input type="number" id="sw" class="num-input" step="5" onchange="W.updSize()"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span class="input-lbl">Alto</span><input type="number" id="sh" class="num-input" step="5" onchange="W.updSize()"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><span class="input-lbl">Fondo</span><input type="number" id="sd" class="num-input" step="5" onchange="W.updSize()"></div>
         </div>
       </div>
-      <button class="tbtn danger" id="deleteSelBtn" style="width:100%;margin-top:10px">Eliminar selección</button>
+      <button class="tbtn danger" style="width:100%;margin-top:10px;height:34px;justify-content:center" onclick="W.deleteSelected()">Eliminar selección</button>
     </div>
   </div>
-  <div class="sec"><div class="sec-label">Resumen</div>
+
+  <div class="sec">
+    <div class="sec-label">Resumen</div>
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="st-total">0</div><div class="stat-lbl">Piezas</div></div>
       <div class="stat-card"><div class="stat-num" id="st-sel">0</div><div class="stat-lbl">Sel.</div></div>
       <div class="stat-card"><div class="stat-num" id="st-mod">0</div><div class="stat-lbl">Mód.</div></div>
     </div>
   </div>
-  <div class="sec"><div class="sec-label">Cómo usar</div>
-    <div class="step-guide"><p><strong>1.</strong> Añade piezas o usa <strong>Generar módulo</strong><br><strong>2.</strong> Clic en una pieza para seleccionarla<br><strong>3.</strong> Arrastra para mover en el espacio<br><strong>Ctrl+Clic</strong> para selección múltiple<br><strong>4.</strong> Ajusta dimensiones y envía tu diseño</p></div>
+
+  <div class="sec">
+    <div class="sec-label">Cómo usar</div>
+    <div class="step-guide">
+      <p>
+        <strong>1.</strong> Añade piezas o usa <strong>Generar módulo</strong><br>
+        <strong>2.</strong> Clic en una pieza para seleccionarla<br>
+        <strong>3.</strong> Arrastra para mover en el espacio<br>
+        <strong>Ctrl+Clic</strong> para selección múltiple<br>
+        <strong>4.</strong> Ajusta dimensiones y envía tu diseño
+      </p>
+    </div>
     <div style="margin-top:8px"><span class="badge muted">Aglomerado 15mm</span></div>
   </div>
 </div>
 
+<!-- SIDEBAR DERECHO -->
 <div id="sidebar-r">
-  <div class="sec"><div class="sec-label">Elementos</div><div class="el-list-wrap" id="el-list"><div class="empty-list"><div class="empty-list-icon">◻</div>Sin elementos aún</div></div></div>
-  <div class="sec"><div class="sec-label">Vistas</div><div class="view-grid"><div class="vbtn" data-view="front">◀ Frontal</div><div class="vbtn" data-view="side">▶ Lateral</div><div class="vbtn" data-view="top">↑ Superior</div><div class="vbtn" data-view="iso">◈ Iso</div></div></div>
+  <div class="sec">
+    <div class="sec-label">Elementos</div>
+    <div class="el-list-wrap" id="el-list">
+      <div class="empty-list"><div class="empty-list-icon">◻</div>Sin elementos aún</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-label">Vistas</div>
+    <div class="view-grid">
+      <div class="vbtn" onclick="W.setView('front')">◀ Frontal</div>
+      <div class="vbtn" onclick="W.setView('side')">▶ Lateral</div>
+      <div class="vbtn" onclick="W.setView('top')">↑ Superior</div>
+      <div class="vbtn" onclick="W.setView('iso')">◈ Iso</div>
+    </div>
+  </div>
 </div>
 
+<!-- CANVAS -->
 <div id="canvas-wrap"></div>
 
+<!-- FLOTANTES -->
 <div id="float-zone">
-  <div class="fbtn" data-view="front" title="Frontal">◀</div><div class="fbtn" data-view="side" title="Lateral">▶</div>
-  <div class="fbtn" data-view="top" title="Superior">↑</div><div class="fbtn" data-view="iso" title="Isométrica">◈</div>
-  <div class="fbtn" id="resetViewBtn" title="Resetear">⟳</div>
+  <div class="fbtn" onclick="W.setView('front')" title="Frontal">◀</div>
+  <div class="fbtn" onclick="W.setView('side')" title="Lateral">▶</div>
+  <div class="fbtn" onclick="W.setView('top')" title="Superior">↑</div>
+  <div class="fbtn" onclick="W.setView('iso')" title="Isométrica">◈</div>
+  <div class="fbtn" onclick="W.resetView()" title="Resetear">⟳</div>
 </div>
-<div id="info-bar"><div class="info-pill">Aglom. <span>15mm</span> · Snap <span>ON</span></div><div class="info-pill" id="ctx-hint">Clic para seleccionar</div></div>
+<div id="info-bar">
+  <div class="info-pill">Aglom. <span>15mm</span> · Snap <span>ON</span></div>
+  <div class="info-pill" id="ctx-hint">Clic para seleccionar</div>
+</div>
 
-<div class="sel-indicator" id="sel-ind"><div class="sel-pill" id="sel-pill-text">2 elementos seleccionados</div></div>
+<!-- SEL INDICATOR -->
+<div class="sel-indicator" id="sel-ind">
+  <div class="sel-pill" id="sel-pill-text">2 elementos seleccionados</div>
+</div>
 
-<div class="modal-backdrop" id="prompt-modal"><div class="pmodal-card"><div class="modal-title"><span class="accent">✦</span> Nuevo módulo</div><div style="font-size:11px;color:var(--textMuted);margin-bottom:0;margin-top:4px">Dimensiones del mueble en centímetros</div><div class="pdim-grid"><div class="pdim-item"><label>Ancho</label><input type="number" id="pm-w" value="80" min="20" max="300"></div><div class="pdim-item"><label>Alto</label><input type="number" id="pm-h" value="200" min="20" max="300"></div><div class="pdim-item"><label>Fondo</label><input type="number" id="pm-d" value="60" min="10" max="100"></div></div><div class="pmodal-hint">Incluye laterales, piso, techo y espaldar en aglomerado 15mm.</div><div class="modal-actions"><button class="btn-secondary" id="cancelGenBtn">Cancelar</button><button class="btn-primary" id="confirmGenBtn">Generar módulo</button></div></div></div>
+<!-- MODAL MÓDULO -->
+<div class="modal-backdrop" id="prompt-modal">
+  <div class="pmodal-card">
+    <div class="modal-title"><span class="accent">✦</span> Nuevo módulo</div>
+    <div style="font-size:11px;color:var(--textMuted);margin-bottom:0;margin-top:4px">Dimensiones del mueble en centímetros</div>
+    <div class="pdim-grid">
+      <div class="pdim-item"><label>Ancho</label><input type="number" id="pm-w" value="80" min="20" max="300"></div>
+      <div class="pdim-item"><label>Alto</label><input type="number" id="pm-h" value="200" min="20" max="300"></div>
+      <div class="pdim-item"><label>Fondo</label><input type="number" id="pm-d" value="60" min="10" max="100"></div>
+    </div>
+    <div class="pmodal-hint">Incluye laterales, piso, techo y espaldar en aglomerado 15mm.</div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="W.closeGenModal()">Cancelar</button>
+      <button class="btn-primary" onclick="W.confirmModule()">Generar módulo</button>
+    </div>
+  </div>
+</div>
 
-<div class="modal-backdrop" id="modal-wrap"><div class="modal-card"><div class="modal-title">Enviar diseño a <span class="accent">CR Design</span></div><div class="modal-sub">Completa tus datos y te contactaremos con el presupuesto de tu mueble a medida.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px"><div class="form-row"><label class="form-lbl">Nombre completo *</label><input type="text" id="fn" class="form-inp" placeholder="Tu nombre"></div><div class="form-row"><label class="form-lbl">Teléfono móvil *</label><input type="tel" id="fp" class="form-inp" placeholder="+34 600 000 000"></div></div><div class="form-row"><label class="form-lbl">Correo electrónico</label><input type="email" id="fe" class="form-inp" placeholder="opcional"></div><div class="form-row"><label class="form-lbl">Dirección de entrega</label><input type="text" id="fa" class="form-inp" placeholder="opcional"></div><div class="form-row"><label class="form-lbl">¿Qué necesitas?</label><textarea id="fq" class="form-inp" rows="2" placeholder="Describe el mueble que necesitas…"></textarea></div><div class="form-row"><label class="form-lbl">Comentarios adicionales</label><textarea id="fc" class="form-inp" rows="2" placeholder="Material, color, plazos…"></textarea></div><div class="sending-msg" id="fspin">⟳ Enviando tu diseño…</div><div class="modal-actions"><button class="btn-secondary" id="closeSendBtn">Cancelar</button><button class="btn-primary" id="doSendBtn">↗ Enviar diseño</button></div></div></div>
+<!-- MODAL ENVIAR -->
+<div class="modal-backdrop" id="modal-wrap">
+  <div class="modal-card">
+    <div class="modal-title">Enviar diseño a <span class="accent">CR Design</span></div>
+    <div class="modal-sub">Completa tus datos y te contactaremos con el presupuesto de tu mueble a medida.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px">
+      <div class="form-row"><label class="form-lbl">Nombre completo *</label><input type="text" id="fn" class="form-inp" placeholder="Tu nombre"></div>
+      <div class="form-row"><label class="form-lbl">Teléfono móvil *</label><input type="tel" id="fp" class="form-inp" placeholder="+34 600 000 000"></div>
+    </div>
+    <div class="form-row"><label class="form-lbl">Correo electrónico</label><input type="email" id="fe" class="form-inp" placeholder="opcional"></div>
+    <div class="form-row"><label class="form-lbl">Dirección de entrega</label><input type="text" id="fa" class="form-inp" placeholder="opcional"></div>
+    <div class="form-row"><label class="form-lbl">¿Qué necesitas?</label><textarea id="fq" class="form-inp" rows="2" placeholder="Describe el mueble que necesitas…"></textarea></div>
+    <div class="form-row"><label class="form-lbl">Comentarios adicionales</label><textarea id="fc" class="form-inp" rows="2" placeholder="Material, color, plazos…"></textarea></div>
+    <div class="sending-msg" id="fspin">⟳ Enviando tu diseño…</div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="W.closeSend()">Cancelar</button>
+      <button class="btn-primary" onclick="W.doSend()">↗ Enviar diseño</button>
+    </div>
+  </div>
+</div>
 
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.128.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.128.0/examples/jsm/"}}</script>
 <script type="module">
-(function(){
-// ==================== PROTECCIÓN COMPLETA ====================
+'use strict';
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('keydown',e=>{
-  const key=e.key;
-  if(key==='F12'){e.preventDefault();return;}
-  if(e.ctrlKey && e.shiftKey && (key==='I'||key==='J'||key==='C')){e.preventDefault();return;}
-  if(e.ctrlKey && key==='U'){e.preventDefault();return;}
-  if(e.ctrlKey && key==='s'){e.preventDefault();return;}
-  if(e.ctrlKey && key==='S'){e.preventDefault();return;}
-  if(e.ctrlKey && key==='p'){e.preventDefault();return;}
-  if(e.ctrlKey && key==='P'){e.preventDefault();return;}
-  if(e.ctrlKey && key==='c' && !e.target.matches('input,textarea')){e.preventDefault();return;}
-  if(e.ctrlKey && key==='x' && !e.target.matches('input,textarea')){e.preventDefault();return;}
+  if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))||(e.ctrlKey&&e.key==='U'))
+    e.preventDefault();
 });
-// Bloquear arrastre de imágenes
-window.addEventListener('dragstart',e=>e.preventDefault());
-// ============================================================
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
-const _G=0.015;
-let _scene,_camera,_renderer,_orbit,_tcontrol,_group=new THREE.Group(),_elements=[],_selected=new Set(),_nextId=1,_modCount=0,_nextX=0;
+const G=0.015;
+let sc,cam,ren,oc,tc,eg=new THREE.Group(),els=[],sel=new Set(),nid=1,modN=0,nextX=0;
 
-const _ET={
-  lateral:{n:'Lateral',i:'▮',c:0xD4BC98,rot:false,ds:{w:_G,h:2.2,d:0.6}},
-  piso:{n:'Piso',i:'▬',c:0xD4BC98,rot:false,ds:{w:2.0,h:_G,d:0.6}},
-  techo:{n:'Techo',i:'▀',c:0xD4BC98,rot:false,ds:{w:2.0,h:_G,d:0.6}},
-  espaldar:{n:'Espaldar',i:'◻',c:0xD4BC98,rot:false,ds:{w:2.0,h:2.2,d:_G}},
-  puerta:{n:'Puerta',i:'🚪',c:0xE8D8C4,rot:true,ds:{w:0.9,h:2.1,d:_G}},
+const ET={
+  lateral:{n:'Lateral',i:'▮',c:0xD4BC98,rot:false,ds:{w:G,h:2.2,d:0.6}},
+  piso:{n:'Piso',i:'▬',c:0xD4BC98,rot:false,ds:{w:2.0,h:G,d:0.6}},
+  techo:{n:'Techo',i:'▀',c:0xD4BC98,rot:false,ds:{w:2.0,h:G,d:0.6}},
+  espaldar:{n:'Espaldar',i:'◻',c:0xD4BC98,rot:false,ds:{w:2.0,h:2.2,d:G}},
+  puerta:{n:'Puerta',i:'🚪',c:0xE8D8C4,rot:true,ds:{w:0.9,h:2.1,d:G}},
   tirador:{n:'Tirador',i:'○',c:0xC4A46B,rot:true,ds:{w:0.1,h:0.02,d:0.008}},
-  estante:{n:'Estante',i:'▭',c:0xE8D8C4,rot:true,ds:{w:1.6,h:_G,d:0.5}}
+  estante:{n:'Estante',i:'▭',c:0xE8D8C4,rot:true,ds:{w:1.6,h:G,d:0.5}}
 };
 
-function _syncInputs(){
-  if(_selected.size!==1)return;
-  const el=Array.from(_selected)[0];
-  const p=el.m.position;
+function init(){
+  const cw=document.getElementById('canvas-wrap');
+  const W=cw.clientWidth,H=cw.clientHeight;
+  sc=new THREE.Scene();
+  sc.background=new THREE.Color(0x0a0a0b);
+  sc.fog=new THREE.Fog(0x0a0a0b,14,30);
+  cam=new THREE.PerspectiveCamera(42,W/H,0.05,60);
+  cam.position.set(4,2.5,5);
+  ren=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+  ren.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  ren.setSize(W,H);
+  ren.shadowMap.enabled=true;
+  ren.shadowMap.type=THREE.PCFSoftShadowMap;
+  ren.toneMapping=THREE.ACESFilmicToneMapping;
+  ren.toneMappingExposure=1.1;
+  cw.appendChild(ren.domElement);
+  oc=new OrbitControls(cam,ren.domElement);
+  oc.enableDamping=true;oc.dampingFactor=0.07;
+  oc.target.set(0,1.2,0);oc.minDistance=1;oc.maxDistance=20;
+  const amb=new THREE.AmbientLight(0x504844,0.9);sc.add(amb);
+  const ml=new THREE.DirectionalLight(0xfff5e8,1.4);
+  ml.position.set(6,10,5);ml.castShadow=true;
+  ml.shadow.mapSize.width=ml.shadow.mapSize.height=2048;
+  ml.shadow.bias=-0.001;sc.add(ml);
+  const bl=new THREE.DirectionalLight(0x8090c0,0.3);bl.position.set(-5,3,-3);sc.add(bl);
+  const fl=new THREE.PointLight(0xc8b890,0.5,15);fl.position.set(-3,4,4);sc.add(fl);
+  const geoF=new THREE.PlaneGeometry(20,20);
+  const matF=new THREE.MeshStandardMaterial({color:0x111113,roughness:0.95,metalness:0.1});
+  const floor=new THREE.Mesh(geoF,matF);floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;sc.add(floor);
+  const gl=new THREE.GridHelper(16,24,0x1e1e24,0x16161c);gl.position.y=0.001;sc.add(gl);
+  sc.add(eg);
+  tc=new TransformControls(cam,ren.domElement);
+  tc.addEventListener('dragging-changed',e=>{oc.enabled=!e.value;if(!e.value){syncInputs();updUI()}});
+  tc.addEventListener('objectChange',()=>syncInputs());
+  sc.add(tc);
+  ren.domElement.addEventListener('click',onCanvasClick);
+  animate();updUI();
+}
+
+function onCanvasClick(e){
+  const rect=ren.domElement.getBoundingClientRect();
+  const mx=((e.clientX-rect.left)/rect.width)*2-1;
+  const my=-((e.clientY-rect.top)/rect.height)*2+1;
+  const ray=new THREE.Raycaster();
+  ray.setFromCamera(new THREE.Vector2(mx,my),cam);
+  const hits=ray.intersectObjects(els.map(x=>x.m));
+  if(hits.length>0){
+    const el=els.find(x=>x.m===hits[0].object);
+    if(el){
+      if(e.ctrlKey||e.metaKey){sel.has(el)?sel.delete(el):sel.add(el);}
+      else{sel.clear();sel.add(el);}
+      updSel();
+    }
+  }else if(!e.ctrlKey&&!e.metaKey){sel.clear();updSel();}
+  updUI();
+}
+
+function updSel(){
+  if(sel.size===1){
+    const el=Array.from(sel)[0];tc.attach(el.m);
+    document.getElementById('transform-panel').style.display='block';syncInputs();
+  }else{tc.detach();document.getElementById('transform-panel').style.display='none';}
+  const ind=document.getElementById('sel-ind');
+  const mb=document.getElementById('multi-badge');
+  if(sel.size>1){
+    ind.classList.add('show');
+    document.getElementById('sel-pill-text').textContent=`${sel.size} elementos seleccionados`;
+    mb.style.display='block';
+    document.getElementById('multi-count-lbl').textContent=`${sel.size} seleccionados`;
+  }else{ind.classList.remove('show');mb.style.display='none';}
+  const si=document.getElementById('sel-info');
+  if(sel.size===1){const el=Array.from(sel)[0];si.innerHTML=`<span style="color:var(--gold)">${ET[el.t]?.n||el.t} #${el.id}</span>`;}
+  else if(sel.size>1){si.innerHTML=`<span style="color:var(--green)">${sel.size} elementos</span>`;}
+  else{si.textContent='Ningún elemento seleccionado';}
+  updUI();
+}
+
+function syncInputs(){
+  if(sel.size!==1)return;
+  const el=Array.from(sel)[0];const p=el.m.position;
   document.getElementById('px').value=(p.x*100).toFixed(1);
   document.getElementById('py').value=(p.y*100).toFixed(1);
   document.getElementById('pz').value=(p.z*100).toFixed(1);
@@ -335,71 +480,22 @@ function _syncInputs(){
   document.getElementById('sd').value=(el.s.d*100).toFixed(1);
 }
 
-function _updUI(){
-  const listDiv=document.getElementById('el-list');
-  if(_elements.length===0){
-    listDiv.innerHTML='<div class="empty-list"><div class="empty-list-icon">◻</div>Sin elementos aún</div>';
-  }else{
-    listDiv.innerHTML='';
-    _elements.forEach(el=>{
-      const cfg=_ET[el.t]||{n:el.t,i:'◻'};
-      const isSel=_selected.has(el);
-      const div=document.createElement('div');
-      div.className='el-item'+(isSel?(_selected.size===1?' sel':' sel-multi'):'');
-      div.innerHTML=`<div class="el-item-icon">${cfg.i}</div><span class="el-item-name">${cfg.n}</span><span class="el-item-id">#${el.id}</span><button class="el-edit-btn" data-id="${el.id}">✏</button>`;
-      div.onclick=(e)=>{
-        if(e.ctrlKey||e.metaKey){_selected.has(el)?_selected.delete(el):_selected.add(el);}
-        else{_selected.clear();_selected.add(el);}
-        _updSel();
-      };
-      const btn=div.querySelector('.el-edit-btn');
-      btn.onclick=(e)=>{e.stopPropagation();_selById(el.id);};
-      listDiv.appendChild(div);
-    });
-  }
-  document.getElementById('st-total').textContent=_elements.length;
-  document.getElementById('st-sel').textContent=_selected.size;
-  document.getElementById('st-mod').textContent=_modCount;
-  const hint=document.getElementById('ctx-hint');
-  if(_selected.size>0)hint.innerHTML=`<span style="color:var(--gold)">${_ET[Array.from(_selected)[_selected.size-1]?.t]?.n||''}</span> seleccionado`;
-  else hint.textContent='Clic para seleccionar';
-}
-
-function _updSel(){
-  if(_selected.size===1){
-    const el=Array.from(_selected)[0];_tcontrol.attach(el.m);
-    document.getElementById('transform-panel').style.display='block';_syncInputs();
-  }else{_tcontrol.detach();document.getElementById('transform-panel').style.display='none';}
-  const ind=document.getElementById('sel-ind'),mb=document.getElementById('multi-badge');
-  if(_selected.size>1){
-    ind.classList.add('show');
-    document.getElementById('sel-pill-text').textContent=`${_selected.size} elementos seleccionados`;
-    mb.style.display='block';
-    document.getElementById('multi-count-lbl').textContent=`${_selected.size} seleccionados`;
-  }else{ind.classList.remove('show');mb.style.display='none';}
-  const si=document.getElementById('sel-info');
-  if(_selected.size===1){const el=Array.from(_selected)[0];si.innerHTML=`<span style="color:var(--gold)">${_ET[el.t]?.n||el.t} #${el.id}</span>`;}
-  else if(_selected.size>1){si.innerHTML=`<span style="color:var(--green)">${_selected.size} elementos</span>`;}
-  else{si.textContent='Ningún elemento seleccionado';}
-  _updUI();
-}
-
-function _mkMesh(type,pos,size,id){
-  const cfg=_ET[type];
+function mkMesh(type,pos,size,id){
+  const cfg=ET[type];
   const geo=new THREE.BoxGeometry(size.w,size.h,size.d);
   const mat=new THREE.MeshStandardMaterial({color:cfg.c,roughness:0.5,metalness:0.04});
   const m=new THREE.Mesh(geo,mat);
   m.position.set(pos.x,pos.y,pos.z);m.castShadow=true;m.receiveShadow=true;
-  m.userData={id,type};_group.add(m);_elements.push({id,t:type,m,s:{...size}});return m;
+  m.userData={id,type};eg.add(m);els.push({id,t:type,m,s:{...size}});return m;
 }
 
-function _addEl(type){
-  const cfg=_ET[type];if(!cfg)return;
-  const id=_nextId++;const s={...cfg.ds};let p={x:0,y:0,z:0};
-  if(type==='lateral'){p={x:_nextX+0.5,y:s.h/2,z:0};}
-  else if(type==='piso'){p={x:0,y:_G/2,z:0};}
-  else if(type==='techo'){p={x:0,y:2.2-_G/2,z:0};}
-  else if(type==='espaldar'){p={x:0,y:s.h/2,z:-s.d/2+_G/2};}
+function addEl(type){
+  const cfg=ET[type];if(!cfg)return;
+  const id=nid++;const s={...cfg.ds};let p={x:0,y:0,z:0};
+  if(type==='lateral'){p={x:nextX+0.5,y:s.h/2,z:0};}
+  else if(type==='piso'){p={x:0,y:G/2,z:0};}
+  else if(type==='techo'){p={x:0,y:2.2-G/2,z:0};}
+  else if(type==='espaldar'){p={x:0,y:s.h/2,z:-s.d/2+G/2};}
   else if(type==='puerta'){p={x:-0.45,y:s.h/2,z:0.31};}
   else if(type==='estante'){p={x:0,y:1.2,z:0};}
   else if(type==='tirador'){
@@ -408,173 +504,209 @@ function _addEl(type){
     const tm=new THREE.Mesh(cg,cm);
     tm.rotation.z=Math.PI/2;tm.position.set(-0.45,1.1,0.32);
     tm.castShadow=true;tm.userData={id,type:'tirador'};
-    _group.add(tm);_elements.push({id,t:'tirador',m:tm,s:{w:0.1,h:0.02,d:0.008}});
-    _updUI();return;
+    eg.add(tm);els.push({id,t:'tirador',m:tm,s:{w:0.1,h:0.02,d:0.008}});
+    updUI();return;
   }
-  _mkMesh(type,p,s,id);
-  if(type==='lateral')_nextX=Math.max(_nextX,p.x+s.w/2);
-  _updUI();
+  mkMesh(type,p,s,id);
+  if(type==='lateral')nextX=Math.max(nextX,p.x+s.w/2);
+  updUI();
 }
 
-function _genModule(w,h,d){
-  const cx=_nextX+w/2;let n=_nextId;
-  _mkMesh('lateral',{x:cx-w/2+_G/2,y:h/2,z:0},{w:_G,h,d},n++);
-  _mkMesh('lateral',{x:cx+w/2-_G/2,y:h/2,z:0},{w:_G,h,d},n++);
-  _mkMesh('piso',{x:cx,y:_G/2,z:0},{w,h:_G,d},n++);
-  _mkMesh('techo',{x:cx,y:h-_G/2,z:0},{w,h:_G,d},n++);
-  _mkMesh('espaldar',{x:cx,y:h/2,z:-d/2+_G/2},{w,h,d:_G},n++);
-  _nextId=n;_nextX=cx+w/2;_modCount++;_updUI();
+function genModule(w,h,d){
+  const cx=nextX+w/2;let n=nid;
+  mkMesh('lateral',{x:cx-w/2+G/2,y:h/2,z:0},{w:G,h,d},n++);
+  mkMesh('lateral',{x:cx+w/2-G/2,y:h/2,z:0},{w:G,h,d},n++);
+  mkMesh('piso',{x:cx,y:G/2,z:0},{w,h:G,d},n++);
+  mkMesh('techo',{x:cx,y:h-G/2,z:0},{w,h:G,d},n++);
+  mkMesh('espaldar',{x:cx,y:h/2,z:-d/2+G/2},{w,h,d:G},n++);
+  nid=n;nextX=cx+w/2;modN++;updUI();
 }
 
-function _deleteSelected(){
-  if(_selected.size===0)return;
-  _selected.forEach(el=>{const i=_elements.findIndex(x=>x.id===el.id);if(i!==-1){_group.remove(el.m);_elements.splice(i,1);}});
-  _selected.clear();_tcontrol.detach();_updSel();_updUI();
+function deleteEl(){
+  if(sel.size===0)return;
+  sel.forEach(el=>{const i=els.findIndex(x=>x.id===el.id);if(i!==-1){eg.remove(el.m);els.splice(i,1);}});
+  sel.clear();tc.detach();updSel();updUI();
 }
 
-function _updPos(){
-  if(_selected.size!==1)return;
-  const el=Array.from(_selected)[0];
-  el.m.position.set(parseFloat(document.getElementById('px').value)/100,parseFloat(document.getElementById('py').value)/100,parseFloat(document.getElementById('pz').value)/100);
+function updPos(){
+  if(sel.size!==1)return;
+  const el=Array.from(sel)[0];
+  el.m.position.set(
+    parseFloat(document.getElementById('px').value)/100,
+    parseFloat(document.getElementById('py').value)/100,
+    parseFloat(document.getElementById('pz').value)/100
+  );
 }
 
-function _updSize(){
-  if(_selected.size!==1)return;
-  const el=Array.from(_selected)[0];
-  const w=parseFloat(document.getElementById('sw').value)/100,h=parseFloat(document.getElementById('sh').value)/100,d=parseFloat(document.getElementById('sd').value)/100;
-  const op=el.m.position.clone();_group.remove(el.m);
+function updSize(){
+  if(sel.size!==1)return;
+  const el=Array.from(sel)[0];
+  const w=parseFloat(document.getElementById('sw').value)/100;
+  const h=parseFloat(document.getElementById('sh').value)/100;
+  const d=parseFloat(document.getElementById('sd').value)/100;
+  const op=el.m.position.clone();eg.remove(el.m);
   const geo=new THREE.BoxGeometry(w,h,d);
-  const mat=new THREE.MeshStandardMaterial({color:_ET[el.t].c,roughness:0.5,metalness:0.04});
+  const mat=new THREE.MeshStandardMaterial({color:ET[el.t].c,roughness:0.5,metalness:0.04});
   const nm=new THREE.Mesh(geo,mat);
   nm.position.copy(op);nm.castShadow=true;nm.receiveShadow=true;nm.userData={id:el.id,type:el.t};
-  _group.add(nm);el.m=nm;el.s={w,h,d};_tcontrol.attach(nm);_updUI();
+  eg.add(nm);el.m=nm;el.s={w,h,d};tc.attach(nm);updUI();
 }
 
-function _clearSel(){_selected.clear();_tcontrol.detach();_updSel();_updUI();}
-function _rotateSelected(){const r=Math.PI/2;_selected.forEach(el=>{if(_ET[el.t]?.rot)el.m.rotation.y+=r;});}
-function _editMultiple(){
-  if(_selected.size===0){alert('Selecciona al menos un elemento (Ctrl+Clic)');return;}
-  const w=prompt('Nuevo ancho (cm):','80'),h=prompt('Nuevo alto (cm):','200'),d=prompt('Nuevo fondo (cm):','60');
-  _selected.forEach(el=>{
-    if(w&&!isNaN(w))el.s.w=parseFloat(w)/100;
-    if(h&&!isNaN(h))el.s.h=parseFloat(h)/100;
-    if(d&&!isNaN(d))el.s.d=parseFloat(d)/100;
-    const op=el.m.position.clone(),ry=el.m.rotation.y;_group.remove(el.m);
-    const geo=new THREE.BoxGeometry(el.s.w,el.s.h,el.s.d);
-    const mat=new THREE.MeshStandardMaterial({color:_ET[el.t].c,roughness:0.5,metalness:0.04});
-    const nm=new THREE.Mesh(geo,mat);
-    nm.position.copy(op);nm.rotation.y=ry;nm.castShadow=true;nm.receiveShadow=true;nm.userData={id:el.id,type:el.t};
-    _group.add(nm);el.m=nm;
-  });
-  if(_selected.size===1)_updSel();_updUI();
+function updUI(){
+  const list=document.getElementById('el-list');
+  if(els.length===0){
+    list.innerHTML='<div class="empty-list"><div class="empty-list-icon">◻</div>Sin elementos aún</div>';
+  }else{
+    list.innerHTML='';
+    els.forEach(el=>{
+      const cfg=ET[el.t]||{n:el.t,i:'◻'};
+      const isSel=sel.has(el);
+      const div=document.createElement('div');
+      div.className='el-item'+(isSel?(sel.size===1?' sel':' sel-multi'):'');
+      div.innerHTML=`<div class="el-item-icon">${cfg.i}</div><span class="el-item-name">${cfg.n}</span><span class="el-item-id">#${el.id}</span><button class="el-edit-btn" onclick="event.stopPropagation();W.selById(${el.id})">✏</button>`;
+      div.onclick=(e)=>{
+        if(e.ctrlKey||e.metaKey){sel.has(el)?sel.delete(el):sel.add(el);}
+        else{sel.clear();sel.add(el);}
+        updSel();updUI();
+      };
+      list.appendChild(div);
+    });
+  }
+  document.getElementById('st-total').textContent=els.length;
+  document.getElementById('st-sel').textContent=sel.size;
+  document.getElementById('st-mod').textContent=modN;
+  const hint=document.getElementById('ctx-hint');
+  if(sel.size>0)hint.innerHTML=`<span style="color:var(--gold)">${ET[Array.from(sel)[sel.size-1]?.t]?.n||''}</span> seleccionado`;
+  else hint.textContent='Clic para seleccionar';
 }
-function _setView(v){
-  const cx=_nextX/2||0;
+
+function setView(v){
+  const cx=nextX/2||0;
   const views={front:[cx,1.5,6,cx,1.2,0],side:[5,1.5,cx,0,1.2,cx],top:[cx,7,0.1,cx,0,0],iso:[cx+4,3,5,cx,1.2,0]};
   const vd=views[v]||views.iso;
-  _camera.position.set(vd[0],vd[1],vd[2]);_orbit.target.set(vd[3],vd[4],vd[5]);_orbit.update();
+  cam.position.set(vd[0],vd[1],vd[2]);oc.target.set(vd[3],vd[4],vd[5]);oc.update();
 }
-function _resetView(){_setView('iso');}
-function _selById(id){const el=_elements.find(x=>x.id===id);if(el){_selected.clear();_selected.add(el);_updSel();_updUI();}}
-function _showSend(){if(_elements.length===0){alert('No hay elementos para enviar');return;}document.getElementById('modal-wrap').classList.add('show');}
-function _closeSend(){document.getElementById('modal-wrap').classList.remove('show');}
-function _openGenModule(){document.getElementById('prompt-modal').classList.add('show');}
-function _closeGenModal(){document.getElementById('prompt-modal').classList.remove('show');}
-function _confirmModule(){
-  const w=parseFloat(document.getElementById('pm-w').value)/100;
-  const h=parseFloat(document.getElementById('pm-h').value)/100;
-  const d=parseFloat(document.getElementById('pm-d').value)/100;
-  if(isNaN(w)||isNaN(h)||isNaN(d))return;
-  _closeGenModal();_genModule(w,h,d);_setView('iso');
-}
-function _doSend(){
+
+// ========== ENVÍO MEJORADO con imagen adjunta directa a correo ==========
+function doSend(){
   const nm=document.getElementById('fn').value.trim();
   const ph=document.getElementById('fp').value.trim();
   if(!nm||!ph){alert('Nombre y teléfono son requeridos');return;}
-  const spin=document.getElementById('fspin');spin.style.display='block';
-  _renderer.render(_scene,_camera);
-  const imgDataURL=_renderer.domElement.toDataURL('image/png');
+  
+  const spin=document.getElementById('fspin');
+  spin.style.display='block';
+  
+  // Capturar la imagen actual del canvas (diseño 3D)
+  ren.render(sc,cam);
+  const imgDataURL=ren.domElement.toDataURL('image/png');
+  
+  // Construir lista de piezas
   let lista='━━━━ LISTA DE PIEZAS ━━━━\n\n';
-  _elements.forEach(e=>{lista+=`${_ET[e.t]?.n||e.t}: ${(e.s.w*100).toFixed(0)}×${(e.s.h*100).toFixed(0)}×${(e.s.d*100).toFixed(0)} cm\n`;});
-  lista+=`\n━━━━ CLIENTE ━━━━\nNombre: ${nm}\nTeléfono: ${ph}\nEmail: ${document.getElementById('fe').value||'-'}\nDirección: ${document.getElementById('fa').value||'-'}\nNecesita: ${document.getElementById('fq').value||'-'}\nComentarios: ${document.getElementById('fc').value||'-'}`;
-  const form=document.createElement('form');form.method='POST';form.action='https://formsubmit.co/miguel_716@hotmail.com';form.style.display='none';form.enctype='multipart/form-data';
-  const fields=[{name:'name',value:nm},{name:'email',value:document.getElementById('fe').value||'cliente@crdesign.com'},{name:'_subject',value:`Diseño 3D - ${nm}`},{name:'message',value:lista},{name:'_captcha',value:'false'},{name:'_template',value:'table'}];
-  fields.forEach(f=>{const inp=document.createElement('input');inp.type='hidden';inp.name=f.name;inp.value=f.value;form.appendChild(inp);});
-  fetch(imgDataURL).then(res=>res.blob()).then(blob=>{
-    const file=new File([blob],`diseno_${nm.replace(/\s/g,'_')}.png`,{type:'image/png'});
-    const fileInput=document.createElement('input');fileInput.type='file';fileInput.name='attachment';
-    const dt=new DataTransfer();dt.items.add(file);fileInput.files=dt.files;
-    form.appendChild(fileInput);document.body.appendChild(form);form.submit();
-    setTimeout(()=>{spin.style.display='none';_closeSend();alert('✓ Diseño enviado correctamente a CR Design (incluye captura 3D)');['fn','fp','fe','fa','fq','fc'].forEach(id=>document.getElementById(id).value='');},2000);
-  }).catch(()=>{spin.style.display='none';alert('Error al generar la imagen');});
-}
-
-function _init(){
-  const cw=document.getElementById('canvas-wrap');
-  const W=cw.clientWidth,H=cw.clientHeight;
-  _scene=new THREE.Scene();_scene.background=new THREE.Color(0x0a0a0b);_scene.fog=new THREE.Fog(0x0a0a0b,14,30);
-  _camera=new THREE.PerspectiveCamera(42,W/H,0.05,60);_camera.position.set(4,2.5,5);
-  _renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
-  _renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));_renderer.setSize(W,H);
-  _renderer.shadowMap.enabled=true;_renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  _renderer.toneMapping=THREE.ACESFilmicToneMapping;_renderer.toneMappingExposure=1.1;
-  cw.appendChild(_renderer.domElement);
-  _orbit=new OrbitControls(_camera,_renderer.domElement);_orbit.enableDamping=true;_orbit.dampingFactor=0.07;_orbit.target.set(0,1.2,0);_orbit.minDistance=1;_orbit.maxDistance=20;
-  const amb=new THREE.AmbientLight(0x504844,0.9);_scene.add(amb);
-  const ml=new THREE.DirectionalLight(0xfff5e8,1.4);ml.position.set(6,10,5);ml.castShadow=true;ml.shadow.mapSize.width=ml.shadow.mapSize.height=2048;ml.shadow.bias=-0.001;_scene.add(ml);
-  const bl=new THREE.DirectionalLight(0x8090c0,0.3);bl.position.set(-5,3,-3);_scene.add(bl);
-  const fl=new THREE.PointLight(0xc8b890,0.5,15);fl.position.set(-3,4,4);_scene.add(fl);
-  const geoF=new THREE.PlaneGeometry(20,20);
-  const matF=new THREE.MeshStandardMaterial({color:0x111113,roughness:0.95,metalness:0.1});
-  const floor=new THREE.Mesh(geoF,matF);floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;_scene.add(floor);
-  const gl=new THREE.GridHelper(16,24,0x1e1e24,0x16161c);gl.position.y=0.001;_scene.add(gl);
-  _scene.add(_group);
-  _tcontrol=new TransformControls(_camera,_renderer.domElement);
-  _tcontrol.addEventListener('dragging-changed',e=>{_orbit.enabled=!e.value;if(!e.value){_syncInputs();_updUI()}});
-  _tcontrol.addEventListener('objectChange',()=>_syncInputs());
-  _scene.add(_tcontrol);
-  _renderer.domElement.addEventListener('click',(e)=>{
-    const rect=_renderer.domElement.getBoundingClientRect();
-    const mx=((e.clientX-rect.left)/rect.width)*2-1;
-    const my=-((e.clientY-rect.top)/rect.height)*2+1;
-    const ray=new THREE.Raycaster();ray.setFromCamera(new THREE.Vector2(mx,my),_camera);
-    const hits=ray.intersectObjects(_elements.map(x=>x.m));
-    if(hits.length>0){
-      const el=_elements.find(x=>x.m===hits[0].object);
-      if(el){if(e.ctrlKey||e.metaKey){_selected.has(el)?_selected.delete(el):_selected.add(el);}else{_selected.clear();_selected.add(el);}_updSel();}
-    }else if(!e.ctrlKey&&!e.metaKey){_selected.clear();_updSel();}
-    _updUI();
+  els.forEach(e=>{
+    lista+=`${ET[e.t]?.n||e.t}: ${(e.s.w*100).toFixed(0)}×${(e.s.h*100).toFixed(0)}×${(e.s.d*100).toFixed(0)} cm\n`;
   });
-  function animate(){requestAnimationFrame(animate);_orbit.update();_renderer.render(_scene,_camera);}
-  animate();_updUI();
-  window.addEventListener('resize',()=>{const cw=document.getElementById('canvas-wrap');_camera.aspect=cw.clientWidth/cw.clientHeight;_camera.updateProjectionMatrix();_renderer.setSize(cw.clientWidth,cw.clientHeight);});
+  lista+=`\n━━━━ CLIENTE ━━━━\nNombre: ${nm}\nTeléfono: ${ph}\nEmail: ${document.getElementById('fe').value||'-'}\nDirección: ${document.getElementById('fa').value||'-'}\nNecesita: ${document.getElementById('fq').value||'-'}\nComentarios: ${document.getElementById('fc').value||'-'}`;
+  
+  // Crear formulario dinámico con FormSubmit y adjuntar la imagen como archivo
+  const form=document.createElement('form');
+  form.method='POST';
+  form.action='https://formsubmit.co/miguel_716@hotmail.com';
+  form.style.display='none';
+  form.enctype='multipart/form-data';
+  
+  // Datos básicos
+  const fields=[
+    {name:'name',value:nm},
+    {name:'email',value:document.getElementById('fe').value || 'cliente@crdesign.com'},
+    {name:'_subject',value:`Diseño 3D - ${nm}`},
+    {name:'message',value:lista},
+    {name:'_captcha',value:'false'},
+    {name:'_template',value:'table'}
+  ];
+  fields.forEach(f=>{
+    const inp=document.createElement('input');
+    inp.type='hidden';
+    inp.name=f.name;
+    inp.value=f.value;
+    form.appendChild(inp);
+  });
+  
+  // Convertir dataURL a Blob y luego a File para adjuntar
+  fetch(imgDataURL)
+    .then(res=>res.blob())
+    .then(blob=>{
+      const file=new File([blob],`diseno_${nm.replace(/\s/g,'_')}.png`,{type:'image/png'});
+      const fileInput=document.createElement('input');
+      fileInput.type='file';
+      fileInput.name='attachment';
+      const dt=new DataTransfer();
+      dt.items.add(file);
+      fileInput.files=dt.files;
+      form.appendChild(fileInput);
+      document.body.appendChild(form);
+      form.submit();
+      
+      // Limpiar y cerrar después del envío
+      setTimeout(()=>{
+        spin.style.display='none';
+        W.closeSend();
+        alert('✓ Diseño enviado correctamente a CR Design (incluye captura 3D)');
+        ['fn','fp','fe','fa','fq','fc'].forEach(id=>document.getElementById(id).value='');
+      },2000);
+    })
+    .catch(err=>{
+      console.error(err);
+      spin.style.display='none';
+      alert('Error al generar la imagen. Inténtalo de nuevo.');
+    });
 }
+// =====================================================
 
-// Asignar eventos
-document.querySelectorAll('[data-act]').forEach(btn=>btn.addEventListener('click',()=>_addEl(btn.getAttribute('data-act'))));
-document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>_setView(btn.getAttribute('data-view'))));
-document.getElementById('genModuleBtn')?.addEventListener('click',_openGenModule);
-document.getElementById('genModulePbtn')?.addEventListener('click',_openGenModule);
-document.getElementById('rotateBtn')?.addEventListener('click',_rotateSelected);
-document.getElementById('editMultiBtn')?.addEventListener('click',_editMultiple);
-document.getElementById('clearSelBtn')?.addEventListener('click',_clearSel);
-document.getElementById('deleteBtn')?.addEventListener('click',_deleteSelected);
-document.getElementById('deleteSelBtn')?.addEventListener('click',_deleteSelected);
-document.getElementById('sendBtn')?.addEventListener('click',_showSend);
-document.getElementById('closeSendBtn')?.addEventListener('click',_closeSend);
-document.getElementById('doSendBtn')?.addEventListener('click',_doSend);
-document.getElementById('cancelGenBtn')?.addEventListener('click',_closeGenModal);
-document.getElementById('confirmGenBtn')?.addEventListener('click',_confirmModule);
-document.getElementById('resetViewBtn')?.addEventListener('click',_resetView);
-document.getElementById('px')?.addEventListener('change',_updPos);
-document.getElementById('py')?.addEventListener('change',_updPos);
-document.getElementById('pz')?.addEventListener('change',_updPos);
-document.getElementById('sw')?.addEventListener('change',_updSize);
-document.getElementById('sh')?.addEventListener('change',_updSize);
-document.getElementById('sd')?.addEventListener('change',_updSize);
+function animate(){requestAnimationFrame(animate);oc.update();ren.render(sc,cam);}
 
-_init();
-})();
+window.addEventListener('resize',()=>{
+  const cw=document.getElementById('canvas-wrap');
+  cam.aspect=cw.clientWidth/cw.clientHeight;
+  cam.updateProjectionMatrix();ren.setSize(cw.clientWidth,cw.clientHeight);
+});
+
+window.W={
+  addEl,deleteSelected:deleteEl,
+  clearSel:()=>{sel.clear();tc.detach();updSel();updUI();},
+  rotateSelected:(deg)=>{const r=deg*Math.PI/180;sel.forEach(el=>{if(ET[el.t]?.rot)el.m.rotation.y+=r;});},
+  editMultiple:()=>{
+    if(sel.size===0){alert('Selecciona al menos un elemento (Ctrl+Clic)');return;}
+    const w=prompt('Nuevo ancho (cm):','80'),h=prompt('Nuevo alto (cm):','200'),d=prompt('Nuevo fondo (cm):','60');
+    sel.forEach(el=>{
+      if(w&&!isNaN(w))el.s.w=parseFloat(w)/100;
+      if(h&&!isNaN(h))el.s.h=parseFloat(h)/100;
+      if(d&&!isNaN(d))el.s.d=parseFloat(d)/100;
+      const op=el.m.position.clone(),ry=el.m.rotation.y;eg.remove(el.m);
+      const geo=new THREE.BoxGeometry(el.s.w,el.s.h,el.s.d);
+      const mat=new THREE.MeshStandardMaterial({color:ET[el.t].c,roughness:0.5,metalness:0.04});
+      const nm=new THREE.Mesh(geo,mat);
+      nm.position.copy(op);nm.rotation.y=ry;nm.castShadow=true;nm.receiveShadow=true;nm.userData={id:el.id,type:el.t};
+      eg.add(nm);el.m=nm;
+    });
+    if(sel.size===1)updSel();updUI();
+  },
+  openGenModule:()=>document.getElementById('prompt-modal').classList.add('show'),
+  closeGenModal:()=>document.getElementById('prompt-modal').classList.remove('show'),
+  confirmModule:()=>{
+    const w=parseFloat(document.getElementById('pm-w').value)/100;
+    const h=parseFloat(document.getElementById('pm-h').value)/100;
+    const d=parseFloat(document.getElementById('pm-d').value)/100;
+    if(isNaN(w)||isNaN(h)||isNaN(d))return;
+    W.closeGenModal();genModule(w,h,d);setView('iso');
+  },
+  showSend:()=>{if(els.length===0){alert('No hay elementos para enviar');return;}document.getElementById('modal-wrap').classList.add('show');},
+  closeSend:()=>document.getElementById('modal-wrap').classList.remove('show'),
+  doSend,
+  setView,resetView:()=>setView('iso'),
+  selById:(id)=>{const el=els.find(x=>x.id===id);if(el){sel.clear();sel.add(el);updSel();updUI();}},
+  updPos,updSize
+};
+init();
 </script>
 </body>
 </html>
