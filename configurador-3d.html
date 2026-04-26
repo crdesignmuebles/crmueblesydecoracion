@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Configurador Armario 3D — CR Design</title>
+<title>Configurador Armario 3D — CR Muebles</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{-webkit-user-select:none;-moz-user-select:none;user-select:none}
@@ -252,7 +252,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 
 <!-- ══ TOPBAR ══ -->
 <div id="tb">
-  <div class="logo"><div class="ld"></div>CR Design</div>
+  <div class="logo"><div class="ld"></div>CR Muebles</div>
   <div class="sp"></div>
   <div class="tg">
     <span class="tl">Módulos</span>
@@ -493,7 +493,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 <!-- ══ MODAL ENVIAR ══ -->
 <div class="mb" id="modal-send">
   <div class="mc2">
-    <div class="mt">Enviar diseño a <span class="ac">CR Design</span></div>
+    <div class="mt">Enviar diseño a <span class="ac">CR Muebles</span></div>
     <div class="ms">Completa tus datos y te enviamos el presupuesto de tu armario a medida.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px">
       <div class="fr"><label class="fl">Nombre *</label><input type="text" id="fn" class="fi" placeholder="Tu nombre"></div>
@@ -511,14 +511,14 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
   </div>
 </div>
 
-<!-- ══ INSTAGRAM CTA TOAST ══ -->
+<!-- ══ INSTAGRAM CTA TOAST - CORREGIDO: TU CUENTA ══ -->
 <div id="ig-toast">
   <div id="ig-close" onclick="W.closeIgToast()" title="Cerrar">✕</div>
   <div id="ig-avatar">📸</div>
   <div id="ig-content">
     <div id="ig-title">¿Buscas inspiración?</div>
-    <div id="ig-msg">Ve diseños reales y resultados finales de nuestros armarios a medida.</div>
-    <a id="ig-btn" href="https://www.instagram.com/cr.design_" target="_blank" rel="noopener">
+    <div id="ig-msg">Descubre diseños reales y resultados finales de nuestros armarios a medida en Instagram.</div>
+    <a id="ig-btn" href="https://www.instagram.com/crmueblesydecoracion" target="_blank" rel="noopener">
       <span id="ig-btn-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
       </span>
@@ -541,14 +541,14 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {TransformControls} from 'three/addons/controls/TransformControls.js';
 
-// ── CONSTANTES ───────────────────────────────────────────────────────────────
+// ── CONSTANTES ──
 const T15 = 0.015;   // tablero 15mm
 const T18 = 0.018;   // tablero 18mm (puertas / frentes cajón)
 const ZH  = 0.06;    // zócalo 6cm
 const TAP = 0.062;   // tapeta 6.2cm
 const BR  = 0.012;   // radio barra
 
-// ── TIPOS ────────────────────────────────────────────────────────────────────
+// ── TIPOS ──
 const ET={
   lateral:    {n:'Lateral',    i:'▮', c:0xD4BC98},
   piso:       {n:'Piso',       i:'▬', c:0xD4BC98},
@@ -565,17 +565,15 @@ const ET={
   divisor:    {n:'Divisor',    i:'|', c:0xD4BC98},
 };
 
-// ── ESTADO ───────────────────────────────────────────────────────────────────
+// ── ESTADO ──
 let sc,cam,ren,oc,tc;
 let eg=new THREE.Group();
 let els=[],sel=new Set(),nid=1,modN=0,nextX=0;
 let lastModW=0.60, lastModH=2.0, lastModD=0.60;
 let curType='colgador';
-
-// Registro de módulos: {cx, w, h, d, hasPuertas}
 let modRegistry=[];
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
+// ── INIT ──
 function init(){
   const cw=document.getElementById('cw');
   const W=cw.clientWidth,H=cw.clientHeight;
@@ -628,7 +626,6 @@ function init(){
   updUI();
 }
 
-// ── PRIMITIVAS ───────────────────────────────────────────────────────────────
 function mkBox(type,pos,size,id){
   const cfg=ET[type]||ET.lateral;
   const geo=new THREE.BoxGeometry(size.w,size.h,size.d);
@@ -653,8 +650,6 @@ function mkCyl(type,pos,r,len,id){
   return m;
 }
 
-// ── CUERPO BASE ──────────────────────────────────────────────────────────────
-// cx = centro X del módulo, devuelve el id del primer elemento
 function mkCuerpo(cx,w,h,d){
   mkBox('lateral',  {x:cx-w/2+T15/2, y:h/2,    z:0},       {w:T15,h,d},     nid++);
   mkBox('lateral',  {x:cx+w/2-T15/2, y:h/2,    z:0},       {w:T15,h,d},     nid++);
@@ -663,48 +658,35 @@ function mkCuerpo(cx,w,h,d){
   mkBox('espaldar', {x:cx,           y:h/2,    z:-d/2+T15/2},{w,h,d:T15},   nid++);
 }
 
-// Ancho interior (entre laterales)
 const iw=(w)=>w-2*T15;
-// Fondo interior
 const id_=(d)=>d-T15;
 
-// ── MÓDULO COLGADOR ──────────────────────────────────────────────────────────
-// Estándar: estante superior a 38cm del techo, barra a 1.60m del suelo
 function genColgador(w,h,d,puertas,zocalo){
   const cx=nextX+w/2;
   mkCuerpo(cx,w,h,d);
   const IW=iw(w), ID=id_(d);
-  // Estante superior (38cm del techo = h-0.38)
   const estY=h-0.38;
   mkBox('estante',{x:cx,y:estY-T15/2,z:-T15/2},{w:IW,h:T15,d:ID},nid++);
-  // Barra para colgar (1.60m del suelo o a mitad si módulo es bajo)
   const barY=Math.min(estY-0.05, 1.60);
   mkCyl('barra',{x:cx,y:barY,z:0},BR,IW-0.02,nid++);
-  const hasPuertas=puertas;
   if(puertas)  mkPuertas(cx,w,h,d);
   if(zocalo)   mkZocaloM(cx,w,d);
-  modRegistry.push({cx,w,h,d,hasPuertas});
+  modRegistry.push({cx,w,h,d,hasPuertas:puertas});
   nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
-  if(modN===1) setTimeout(showIgToast, 25000); // 25s tras primer módulo
 }
 
-// ── MÓDULO CAJONES + COLGADOR ────────────────────────────────────────────────
-// 3 cajones de 20cm en la parte baja, barra + estante arriba
 function genCajonesColg(w,h,d,puertas,zocalo){
   const cx=nextX+w/2;
   mkCuerpo(cx,w,h,d);
   const IW=iw(w), ID=id_(d);
   const cajonH=0.20;
   const nCaj=3;
-  const cajonesH=nCaj*cajonH + (nCaj-1)*T15; // total zona cajones
-  const cajonesY0=T15; // desde el piso interior
-
-  // Cajones
+  const cajonesH=nCaj*cajonH + (nCaj-1)*T15;
+  const cajonesY0=T15;
   for(let i=0;i<nCaj;i++){
     const cy=cajonesY0+i*(cajonH+T15)+cajonH/2;
     mkBox('cajon',    {x:cx,y:cy,z:-T15/2},            {w:IW-0.01,h:cajonH-0.005,d:ID-0.02},nid++);
     mkBox('cajon_f',  {x:cx,y:cy,z:d/2-T15+T18/2},     {w:IW+0.002,h:cajonH+T15-0.001,d:T18},nid++);
-    // tirador cajón
     const tcg=new THREE.CylinderGeometry(0.005,0.005,IW*0.28,10);
     const tmt=new THREE.MeshStandardMaterial({color:0xC4A46B,metalness:0.9,roughness:0.1});
     const tm=new THREE.Mesh(tcg,tmt);
@@ -713,25 +695,19 @@ function genCajonesColg(w,h,d,puertas,zocalo){
     tm.castShadow=true;tm.userData={id:nid,type:'tirador'};
     eg.add(tm);els.push({id:nid++,t:'tirador',m:tm,s:{w:IW*0.28,h:0.01,d:0.01}});
   }
-
-  // Divisor horizontal sobre cajones
   const divY=cajonesY0+cajonesH;
   mkBox('estante',{x:cx,y:divY+T15/2,z:-T15/2},{w:IW,h:T15,d:ID},nid++);
-
-  // Zona superior: barra + estante techo
   const zonaH=h-divY-T15*2;
   const estY=h-T15-0.38;
   mkBox('estante',{x:cx,y:estY-T15/2,z:-T15/2},{w:IW,h:T15,d:ID},nid++);
   const barY=divY+T15+(zonaH*0.45);
   mkCyl('barra',{x:cx,y:barY,z:0},BR,IW-0.02,nid++);
-
   if(puertas) mkPuertas(cx,w,h,d);
   if(zocalo)  mkZocaloM(cx,w,d);
   modRegistry.push({cx,w,h,d,hasPuertas:puertas});
   nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
 }
 
-// ── MÓDULO ESTANTES (cremallera) ─────────────────────────────────────────────
 function genEstantes(w,h,d,puertas,zocalo){
   const cx=nextX+w/2;
   mkCuerpo(cx,w,h,d);
@@ -748,7 +724,6 @@ function genEstantes(w,h,d,puertas,zocalo){
   nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
 }
 
-// ── MÓDULO MALETAS (superior) ────────────────────────────────────────────────
 function genMaletas(w,h,d,puertas,zocalo){
   const cx=nextX+w/2;
   mkCuerpo(cx,w,h,d);
@@ -758,7 +733,6 @@ function genMaletas(w,h,d,puertas,zocalo){
   nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
 }
 
-// ── MÓDULO BÁSICO ────────────────────────────────────────────────────────────
 function genBasico(w,h,d,puertas,zocalo){
   const cx=nextX+w/2;
   mkCuerpo(cx,w,h,d);
@@ -768,16 +742,13 @@ function genBasico(w,h,d,puertas,zocalo){
   nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
 }
 
-// ── PUERTAS ──────────────────────────────────────────────────────────────────
-// 2 puertas de piso a techo por módulo, tiradores incluidos
 function mkPuertas(cx,w,h,d){
-  const pH=h;                       // piso a techo
-  const pW=(w/2)-0.003;             // cada puerta = mitad ancho
-  const pZ=d/2+T18/2+0.002;         // delante del cuerpo
+  const pH=h;
+  const pW=(w/2)-0.003;
+  const pZ=d/2+T18/2+0.002;
   [-1,1].forEach(side=>{
     const px=cx+side*(w/4);
     mkBox('puerta',{x:px,y:pH/2,z:pZ},{w:pW,h:pH,d:T18},nid++);
-    // tirador vertical (lado interior)
     const tCg=new THREE.CylinderGeometry(0.005,0.005,0.13,10);
     const tMt=new THREE.MeshStandardMaterial({color:0xC4A46B,metalness:0.9,roughness:0.1});
     const tM=new THREE.Mesh(tCg,tMt);
@@ -788,13 +759,10 @@ function mkPuertas(cx,w,h,d){
   });
 }
 
-// ── ZÓCALO LOCAL ────────────────────────────────────────────────────────────
 function mkZocaloM(cx,w,d){
   mkBox('zocalo',{x:cx,y:ZH/2,z:d/2-T15/2},{w,h:ZH,d:T15},nid++);
 }
 
-// ── EXTRAS GLOBALES ──────────────────────────────────────────────────────────
-// Zócalo corrido en todo el armario
 function addZocalo(){
   const totalW=nextX;
   if(totalW<=0){alert('Primero genera al menos un módulo');return;}
@@ -804,7 +772,6 @@ function addZocalo(){
   updUI();
 }
 
-// Tapeta corrida en todo el armario
 function addTapeta(){
   const totalW=nextX;
   if(totalW<=0){alert('Primero genera al menos un módulo');return;}
@@ -815,26 +782,20 @@ function addTapeta(){
   updUI();
 }
 
-// Puertas inteligentes: busca el primer módulo sin puertas y las añade
 function addPuertasActivo(){
   if(modRegistry.length===0){alert('Primero genera al menos un módulo');return;}
   const pending=modRegistry.filter(m=>!m.hasPuertas);
-  if(pending.length===0){
-    // Todas las puertas colocadas — botón ya desactivado, por si acaso
-    return;
-  }
-  const mod=pending[0]; // primer módulo sin puertas
+  if(pending.length===0) return;
+  const mod=pending[0];
   mkPuertas(mod.cx, mod.w, mod.h, mod.d);
   mod.hasPuertas=true;
   updUI();
   updPuertasBtn();
 }
 
-// Actualiza estado visual del botón de puertas
 function updPuertasBtn(){
   const pending=modRegistry.filter(m=>!m.hasPuertas).length;
   const total=modRegistry.length;
-  // Botones en topbar y sidebar
   ['btn-puertas-tb','btn-puertas-sb'].forEach(id=>{
     const btn=document.getElementById(id);
     if(!btn)return;
@@ -859,7 +820,6 @@ function updPuertasBtn(){
   });
 }
 
-// Pieza suelta
 function addEl(type){
   const id=nid++;
   if(type==='barra'){
@@ -872,7 +832,6 @@ function addEl(type){
   updUI();
 }
 
-// ── CANVAS CLICK ─────────────────────────────────────────────────────────────
 function onCanvasClick(e){
   const rect=ren.domElement.getBoundingClientRect();
   const mx=((e.clientX-rect.left)/rect.width)*2-1;
@@ -891,7 +850,6 @@ function onCanvasClick(e){
   updUI();
 }
 
-// ── SELECCIÓN ────────────────────────────────────────────────────────────────
 function updSel(){
   if(sel.size===1){
     const el=Array.from(sel)[0];tc.attach(el.m);
@@ -925,7 +883,6 @@ function syncInputs(){
   document.getElementById('sd').value=(el.s.d*100).toFixed(1);
 }
 
-// ── UI ───────────────────────────────────────────────────────────────────────
 function updUI(){
   const list=document.getElementById('el-list');
   if(els.length===0){
@@ -954,7 +911,6 @@ function updUI(){
   else hint.textContent=nextX>0?`Armario ${(nextX*100).toFixed(0)}cm ancho`:'Elige un módulo para empezar';
 }
 
-// ── TRANSFORM ────────────────────────────────────────────────────────────────
 function updPos(){
   if(sel.size!==1)return;
   const el=Array.from(sel)[0];
@@ -986,7 +942,6 @@ function deleteEl(){
     if(i!==-1){eg.remove(el.m);els.splice(i,1);}
   });
   sel.clear();tc.detach();
-  // Si no quedan elementos, resetear todo el estado del armario
   if(els.length===0){
     modRegistry=[];nextX=0;modN=0;nid=1;
     lastModW=0.60;lastModH=2.0;lastModD=0.60;
@@ -995,7 +950,6 @@ function deleteEl(){
   updSel();updUI();
 }
 
-// ── VISTAS ───────────────────────────────────────────────────────────────────
 function setView(v){
   const cx=nextX/2||0;
   const views={
@@ -1009,13 +963,12 @@ function setView(v){
   oc.target.set(vd[3],vd[4],vd[5]);oc.update();
 }
 
-// ── MODAL MÓDULO ─────────────────────────────────────────────────────────────
 const MOD_DEFS={
-  colgador: {title:'👔 Módulo colgador',   info:'Estante superior a 38cm del techo + barra para colgar a 160cm del suelo. El módulo principal de cualquier armario.', w:60,h:200,d:60},
-  cajones:  {title:'🗂 Cajones + Colgador',info:'3 cajones de 20cm en la parte inferior con frentes y tiradores. Barra y estante en la zona superior. Como el plano técnico.', w:60,h:200,d:60},
-  estantes: {title:'📚 Torre de estantes', info:'5 estantes regulables distribuidos uniformemente. Módulo tipo cremallera. Ideal para lado derecho del armario.', w:35,h:200,d:60},
-  maletas:  {title:'🧳 Módulo superior',   info:'Cuerpo abierto de 40cm de alto para maletas y bultos. Se coloca sobre los módulos principales.', w:60,h:40, d:60},
-  basico:   {title:'✦ Módulo básico',      info:'Cuerpo vacío con dimensiones completamente libres. Personalizable.', w:60,h:200,d:60},
+  colgador: {title:'👔 Módulo colgador',   info:'Estante superior a 38cm del techo + barra para colgar a 160cm del suelo.', w:60,h:200,d:60},
+  cajones:  {title:'🗂 Cajones + Colgador',info:'3 cajones de 20cm en la parte inferior con frentes y tiradores.', w:60,h:200,d:60},
+  estantes: {title:'📚 Torre de estantes', info:'5 estantes regulables distribuidos uniformemente.', w:35,h:200,d:60},
+  maletas:  {title:'🧳 Módulo superior',   info:'Cuerpo abierto de 40cm de alto para maletas y bultos.', w:60,h:40, d:60},
+  basico:   {title:'✦ Módulo básico',      info:'Cuerpo vacío con dimensiones completamente libres.', w:60,h:200,d:60},
 };
 
 function setModType(type){
@@ -1027,7 +980,6 @@ function setModType(type){
   document.getElementById('pm-w').value=def.w;
   document.getElementById('pm-h').value=def.h;
   document.getElementById('pm-d').value=def.d;
-  // Tabs activos
   ['colgador','cajones','estantes','maletas','basico'].forEach(t=>{
     const btn=document.getElementById('tt-'+t);
     const colorMap={colgador:'ac-g',cajones:'ac-b',estantes:'ac-p',maletas:'ac-a',basico:'ac-go'};
@@ -1035,34 +987,26 @@ function setModType(type){
   });
 }
 
-// ── INSTAGRAM TOAST ──────────────────────────────────────────────────────────
 let igShown=false;
-
 function showIgToast(){
   if(igShown)return;
   igShown=true;
   const t=document.getElementById('ig-toast');
   if(t)t.classList.add('show');
 }
-
 function closeIgToast(){
   const t=document.getElementById('ig-toast');
   if(t){t.classList.remove('show');}
 }
-
-// Disparo por tiempo: 90s después de abrir la app
 setTimeout(showIgToast, 90000);
 
-// ── ANIMATE ───────────────────────────────────────────────────────────────────
 function animate(){requestAnimationFrame(animate);oc.update();ren.render(sc,cam);}
-
 function onResize(){
   const cw=document.getElementById('cw');
   cam.aspect=cw.clientWidth/cw.clientHeight;
   cam.updateProjectionMatrix();ren.setSize(cw.clientWidth,cw.clientHeight);
 }
 
-// ── ENVÍO ─────────────────────────────────────────────────────────────────────
 function doSend(){
   const nm=document.getElementById('fn').value.trim();
   const ph=document.getElementById('fp').value.trim();
@@ -1077,18 +1021,17 @@ function doSend(){
   const form=document.createElement('form');
   form.method='POST';form.action='https://formsubmit.co/miguel_716@hotmail.com';
   form.style.display='none';form.enctype='multipart/form-data';
-  [{name:'name',value:nm},{name:'email',value:document.getElementById('fe').value||'cliente@crdesign.com'},{name:'_subject',value:`Diseño Armario 3D - ${nm}`},{name:'message',value:lista},{name:'_captcha',value:'false'},{name:'_template',value:'table'}]
+  [{name:'name',value:nm},{name:'email',value:document.getElementById('fe').value||'cliente@crmuebles.com'},{name:'_subject',value:`Diseño Armario 3D - ${nm}`},{name:'message',value:lista},{name:'_captcha',value:'false'},{name:'_template',value:'table'}]
   .forEach(f=>{const i=document.createElement('input');i.type='hidden';i.name=f.name;i.value=f.value;form.appendChild(i);});
   fetch(imgDataURL).then(r=>r.blob()).then(b=>{
     const file=new File([b],`armario_${nm.replace(/\s/g,'_')}.png`,{type:'image/png'});
     const fi=document.createElement('input');fi.type='file';fi.name='attachment';
     const dt=new DataTransfer();dt.items.add(file);fi.files=dt.files;
     form.appendChild(fi);document.body.appendChild(form);form.submit();
-    setTimeout(()=>{spin.style.display='none';W.closeSend();alert('✓ Diseño enviado a CR Design');['fn','fp','fe','fa','fq','fc'].forEach(id=>document.getElementById(id).value='');},2000);
+    setTimeout(()=>{spin.style.display='none';W.closeSend();alert('✓ Diseño enviado a CR Muebles');['fn','fp','fe','fa','fq','fc'].forEach(id=>document.getElementById(id).value='');},2000);
   }).catch(()=>{spin.style.display='none';alert('Error al generar imagen.');});
 }
 
-// ── API PÚBLICA ───────────────────────────────────────────────────────────────
 window.W={
   openMod:(type)=>{setModType(type||'colgador');document.getElementById('mm').classList.add('show');},
   setModType,
