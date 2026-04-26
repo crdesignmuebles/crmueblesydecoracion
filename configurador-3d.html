@@ -453,11 +453,14 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 // ========== PROTECCIÓN ANTI-COPIA ==========
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', e => {
-  const key = e.key;
-  if (key === 'F12') { e.preventDefault(); return; }
-  if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) { e.preventDefault(); return; }
-  if (e.ctrlKey && (key === 'U' || key === 's' || key === 'S' || key === 'p' || key === 'P')) { e.preventDefault(); return; }
-  if (e.ctrlKey && (key === 'c' || key === 'x') && !e.target.matches('input,textarea')) { e.preventDefault(); return; }
+  // Solo bloquea las teclas más comunes para copiar NO textos de inputs
+  if (e.ctrlKey && (e.key === 'c' || e.key === 'x') && !e.target.matches('input,textarea')) {
+    e.preventDefault();
+  }
+  // Bloqueo de impresión
+  if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
+    e.preventDefault();
+  }
 });
 window.addEventListener('dragstart', e => e.preventDefault());
 
