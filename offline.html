@@ -1,1 +1,41 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sin conexión - CR Muebles</title>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a0b, #1a1a1e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    color: #eeebe5;
+    text-align: center;
+  }
+  .icon { font-size: 80px; margin-bottom: 20px; }
+  h1 { color: #c8a870; font-size: 24px; margin-bottom: 10px; }
+  p { color: #7a7a85; margin-bottom: 30px; }
+  button {
+    background: linear-gradient(135deg, #c8a870, #906030);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 12px;
+    color: #1a0e00;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div>
+  <div class="icon">📱</div>
+  <h1>Sin conexión a Internet</h1>
+  <p>Conéctate para usar el configurador 3D</p>
+  <button onclick="location.reload()">Reintentar</button>
+</div>
+</body>
+</html>
