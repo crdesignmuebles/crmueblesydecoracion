@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>CR Muebles y Decoración - Diseña tu armario 3D</title>
+
 <!-- ========== PWA CONFIGURACIÓN ========== -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -10,27 +14,41 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-touch-icon" href="icons/icon-192.png">
 
-<!-- ========== PROTECCIÓN - ANTI COPIA ========== -->
+<!-- ========== PROTECCIÓN ANTI-COPIA ========== -->
 <meta name="robots" content="noindex, nofollow">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Configurador Armario 3D — CR Muebles</title>
+<meta name="googlebot" content="noindex, nofollow">
+
+<!-- ========== FUENTES ========== -->
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
-*{-webkit-user-select:none;-moz-user-select:none;user-select:none}
-input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text}
-:root{
-  --bg:#0a0a0b;--sf:#111113;--sf2:#18181c;--sf3:#202026;
-  --bd:#28282f;--bd2:#38383f;--gold:#c8a870;--glow:rgba(200,168,112,.15);
-  --tx:#eeebe5;--txm:#7a7a85;--txd:#44444e;
-  --green:#3ecf8e;--blue:#5b9cf6;--purple:#a78bfa;--red:#e05757;
-  --r:8px;--rL:14px;--rXl:20px;
+/* ========== PROTECCIONES ========== */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
+input, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
+/* ========== VARIABLES ========== */
+:root{
+  --bg:#0a0a0b; --sf:#111113; --sf2:#18181c; --sf3:#202026;
+  --bd:#28282f; --bd2:#38383f; --gold:#c8a870; --glow:rgba(200,168,112,.15);
+  --tx:#eeebe5; --txm:#7a7a85; --txd:#44444e;
+  --green:#3ecf8e; --blue:#5b9cf6; --purple:#a78bfa; --red:#e05757;
+  --r:8px; --rL:14px; --rXl:20px;
+}
+
+/* ========== RESET ========== */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Syne',sans-serif;font-size:14px}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
 
-/* ── TOPBAR ── */
+/* ========== TOPBAR ========== */
 #tb{position:fixed;top:0;left:0;right:0;height:54px;background:rgba(10,10,11,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:4px;padding:0 10px;z-index:100}
 .logo{font-size:12px;font-weight:800;letter-spacing:3px;color:var(--gold);text-transform:uppercase;white-space:nowrap;padding-right:10px;display:flex;align-items:center;gap:7px}
 .ld{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pulse 2.5s ease-in-out infinite}
@@ -51,19 +69,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .tbtn.ghost:hover{background:var(--sf2)}
 .tsp{flex:1}
 
-/* ── LAYOUT ── */
+/* ========== LAYOUT ========== */
 #sl{position:fixed;left:0;top:54px;bottom:0;width:276px;background:var(--sf);border-right:1px solid var(--bd);overflow-y:auto;z-index:90;display:flex;flex-direction:column}
 #sr{position:fixed;right:0;top:54px;bottom:0;width:250px;background:var(--sf);border-left:1px solid var(--bd);overflow-y:auto;z-index:90}
 #cw{position:fixed;top:54px;left:276px;right:250px;bottom:0;background:var(--bg)}
 canvas{display:block;width:100%;height:100%}
 
-/* ── SECTIONS ── */
+/* ========== SECTIONS ========== */
 .sec{padding:13px;border-bottom:1px solid var(--bd)}
 .sec:last-child{border-bottom:none}
 .slbl{font-size:8px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--txd);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .slbl::after{content:'';flex:1;height:1px;background:var(--bd)}
 
-/* ── MODULE CARDS ── */
+/* ========== MODULE CARDS ========== */
 .mc{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rL);padding:10px 11px;cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:9px;margin-bottom:5px;position:relative;overflow:hidden}
 .mc::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--glow),transparent);opacity:0;transition:opacity .2s}
 .mc:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
@@ -87,7 +105,7 @@ canvas{display:block;width:100%;height:100%}
 .mc-add{width:22px;height:22px;border-radius:5px;border:1px solid var(--bd2);background:transparent;color:var(--txm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .14s;flex-shrink:0;font-family:'Syne',sans-serif}
 .mc-add:hover{background:var(--gold);border-color:var(--gold);color:#1a0e00;transform:scale(1.12)}
 
-/* ── PIEZAS GRID ── */
+/* ========== PIEZAS GRID ========== */
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .pb{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rL);padding:9px 7px 8px;cursor:pointer;text-align:center;transition:all .14s;position:relative;overflow:hidden}
 .pb::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--glow),transparent);opacity:0;transition:opacity .2s}
@@ -97,19 +115,19 @@ canvas{display:block;width:100%;height:100%}
 .pi{font-size:17px;display:block;margin-bottom:3px;line-height:1}
 .pl{font-size:9px;color:var(--txm);font-weight:700;letter-spacing:.4px}
 
-/* ── INPUTS ── */
+/* ========== INPUTS ========== */
 .ilbl{font-size:8px;color:var(--txd);letter-spacing:.8px;text-transform:uppercase;font-weight:700}
 .ni{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:7px 9px;color:var(--tx);font-size:12px;font-family:'DM Mono',monospace;width:100%;transition:border-color .15s,box-shadow .15s}
 .ni:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--glow)}
 
-/* ── STATS ── */
+/* ========== STATS ========== */
 .srow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
 .sc2{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--rL);padding:10px 7px;text-align:center;position:relative;overflow:hidden}
 .sc2::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:36%;height:1px;background:var(--gold);opacity:.22}
 .sn{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--gold);line-height:1}
 .sl2{font-size:8px;color:var(--txd);text-transform:uppercase;letter-spacing:1px;margin-top:4px;font-weight:700}
 
-/* ── EL LIST ── */
+/* ========== EL LIST ========== */
 .eli{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:var(--r);cursor:pointer;margin-bottom:2px;border:1px solid transparent;transition:all .12s;font-size:11px}
 .eli:hover{background:var(--sf2);border-color:var(--bd)}
 .eli.sel{background:rgba(200,168,112,.07);border-color:rgba(200,168,112,.38)}
@@ -120,23 +138,23 @@ canvas{display:block;width:100%;height:100%}
 .eeb{width:20px;height:20px;border-radius:4px;background:transparent;border:1px solid var(--bd);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:var(--txm);transition:all .12s}
 .eeb:hover{background:var(--sf3);color:var(--gold);border-color:rgba(200,168,112,.38)}
 
-/* ── VIEWS ── */
+/* ========== VIEWS ========== */
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .vb{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:8px 7px;cursor:pointer;text-align:center;transition:all .14s;font-family:'Syne',sans-serif;color:var(--txm);font-size:10px;font-weight:700;letter-spacing:.4px}
 .vb:hover{background:var(--sf3);color:var(--gold);border-color:rgba(200,168,112,.28)}
 .vb:active{transform:scale(.95)}
 
-/* ── FLOAT ── */
+/* ========== FLOAT ========== */
 #fz{position:fixed;bottom:18px;right:262px;display:flex;gap:4px;z-index:95}
 .fb{width:36px;height:36px;background:rgba(17,17,19,.93);backdrop-filter:blur(10px);border:1px solid var(--bd2);border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .14s;color:var(--txm)}
 .fb:hover{background:var(--sf3);color:var(--gold);border-color:rgba(200,168,112,.38);transform:translateY(-2px)}
 
-/* ── INFO BAR ── */
+/* ========== INFO BAR ========== */
 #ib{position:fixed;bottom:18px;left:288px;display:flex;align-items:center;gap:5px;z-index:95}
 .ip{background:rgba(17,17,19,.93);backdrop-filter:blur(10px);border:1px solid var(--bd2);border-radius:20px;padding:5px 12px;font-size:10px;color:var(--txm);font-weight:700;white-space:nowrap}
 .ip span{color:var(--gold)}
 
-/* ── MODAL ── */
+/* ========== MODALES ========== */
 .mb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(7px)}
 .mb.show{display:flex}
 .mc2{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--rXl);padding:26px;width:90%;max-width:460px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.75);animation:mIn .2s ease}
@@ -157,19 +175,19 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 .bs:hover{background:var(--sf2);color:var(--tx)}
 .spin{display:none;text-align:center;padding:11px;color:var(--gold);font-size:11px;font-weight:700;letter-spacing:1px}
 
-/* ── MOD MODAL CARD ── */
+/* ========== MOD MODAL CARD ========== */
 .pmc{background:var(--sf);border:1px solid rgba(200,168,112,.35);border-radius:var(--rXl);padding:24px;width:90%;max-width:420px;animation:mIn .2s ease;box-shadow:0 0 60px rgba(200,168,112,.08)}
 .pdg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0}
 .pdi label{font-size:8px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txd);display:block;margin-bottom:4px;font-weight:700}
 .pdi input{width:100%;padding:10px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);font-size:16px;font-family:'DM Mono',monospace;font-weight:500;text-align:center;transition:border-color .15s,box-shadow .15s}
 .pdi input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--glow)}
 
-/* ── SEL INDICATOR ── */
+/* ========== SEL INDICATOR ========== */
 .si{position:fixed;top:65px;left:50%;transform:translateX(-50%);z-index:95;display:none;pointer-events:none}
 .si.show{display:block}
 .sp2{background:rgba(62,207,142,.09);border:1px solid rgba(62,207,142,.32);border-radius:20px;padding:5px 16px;font-size:10px;color:var(--green);white-space:nowrap;font-weight:700;letter-spacing:.5px}
 
-/* ── GUIDE ── */
+/* ========== GUIDE ========== */
 .guide{background:linear-gradient(135deg,rgba(200,168,112,.07),rgba(200,168,112,.02));border:1px solid rgba(200,168,112,.18);border-radius:var(--rL);padding:10px;margin-bottom:4px}
 .guide p{font-size:10px;color:var(--txm);line-height:1.7;font-weight:400}
 .guide strong{color:var(--gold)}
@@ -177,17 +195,13 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 .badge.g{background:rgba(200,168,112,.1);color:var(--gold);border:1px solid rgba(200,168,112,.22)}
 .badge.m{background:var(--sf2);color:var(--txm);border:1px solid var(--bd)}
 
-/* ── CHECKBOX ROW ── */
+/* ========== CHECKBOX ROW ========== */
 .chkrow{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:10px;cursor:pointer}
 .chkrow input{accent-color:var(--gold);width:15px;height:15px;cursor:pointer;flex-shrink:0}
 .chkrow label{font-size:10px;color:var(--txm);cursor:pointer;font-weight:700;line-height:1.4}
 .chkrow label strong{color:var(--tx)}
 
-/* ── MODULE PREVIEW ── */
-.prev-box{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;margin-bottom:12px;font-size:10px;color:var(--txm);line-height:1.7}
-.prev-box strong{color:var(--gold)}
-
-/* ── TYPE TABS ── */
+/* ========== TYPE TABS ========== */
 .ttabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
 .ttab{padding:5px 11px;border-radius:20px;border:1px solid var(--bd2);background:var(--sf2);color:var(--txm);font-size:10px;font-weight:700;cursor:pointer;transition:all .14s;font-family:'Syne',sans-serif}
 .ttab:hover{color:var(--tx)}
@@ -201,169 +215,105 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 .empty{text-align:center;padding:24px 12px;color:var(--txd);font-size:11px;font-weight:700}
 .empty-i{font-size:24px;margin-bottom:8px;opacity:.22}
 
-/* ── INSTAGRAM CTA TOAST ── */
-#ig-toast{
-  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);
-  background:linear-gradient(135deg,#1a0a1e 0%,#12091a 100%);
-  border:1px solid rgba(225,48,108,.35);
-  border-radius:20px;padding:16px 20px 16px 16px;
-  display:flex;align-items:center;gap:14px;
-  box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 0 1px rgba(225,48,108,.12);
-  z-index:300;max-width:420px;width:calc(100% - 40px);
-  transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease;
-  opacity:0;pointer-events:none;
-}
-#ig-toast.show{
-  transform:translateX(-50%) translateY(0);
-  opacity:1;pointer-events:auto;
-}
-#ig-close{
-  position:absolute;top:8px;right:10px;
-  font-size:11px;color:rgba(255,255,255,.3);cursor:pointer;
-  width:18px;height:18px;display:flex;align-items:center;justify-content:center;
-  border-radius:50%;transition:all .15s;
-}
+/* ========== INSTAGRAM CTA TOAST - CORREGIDO A TU CUENTA ========== */
+#ig-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,#1a0a1e 0%,#12091a 100%);border:1px solid rgba(225,48,108,.35);border-radius:20px;padding:16px 20px 16px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 0 1px rgba(225,48,108,.12);z-index:300;max-width:420px;width:calc(100% - 40px);transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease;opacity:0;pointer-events:none}
+#ig-toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+#ig-close{position:absolute;top:8px;right:10px;font-size:11px;color:rgba(255,255,255,.3);cursor:pointer;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s}
 #ig-close:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.08)}
-#ig-avatar{
-  width:44px;height:44px;border-radius:14px;flex-shrink:0;
-  background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7);
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-  box-shadow:0 4px 14px rgba(238,42,123,.35);
-}
+#ig-avatar{width:44px;height:44px;border-radius:14px;flex-shrink:0;background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 14px rgba(238,42,123,.35)}
 #ig-content{flex:1;min-width:0}
 #ig-title{font-size:12px;font-weight:800;color:#fff;margin-bottom:3px;letter-spacing:.3px}
 #ig-msg{font-size:10px;color:rgba(255,255,255,.5);line-height:1.4;margin-bottom:10px;font-weight:400}
-#ig-btn{
-  display:inline-flex;align-items:center;gap:7px;
-  background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7);
-  border:none;border-radius:10px;padding:8px 15px;
-  color:#fff;font-size:11px;font-weight:800;font-family:'Syne',sans-serif;
-  cursor:pointer;letter-spacing:.5px;text-decoration:none;
-  transition:filter .15s,transform .15s;
-  box-shadow:0 4px 14px rgba(238,42,123,.3);
-}
+#ig-btn{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7);border:none;border-radius:10px;padding:8px 15px;color:#fff;font-size:11px;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;letter-spacing:.5px;text-decoration:none;transition:filter .15s,transform .15s;box-shadow:0 4px 14px rgba(238,42,123,.3)}
 #ig-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
 #ig-btn:active{transform:translateY(0)}
-#ig-btn-icon{width:14px;height:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#ig-btn-icon svg{width:14px;height:14px}
 
-@media(max-width:960px){
-  #ig-toast{bottom:18px}
-}
+/* ========== SPLASH SCREEN ========== */
+.splash-screen{position:fixed;inset:0;background:#0a0a0b;z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .5s ease}
+.splash-screen.hide{opacity:0;pointer-events:none}
+.splash-logo{width:80px;height:80px;background:linear-gradient(135deg,#c8a870,#906030);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:20px;animation:pulse 1.5s ease infinite}
+.splash-text{font-size:14px;color:#c8a870;letter-spacing:3px;font-weight:800;text-transform:uppercase}
 
+/* ========== PWA MODE ========== */
+.pwa-mode #tb{padding-top:env(safe-area-inset-top)}
+.pwa-mode #sl,.pwa-mode #sr{padding-bottom:env(safe-area-inset-bottom)}
+
+/* ========== MOBILE RESPONSIVE ========== */
 @media(max-width:960px){
   #sl,#sr{display:none}
   #cw{left:0;right:0}
-  #fz{right:14px}
-  #ib{left:14px}
+  #fz{right:14px;bottom:70px}
+  #ib{left:14px;bottom:12px}
+  .mobile-menu-btn{position:fixed;bottom:20px;left:20px;width:48px;height:48px;background:linear-gradient(135deg,var(--gold),#906030);border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:96;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.3);border:none;font-size:22px}
+  .mobile-panel{position:fixed;top:0;left:-85%;width:80%;height:100%;background:var(--sf);z-index:200;transition:left .3s ease;overflow-y:auto;padding-top:60px}
+  .mobile-panel.open{left:0}
+  .mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:199;display:none}
+  .tbtn,.pb,.mc,.fb,.vb{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  #tb{overflow-x:auto;scrollbar-width:thin}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ TOPBAR ══ -->
+<!-- ========== SPLASH SCREEN ========== -->
+<div class="splash-screen" id="splash">
+  <div class="splash-logo">🚪</div>
+  <div class="splash-text">CR Muebles</div>
+</div>
+
+<!-- ========== TOPBAR ========== -->
 <div id="tb">
   <div class="logo"><div class="ld"></div>CR Muebles</div>
   <div class="sp"></div>
   <div class="tg">
     <span class="tl">Módulos</span>
-    <button class="tbtn gold" onclick="W.openMod('colgador')" style="border-left:2px solid var(--green)">👔 Colgador</button>
-    <button class="tbtn gold" onclick="W.openMod('cajones')"  style="border-left:2px solid var(--blue)">🗂 Cajones+Colgador</button>
-    <button class="tbtn gold" onclick="W.openMod('estantes')" style="border-left:2px solid var(--purple)">📚 Estantes</button>
-    <button class="tbtn gold" onclick="W.openMod('maletas')"  style="border-left:2px solid #f59e0b">🧳 Superior</button>
-    <button class="tbtn gold" onclick="W.openMod('basico')">✦ Básico</button>
+    <button class="tbtn gold" onclick="app.openMod('colgador')" style="border-left:2px solid var(--green)">👔 Colgador</button>
+    <button class="tbtn gold" onclick="app.openMod('cajones')"  style="border-left:2px solid var(--blue)">🗂 Cajones+Colgador</button>
+    <button class="tbtn gold" onclick="app.openMod('estantes')" style="border-left:2px solid var(--purple)">📚 Estantes</button>
+    <button class="tbtn gold" onclick="app.openMod('maletas')"  style="border-left:2px solid #f59e0b">🧳 Superior</button>
+    <button class="tbtn gold" onclick="app.openMod('basico')">✦ Básico</button>
   </div>
   <div class="sp"></div>
   <div class="tg">
     <span class="tl">Extras</span>
-    <button class="tbtn ghost" onclick="W.addZocalo()">▬ Zócalo</button>
-    <button class="tbtn ghost" onclick="W.addTapeta()">▀ Tapeta</button>
-    <button id="btn-puertas-tb" class="tbtn ghost" onclick="W.addPuertasActivo()">🚪 Puertas</button>
+    <button class="tbtn ghost" onclick="app.addZocalo()">▬ Zócalo</button>
+    <button class="tbtn ghost" onclick="app.addTapeta()">▀ Tapeta</button>
+    <button id="btn-puertas-tb" class="tbtn ghost" onclick="app.addPuertas()">🚪 Puertas</button>
   </div>
   <div class="sp"></div>
   <div class="tg">
-    <button class="tbtn ghost" onclick="W.clearSel()">✕ Desel.</button>
-    <button class="tbtn danger" onclick="W.deleteSelected()">🗑 Eliminar</button>
+    <button class="tbtn ghost" onclick="app.clearSel()">✕ Desel.</button>
+    <button class="tbtn danger" onclick="app.deleteSelected()">🗑 Eliminar</button>
   </div>
   <div class="tsp"></div>
   <div class="tg">
-    <button class="tbtn ok" onclick="W.showSend()">↗ Enviar diseño</button>
-    <a href="../index.html" class="tbtn ghost">← Volver</a>
+    <button class="tbtn ok" onclick="app.showSend()">↗ Enviar diseño</button>
   </div>
 </div>
 
-<!-- ══ SIDEBAR IZQUIERDO ══ -->
+<!-- ========== SIDEBAR IZQUIERDO ========== -->
 <div id="sl">
-
-  <!-- MÓDULOS -->
   <div class="sec">
     <div class="slbl">Módulos de armario</div>
-
-    <div class="mc c-colgador" onclick="W.openMod('colgador')">
-      <div class="mi g">👔</div>
-      <div class="mc-info">
-        <div class="mn">Colgador de ropa</div>
-        <div class="md">Barra + estante superior + espacio largo</div>
-        <div class="mm">60×200cm · Aglom. 15mm</div>
-      </div>
-      <button class="mc-add">+</button>
-    </div>
-
-    <div class="mc c-cajones" onclick="W.openMod('cajones')">
-      <div class="mi b">🗂</div>
-      <div class="mc-info">
-        <div class="mn">Cajones + Colgador</div>
-        <div class="md">3 cajones bajos · barra superior · estante</div>
-        <div class="mm">60×200cm · Aglom. 15mm</div>
-      </div>
-      <button class="mc-add">+</button>
-    </div>
-
-    <div class="mc c-estantes" onclick="W.openMod('estantes')">
-      <div class="mi p">📚</div>
-      <div class="mc-info">
-        <div class="mn">Torre de estantes</div>
-        <div class="md">5 estantes regulables tipo cremallera</div>
-        <div class="mm">35×200cm · Aglom. 15mm</div>
-      </div>
-      <button class="mc-add">+</button>
-    </div>
-
-    <div class="mc c-maletas" onclick="W.openMod('maletas')">
-      <div class="mi a">🧳</div>
-      <div class="mc-info">
-        <div class="mn">Módulo superior</div>
-        <div class="md">Zona abierta para maletas y bultos</div>
-        <div class="mm">60×40cm · Aglom. 15mm</div>
-      </div>
-      <button class="mc-add">+</button>
-    </div>
-
-    <div class="mc c-basico" onclick="W.openMod('basico')">
-      <div class="mi go">✦</div>
-      <div class="mc-info">
-        <div class="mn">Básico personalizado</div>
-        <div class="md">Cuerpo vacío · medidas libres</div>
-        <div class="mm">Dimensiones a elegir</div>
-      </div>
-      <button class="mc-add">+</button>
-    </div>
+    <div class="mc c-colgador" onclick="app.openMod('colgador')"><div class="mi g">👔</div><div class="mc-info"><div class="mn">Colgador de ropa</div><div class="md">Barra + estante superior</div><div class="mm">60×200cm</div></div><button class="mc-add">+</button></div>
+    <div class="mc c-cajones" onclick="app.openMod('cajones')"><div class="mi b">🗂</div><div class="mc-info"><div class="mn">Cajones + Colgador</div><div class="md">3 cajones + barra</div><div class="mm">60×200cm</div></div><button class="mc-add">+</button></div>
+    <div class="mc c-estantes" onclick="app.openMod('estantes')"><div class="mi p">📚</div><div class="mc-info"><div class="mn">Torre de estantes</div><div class="md">5 estantes regulables</div><div class="mm">35×200cm</div></div><button class="mc-add">+</button></div>
+    <div class="mc c-maletas" onclick="app.openMod('maletas')"><div class="mi a">🧳</div><div class="mc-info"><div class="mn">Módulo superior</div><div class="md">Para maletas y bultos</div><div class="mm">60×40cm</div></div><button class="mc-add">+</button></div>
+    <div class="mc c-basico" onclick="app.openMod('basico')"><div class="mi go">✦</div><div class="mc-info"><div class="mn">Básico personalizado</div><div class="md">Medidas libres</div><div class="mm">Dimensiones a elegir</div></div><button class="mc-add">+</button></div>
   </div>
 
-  <!-- EXTRAS -->
   <div class="sec">
     <div class="slbl">Extras rápidos</div>
     <div class="pgrid">
-      <div id="btn-puertas-sb" class="pb" onclick="W.addPuertasActivo()"><span class="pi">🚪</span><span class="pl">Puertas</span></div>
-      <div class="pb" onclick="W.addZocalo()"><span class="pi">▬</span><span class="pl">Zócalo</span></div>
-      <div class="pb" onclick="W.addTapeta()"><span class="pi">▀</span><span class="pl">Tapeta</span></div>
-      <div class="pb" onclick="W.addEl('barra')"><span class="pi">━</span><span class="pl">Barra</span></div>
-      <div class="pb" onclick="W.addEl('estante')"><span class="pi">▭</span><span class="pl">Estante</span></div>
-      <div class="pb" onclick="W.addEl('cajon')"><span class="pi">📦</span><span class="pl">Cajón</span></div>
+      <div id="btn-puertas-sb" class="pb" onclick="app.addPuertas()"><span class="pi">🚪</span><span class="pl">Puertas</span></div>
+      <div class="pb" onclick="app.addZocalo()"><span class="pi">▬</span><span class="pl">Zócalo</span></div>
+      <div class="pb" onclick="app.addTapeta()"><span class="pi">▀</span><span class="pl">Tapeta</span></div>
+      <div class="pb" onclick="app.addEl('barra')"><span class="pi">━</span><span class="pl">Barra</span></div>
+      <div class="pb" onclick="app.addEl('estante')"><span class="pi">▭</span><span class="pl">Estante</span></div>
+      <div class="pb" onclick="app.addEl('cajon')"><span class="pi">📦</span><span class="pl">Cajón</span></div>
     </div>
   </div>
 
-  <!-- SELECCIÓN -->
   <div class="sec">
     <div class="slbl">Selección activa</div>
     <div id="sel-info" style="color:var(--txm);font-size:11px;margin-bottom:8px;font-weight:700">Ningún elemento</div>
@@ -372,24 +322,23 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
       <div style="margin-bottom:8px">
         <div class="ilbl" style="margin-bottom:5px">Posición (cm)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
-          <div style="display:flex;flex-direction:column;gap:3px"><span class="ilbl">X</span><input type="number" id="px" class="ni" step="1" onchange="W.updPos()"></div>
-          <div style="display:flex;flex-direction:column;gap:3px"><span class="ilbl">Y</span><input type="number" id="py" class="ni" step="1" onchange="W.updPos()"></div>
-          <div style="display:flex;flex-direction:column;gap:3px"><span class="ilbl">Z</span><input type="number" id="pz" class="ni" step="1" onchange="W.updPos()"></div>
+          <div><span class="ilbl">X</span><input type="number" id="px" class="ni" step="1" onchange="app.updPos()"></div>
+          <div><span class="ilbl">Y</span><input type="number" id="py" class="ni" step="1" onchange="app.updPos()"></div>
+          <div><span class="ilbl">Z</span><input type="number" id="pz" class="ni" step="1" onchange="app.updPos()"></div>
         </div>
       </div>
       <div>
         <div class="ilbl" style="margin-bottom:5px">Dimensiones (cm)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
-          <div style="display:flex;flex-direction:column;gap:3px"><span class="ilbl">Ancho</span><input type="number" id="sw" class="ni" step="5" onchange="W.updSize()"></div>
-          <div style="display:flex;flex-direction:column;gap:3px"><span class="ilbl">Alto</span><input type="number" id="sh" class="ni" step="5" onchange="W.updSize()"></div>
-          <div style="display:flex;flex-direction:column;gap:3px"><span class="ilbl">Fondo</span><input type="number" id="sd" class="ni" step="5" onchange="W.updSize()"></div>
+          <div><span class="ilbl">Ancho</span><input type="number" id="sw" class="ni" step="5" onchange="app.updSize()"></div>
+          <div><span class="ilbl">Alto</span><input type="number" id="sh" class="ni" step="5" onchange="app.updSize()"></div>
+          <div><span class="ilbl">Fondo</span><input type="number" id="sd" class="ni" step="5" onchange="app.updSize()"></div>
         </div>
       </div>
-      <button class="tbtn danger" style="width:100%;margin-top:8px;height:32px;justify-content:center;font-size:10px" onclick="W.deleteSelected()">Eliminar selección</button>
+      <button class="tbtn danger" style="width:100%;margin-top:8px" onclick="app.deleteSelected()">Eliminar selección</button>
     </div>
   </div>
 
-  <!-- STATS -->
   <div class="sec">
     <div class="slbl">Resumen</div>
     <div class="srow">
@@ -399,140 +348,101 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
     </div>
   </div>
 
-  <!-- GUIDE -->
   <div class="sec">
     <div class="slbl">Cómo usar</div>
-    <div class="guide">
-      <p>
-        <strong>1.</strong> Elige un módulo → ajusta ancho → Generar<br>
-        <strong>2.</strong> Los módulos se colocan uno al lado del otro automáticamente<br>
-        <strong>3.</strong> Pulsa <strong>🚪 Puertas</strong> para añadir 2 puertas al último módulo<br>
-        <strong>4.</strong> Añade <strong>Zócalo</strong> y <strong>Tapeta</strong> al terminar<br>
-        <strong>Clic</strong> pieza para seleccionar · <strong>Arrastra</strong> para mover
-      </p>
-    </div>
-    <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">
-      <span class="badge m">Aglom. 15mm</span>
-      <span class="badge g">Puertas 18mm</span>
-    </div>
+    <div class="guide"><p><strong>1.</strong> Elige un módulo → ajusta ancho → Generar<br><strong>2.</strong> Los módulos se colocan uno al lado del otro<br><strong>3.</strong> Pulsa <strong>🚪 Puertas</strong> para añadir puertas<br><strong>4.</strong> Añade <strong>Zócalo</strong> y <strong>Tapeta</strong> al terminar</p></div>
+    <div style="margin-top:8px"><span class="badge m">Aglom. 15mm</span><span class="badge g" style="margin-left:5px">Puertas 18mm</span></div>
   </div>
-
 </div>
 
-<!-- ══ SIDEBAR DERECHO ══ -->
+<!-- ========== SIDEBAR DERECHO ========== -->
 <div id="sr">
   <div class="sec">
     <div class="slbl">Elementos</div>
-    <div class="elw" id="el-list">
-      <div class="empty"><div class="empty-i">◻</div>Sin elementos aún</div>
-    </div>
+    <div class="elw" id="el-list"><div class="empty"><div class="empty-i">◻</div>Sin elementos aún</div></div>
   </div>
   <div class="sec">
     <div class="slbl">Vista</div>
     <div class="vgrid">
-      <div class="vb" onclick="W.setView('front')">◀ Frontal</div>
-      <div class="vb" onclick="W.setView('side')">▶ Lateral</div>
-      <div class="vb" onclick="W.setView('top')">↑ Superior</div>
-      <div class="vb" onclick="W.setView('iso')">◈ Iso</div>
+      <div class="vb" onclick="app.setView('front')">◀ Frontal</div>
+      <div class="vb" onclick="app.setView('side')">▶ Lateral</div>
+      <div class="vb" onclick="app.setView('top')">↑ Superior</div>
+      <div class="vb" onclick="app.setView('iso')">◈ Iso</div>
     </div>
   </div>
 </div>
 
-<!-- ══ CANVAS ══ -->
+<!-- ========== CANVAS ========== -->
 <div id="cw"></div>
 
-<!-- ══ FLOTANTES ══ -->
+<!-- ========== FLOTANTES ========== -->
 <div id="fz">
-  <div class="fb" onclick="W.setView('front')">◀</div>
-  <div class="fb" onclick="W.setView('side')">▶</div>
-  <div class="fb" onclick="W.setView('top')">↑</div>
-  <div class="fb" onclick="W.setView('iso')">◈</div>
-  <div class="fb" onclick="W.resetView()">⟳</div>
+  <div class="fb" onclick="app.setView('front')">◀</div>
+  <div class="fb" onclick="app.setView('side')">▶</div>
+  <div class="fb" onclick="app.setView('top')">↑</div>
+  <div class="fb" onclick="app.setView('iso')">◈</div>
+  <div class="fb" onclick="app.resetView()">⟳</div>
 </div>
+
 <div id="ib">
   <div class="ip">Aglom. <span>15mm</span> · Puertas <span>18mm</span></div>
   <div class="ip" id="ctx">Elige un módulo para empezar</div>
 </div>
 
-<!-- ══ SEL INDICATOR ══ -->
+<!-- ========== SEL INDICATOR ========== -->
 <div class="si" id="si"><div class="sp2" id="si-t">2 elementos</div></div>
 
-<!-- ══ MODAL MÓDULO ══ -->
+<!-- ========== MODAL MÓDULO ========== -->
 <div class="mb" id="mm">
   <div class="pmc">
     <div class="mt" id="mm-title"><span class="ac">✦</span> Nuevo módulo</div>
-    <div style="font-size:10px;color:var(--txm);margin:4px 0 12px;line-height:1.5" id="mm-sub">Ajusta las medidas y opciones</div>
-
-    <!-- Tipo -->
+    <div style="font-size:10px;color:var(--txm);margin:4px 0 12px" id="mm-sub">Ajusta las medidas y opciones</div>
     <div class="slbl" style="margin-bottom:8px">Tipo</div>
     <div class="ttabs">
-      <button class="ttab" id="tt-colgador" onclick="W.setModType('colgador')">👔 Colgador</button>
-      <button class="ttab" id="tt-cajones"  onclick="W.setModType('cajones')">🗂 Cajones+Colg.</button>
-      <button class="ttab" id="tt-estantes" onclick="W.setModType('estantes')">📚 Estantes</button>
-      <button class="ttab" id="tt-maletas"  onclick="W.setModType('maletas')">🧳 Superior</button>
-      <button class="ttab" id="tt-basico"   onclick="W.setModType('basico')">✦ Básico</button>
+      <button class="ttab" id="tt-colgador" onclick="app.setModType('colgador')">👔 Colgador</button>
+      <button class="ttab" id="tt-cajones"  onclick="app.setModType('cajones')">🗂 Cajones+Colg.</button>
+      <button class="ttab" id="tt-estantes" onclick="app.setModType('estantes')">📚 Estantes</button>
+      <button class="ttab" id="tt-maletas"  onclick="app.setModType('maletas')">🧳 Superior</button>
+      <button class="ttab" id="tt-basico"   onclick="app.setModType('basico')">✦ Básico</button>
     </div>
-
-    <!-- Info -->
     <div class="prev-box" id="mm-info">Selecciona el tipo de módulo</div>
-
-    <!-- Dims -->
     <div class="slbl" style="margin-bottom:8px">Dimensiones (cm)</div>
     <div class="pdg">
       <div class="pdi"><label>Ancho</label><input type="number" id="pm-w" value="60" min="20" max="300"></div>
       <div class="pdi"><label>Alto</label><input type="number" id="pm-h" value="200" min="20" max="300"></div>
       <div class="pdi"><label>Fondo</label><input type="number" id="pm-d" value="60" min="10" max="100"></div>
     </div>
-
-    <!-- Opciones -->
-    <div class="chkrow">
-      <input type="checkbox" id="opt-puertas">
-      <label for="opt-puertas"><strong>Añadir 2 puertas</strong> de piso a techo (18mm, tiradores incluidos)</label>
-    </div>
-    <div class="chkrow" id="opt-zocalo-row">
-      <input type="checkbox" id="opt-zocalo">
-      <label for="opt-zocalo"><strong>Añadir zócalo</strong> frontal (6cm de alto)</label>
-    </div>
-
-    <div class="ma">
-      <button class="bs" onclick="W.closeMM()">Cancelar</button>
-      <button class="bp" onclick="W.confirmMod()">Generar módulo</button>
-    </div>
+    <div class="chkrow"><input type="checkbox" id="opt-puertas"><label for="opt-puertas"><strong>Añadir 2 puertas</strong> piso a techo</label></div>
+    <div class="chkrow"><input type="checkbox" id="opt-zocalo"><label for="opt-zocalo"><strong>Añadir zócalo</strong> frontal (6cm)</label></div>
+    <div class="ma"><button class="bs" onclick="app.closeMM()">Cancelar</button><button class="bp" onclick="app.confirmMod()">Generar módulo</button></div>
   </div>
 </div>
 
-<!-- ══ MODAL ENVIAR ══ -->
+<!-- ========== MODAL ENVIAR ========== -->
 <div class="mb" id="modal-send">
   <div class="mc2">
     <div class="mt">Enviar diseño a <span class="ac">CR Muebles</span></div>
-    <div class="ms">Completa tus datos y te enviamos el presupuesto de tu armario a medida.</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px">
-      <div class="fr"><label class="fl">Nombre *</label><input type="text" id="fn" class="fi" placeholder="Tu nombre"></div>
-      <div class="fr"><label class="fl">Teléfono *</label><input type="tel" id="fp" class="fi" placeholder="+34 600 000 000"></div>
-    </div>
+    <div class="ms">Te enviamos el presupuesto de tu armario a medida</div>
+    <div class="fr"><label class="fl">Nombre *</label><input type="text" id="fn" class="fi" placeholder="Tu nombre"></div>
+    <div class="fr"><label class="fl">Teléfono *</label><input type="tel" id="fp" class="fi" placeholder="+34 600 000 000"></div>
     <div class="fr"><label class="fl">Email</label><input type="email" id="fe" class="fi" placeholder="opcional"></div>
     <div class="fr"><label class="fl">Dirección</label><input type="text" id="fa" class="fi" placeholder="opcional"></div>
     <div class="fr"><label class="fl">¿Qué necesitas?</label><textarea id="fq" class="fi" rows="2" placeholder="Describe tu armario…"></textarea></div>
     <div class="fr"><label class="fl">Comentarios</label><textarea id="fc" class="fi" rows="2" placeholder="Material, color, plazos…"></textarea></div>
     <div class="spin" id="fspin">⟳ Enviando tu diseño…</div>
-    <div class="ma">
-      <button class="bs" onclick="W.closeSend()">Cancelar</button>
-      <button class="bp" onclick="W.doSend()">↗ Enviar diseño</button>
-    </div>
+    <div class="ma"><button class="bs" onclick="app.closeSend()">Cancelar</button><button class="bp" onclick="app.doSend()">↗ Enviar diseño</button></div>
   </div>
 </div>
 
-<!-- ══ INSTAGRAM CTA TOAST - CORREGIDO: TU CUENTA ══ -->
+<!-- ========== INSTAGRAM TOAST - CORREGIDO A TU CUENTA ========== -->
 <div id="ig-toast">
-  <div id="ig-close" onclick="W.closeIgToast()" title="Cerrar">✕</div>
+  <div id="ig-close" onclick="app.closeIgToast()" title="Cerrar">✕</div>
   <div id="ig-avatar">📸</div>
   <div id="ig-content">
     <div id="ig-title">¿Buscas inspiración?</div>
-    <div id="ig-msg">Descubre diseños reales y resultados finales de nuestros armarios a medida en Instagram.</div>
+    <div id="ig-msg">Descubre diseños reales de nuestros armarios a medida en Instagram</div>
     <a id="ig-btn" href="https://www.instagram.com/crmueblesydecoracion" target="_blank" rel="noopener">
-      <span id="ig-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-      </span>
+      <span id="ig-btn-icon">📷</span>
       Ver más diseños
     </a>
   </div>
@@ -540,540 +450,463 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
 
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.128.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.128.0/examples/jsm/"}}</script>
 <script type="module">
-'use strict';
-// ── PROTECCIÓN ──────────────────────────────────────────────────────────────
-document.addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('keydown',e=>{
-  if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))||(e.ctrlKey&&e.key==='U'))
-    e.preventDefault();
+// ========== PROTECCIÓN ANTI-COPIA ==========
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  const key = e.key;
+  if (key === 'F12') { e.preventDefault(); return; }
+  if (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C')) { e.preventDefault(); return; }
+  if (e.ctrlKey && (key === 'U' || key === 's' || key === 'S' || key === 'p' || key === 'P')) { e.preventDefault(); return; }
+  if (e.ctrlKey && (key === 'c' || key === 'x') && !e.target.matches('input,textarea')) { e.preventDefault(); return; }
 });
+window.addEventListener('dragstart', e => e.preventDefault());
 
+// ========== IMPORT THREE ==========
 import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {TransformControls} from 'three/addons/controls/TransformControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
 
-// ── CONSTANTES ──
-const T15 = 0.015;   // tablero 15mm
-const T18 = 0.018;   // tablero 18mm (puertas / frentes cajón)
-const ZH  = 0.06;    // zócalo 6cm
-const TAP = 0.062;   // tapeta 6.2cm
-const BR  = 0.012;   // radio barra
+// ========== CONSTANTES ==========
+const T15 = 0.015;
+const T18 = 0.018;
+const ZH = 0.06;
+const TAP = 0.062;
+const BR = 0.012;
 
-// ── TIPOS ──
-const ET={
-  lateral:    {n:'Lateral',    i:'▮', c:0xD4BC98},
-  piso:       {n:'Piso',       i:'▬', c:0xD4BC98},
-  techo:      {n:'Techo',      i:'▀', c:0xD4BC98},
-  espaldar:   {n:'Espaldar',   i:'◻', c:0xD4BC98},
-  estante:    {n:'Estante',    i:'▭', c:0xE8D8C4},
-  puerta:     {n:'Puerta',     i:'🚪',c:0xF0E4CC},
-  barra:      {n:'Barra',      i:'━', c:0x8899AA},
-  cajon:      {n:'Cajón',      i:'📦',c:0xCCB48A},
-  cajon_f:    {n:'Frente caj.',i:'▬', c:0xEADAC0},
-  zocalo:     {n:'Zócalo',     i:'▬', c:0xBBA888},
-  tapeta:     {n:'Tapeta',     i:'▀', c:0xBBA888},
-  tirador:    {n:'Tirador',    i:'○', c:0xC4A46B},
-  divisor:    {n:'Divisor',    i:'|', c:0xD4BC98},
+const ET = {
+  lateral: { n: 'Lateral', i: '▮', c: 0xD4BC98 },
+  piso: { n: 'Piso', i: '▬', c: 0xD4BC98 },
+  techo: { n: 'Techo', i: '▀', c: 0xD4BC98 },
+  espaldar: { n: 'Espaldar', i: '◻', c: 0xD4BC98 },
+  estante: { n: 'Estante', i: '▭', c: 0xE8D8C4 },
+  puerta: { n: 'Puerta', i: '🚪', c: 0xF0E4CC },
+  barra: { n: 'Barra', i: '━', c: 0x8899AA },
+  cajon: { n: 'Cajón', i: '📦', c: 0xCCB48A },
+  cajon_f: { n: 'Frente caj.', i: '▬', c: 0xEADAC0 },
+  zocalo: { n: 'Zócalo', i: '▬', c: 0xBBA888 },
+  tapeta: { n: 'Tapeta', i: '▀', c: 0xBBA888 },
+  tirador: { n: 'Tirador', i: '○', c: 0xC4A46B }
 };
 
-// ── ESTADO ──
-let sc,cam,ren,oc,tc;
-let eg=new THREE.Group();
-let els=[],sel=new Set(),nid=1,modN=0,nextX=0;
-let lastModW=0.60, lastModH=2.0, lastModD=0.60;
-let curType='colgador';
-let modRegistry=[];
+// ========== ESTADO ==========
+let sc, cam, ren, oc, tc;
+let eg = new THREE.Group();
+let els = [], sel = new Set(), nid = 1, modN = 0, nextX = 0;
+let lastModW = 0.60, lastModH = 2.0, lastModD = 0.60;
+let curType = 'colgador';
+let modRegistry = [];
 
-// ── INIT ──
-function init(){
-  const cw=document.getElementById('cw');
-  const W=cw.clientWidth,H=cw.clientHeight;
-  sc=new THREE.Scene();
-  sc.background=new THREE.Color(0x0a0a0b);
-  sc.fog=new THREE.Fog(0x0a0a0b,14,28);
-  cam=new THREE.PerspectiveCamera(42,W/H,0.05,60);
-  cam.position.set(3.5,2.2,5);
-  ren=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
-  ren.setPixelRatio(Math.min(devicePixelRatio,2));
-  ren.setSize(W,H);
-  ren.shadowMap.enabled=true;
-  ren.shadowMap.type=THREE.PCFSoftShadowMap;
-  ren.toneMapping=THREE.ACESFilmicToneMapping;
-  ren.toneMappingExposure=1.1;
-  cw.appendChild(ren.domElement);
-
-  oc=new OrbitControls(cam,ren.domElement);
-  oc.enableDamping=true;oc.dampingFactor=0.07;
-  oc.target.set(0,1.1,0);oc.minDistance=0.8;oc.maxDistance=18;
-
-  // Luces
-  sc.add(new THREE.AmbientLight(0x504844,0.9));
-  const ml=new THREE.DirectionalLight(0xfff5e8,1.35);
-  ml.position.set(6,10,5);ml.castShadow=true;
-  ml.shadow.mapSize.width=ml.shadow.mapSize.height=2048;
-  ml.shadow.bias=-0.001;sc.add(ml);
-  const bl=new THREE.DirectionalLight(0x8090c0,0.3);bl.position.set(-5,3,-3);sc.add(bl);
-  const fl=new THREE.PointLight(0xc8b890,0.45,14);fl.position.set(-2,4,4);sc.add(fl);
-
-  // Suelo
-  const floor=new THREE.Mesh(
-    new THREE.PlaneGeometry(22,22),
-    new THREE.MeshStandardMaterial({color:0x111113,roughness:0.95,metalness:0.1})
-  );
-  floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;sc.add(floor);
-  const grid=new THREE.GridHelper(18,26,0x1c1c22,0x141418);
-  grid.position.y=0.001;sc.add(grid);
-
-  sc.add(eg);
-  tc=new TransformControls(cam,ren.domElement);
-  tc.addEventListener('dragging-changed',e=>{oc.enabled=!e.value;if(!e.value){syncInputs();updUI()}});
-  tc.addEventListener('objectChange',()=>syncInputs());
-  sc.add(tc);
-
-  ren.domElement.addEventListener('click',onCanvasClick);
-  window.addEventListener('resize',onResize);
-  animate();
-  setModType('colgador');
-  updUI();
-}
-
-function mkBox(type,pos,size,id){
-  const cfg=ET[type]||ET.lateral;
-  const geo=new THREE.BoxGeometry(size.w,size.h,size.d);
-  const mat=new THREE.MeshStandardMaterial({color:cfg.c,roughness:0.48,metalness:0.04});
-  const m=new THREE.Mesh(geo,mat);
-  m.position.set(pos.x,pos.y,pos.z);
-  m.castShadow=true;m.receiveShadow=true;
-  m.userData={id,type};
-  eg.add(m);els.push({id,t:type,m,s:{...size}});
+// ========== FUNCIONES PRINCIPALES ==========
+function mkBox(type, pos, size, id) {
+  const cfg = ET[type] || ET.lateral;
+  const geo = new THREE.BoxGeometry(size.w, size.h, size.d);
+  const mat = new THREE.MeshStandardMaterial({ color: cfg.c, roughness: 0.48, metalness: 0.04 });
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(pos.x, pos.y, pos.z);
+  m.castShadow = true; m.receiveShadow = true;
+  m.userData = { id, type };
+  eg.add(m); els.push({ id, t: type, m, s: { ...size } });
   return m;
 }
 
-function mkCyl(type,pos,r,len,id){
-  const geo=new THREE.CylinderGeometry(r,r,len,16);
-  const mat=new THREE.MeshStandardMaterial({color:ET[type].c,metalness:0.85,roughness:0.12});
-  const m=new THREE.Mesh(geo,mat);
-  m.rotation.z=Math.PI/2;
-  m.position.set(pos.x,pos.y,pos.z);
-  m.castShadow=true;
-  m.userData={id,type};
-  eg.add(m);els.push({id,t:type,m,s:{w:len,h:r*2,d:r*2}});
+function mkCyl(type, pos, r, len, id) {
+  const geo = new THREE.CylinderGeometry(r, r, len, 16);
+  const mat = new THREE.MeshStandardMaterial({ color: ET[type].c, metalness: 0.85, roughness: 0.12 });
+  const m = new THREE.Mesh(geo, mat);
+  m.rotation.z = Math.PI / 2;
+  m.position.set(pos.x, pos.y, pos.z);
+  m.castShadow = true;
+  m.userData = { id, type };
+  eg.add(m); els.push({ id, t: type, m, s: { w: len, h: r * 2, d: r * 2 } });
   return m;
 }
 
-function mkCuerpo(cx,w,h,d){
-  mkBox('lateral',  {x:cx-w/2+T15/2, y:h/2,    z:0},       {w:T15,h,d},     nid++);
-  mkBox('lateral',  {x:cx+w/2-T15/2, y:h/2,    z:0},       {w:T15,h,d},     nid++);
-  mkBox('piso',     {x:cx,           y:T15/2,  z:0},       {w,h:T15,d},     nid++);
-  mkBox('techo',    {x:cx,           y:h-T15/2,z:0},       {w,h:T15,d},     nid++);
-  mkBox('espaldar', {x:cx,           y:h/2,    z:-d/2+T15/2},{w,h,d:T15},   nid++);
+function mkCuerpo(cx, w, h, d) {
+  mkBox('lateral', { x: cx - w / 2 + T15 / 2, y: h / 2, z: 0 }, { w: T15, h, d }, nid++);
+  mkBox('lateral', { x: cx + w / 2 - T15 / 2, y: h / 2, z: 0 }, { w: T15, h, d }, nid++);
+  mkBox('piso', { x: cx, y: T15 / 2, z: 0 }, { w, h: T15, d }, nid++);
+  mkBox('techo', { x: cx, y: h - T15 / 2, z: 0 }, { w, h: T15, d }, nid++);
+  mkBox('espaldar', { x: cx, y: h / 2, z: -d / 2 + T15 / 2 }, { w, h, d: T15 }, nid++);
 }
 
-const iw=(w)=>w-2*T15;
-const id_=(d)=>d-T15;
-
-function genColgador(w,h,d,puertas,zocalo){
-  const cx=nextX+w/2;
-  mkCuerpo(cx,w,h,d);
-  const IW=iw(w), ID=id_(d);
-  const estY=h-0.38;
-  mkBox('estante',{x:cx,y:estY-T15/2,z:-T15/2},{w:IW,h:T15,d:ID},nid++);
-  const barY=Math.min(estY-0.05, 1.60);
-  mkCyl('barra',{x:cx,y:barY,z:0},BR,IW-0.02,nid++);
-  if(puertas)  mkPuertas(cx,w,h,d);
-  if(zocalo)   mkZocaloM(cx,w,d);
-  modRegistry.push({cx,w,h,d,hasPuertas:puertas});
-  nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
-}
-
-function genCajonesColg(w,h,d,puertas,zocalo){
-  const cx=nextX+w/2;
-  mkCuerpo(cx,w,h,d);
-  const IW=iw(w), ID=id_(d);
-  const cajonH=0.20;
-  const nCaj=3;
-  const cajonesH=nCaj*cajonH + (nCaj-1)*T15;
-  const cajonesY0=T15;
-  for(let i=0;i<nCaj;i++){
-    const cy=cajonesY0+i*(cajonH+T15)+cajonH/2;
-    mkBox('cajon',    {x:cx,y:cy,z:-T15/2},            {w:IW-0.01,h:cajonH-0.005,d:ID-0.02},nid++);
-    mkBox('cajon_f',  {x:cx,y:cy,z:d/2-T15+T18/2},     {w:IW+0.002,h:cajonH+T15-0.001,d:T18},nid++);
-    const tcg=new THREE.CylinderGeometry(0.005,0.005,IW*0.28,10);
-    const tmt=new THREE.MeshStandardMaterial({color:0xC4A46B,metalness:0.9,roughness:0.1});
-    const tm=new THREE.Mesh(tcg,tmt);
-    tm.rotation.z=Math.PI/2;
-    tm.position.set(cx,cy,d/2-T15+T18+0.011);
-    tm.castShadow=true;tm.userData={id:nid,type:'tirador'};
-    eg.add(tm);els.push({id:nid++,t:'tirador',m:tm,s:{w:IW*0.28,h:0.01,d:0.01}});
-  }
-  const divY=cajonesY0+cajonesH;
-  mkBox('estante',{x:cx,y:divY+T15/2,z:-T15/2},{w:IW,h:T15,d:ID},nid++);
-  const zonaH=h-divY-T15*2;
-  const estY=h-T15-0.38;
-  mkBox('estante',{x:cx,y:estY-T15/2,z:-T15/2},{w:IW,h:T15,d:ID},nid++);
-  const barY=divY+T15+(zonaH*0.45);
-  mkCyl('barra',{x:cx,y:barY,z:0},BR,IW-0.02,nid++);
-  if(puertas) mkPuertas(cx,w,h,d);
-  if(zocalo)  mkZocaloM(cx,w,d);
-  modRegistry.push({cx,w,h,d,hasPuertas:puertas});
-  nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
-}
-
-function genEstantes(w,h,d,puertas,zocalo){
-  const cx=nextX+w/2;
-  mkCuerpo(cx,w,h,d);
-  const IW=iw(w), ID=id_(d);
-  const nEst=5;
-  const gap=(h-2*T15)/(nEst+1);
-  for(let i=1;i<=nEst;i++){
-    const ey=T15+gap*i;
-    mkBox('estante',{x:cx,y:ey,z:-T15/2},{w:IW,h:T15,d:ID},nid++);
-  }
-  if(puertas) mkPuertas(cx,w,h,d);
-  if(zocalo)  mkZocaloM(cx,w,d);
-  modRegistry.push({cx,w,h,d,hasPuertas:puertas});
-  nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
-}
-
-function genMaletas(w,h,d,puertas,zocalo){
-  const cx=nextX+w/2;
-  mkCuerpo(cx,w,h,d);
-  if(puertas) mkPuertas(cx,w,h,d);
-  if(zocalo)  mkZocaloM(cx,w,d);
-  modRegistry.push({cx,w,h,d,hasPuertas:puertas});
-  nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
-}
-
-function genBasico(w,h,d,puertas,zocalo){
-  const cx=nextX+w/2;
-  mkCuerpo(cx,w,h,d);
-  if(puertas) mkPuertas(cx,w,h,d);
-  if(zocalo)  mkZocaloM(cx,w,d);
-  modRegistry.push({cx,w,h,d,hasPuertas:puertas});
-  nextX=cx+w/2; lastModW=w;lastModH=h;lastModD=d; modN++;updUI();updPuertasBtn();
-}
-
-function mkPuertas(cx,w,h,d){
-  const pH=h;
-  const pW=(w/2)-0.003;
-  const pZ=d/2+T18/2+0.002;
-  [-1,1].forEach(side=>{
-    const px=cx+side*(w/4);
-    mkBox('puerta',{x:px,y:pH/2,z:pZ},{w:pW,h:pH,d:T18},nid++);
-    const tCg=new THREE.CylinderGeometry(0.005,0.005,0.13,10);
-    const tMt=new THREE.MeshStandardMaterial({color:0xC4A46B,metalness:0.9,roughness:0.1});
-    const tM=new THREE.Mesh(tCg,tMt);
-    tM.rotation.x=Math.PI/2;
-    tM.position.set(px-side*0.05, pH*0.46, pZ+T18/2+0.015);
-    tM.castShadow=true;tM.userData={id:nid,type:'tirador'};
-    eg.add(tM);els.push({id:nid++,t:'tirador',m:tM,s:{w:0.012,h:0.012,d:0.13}});
+function mkPuertas(cx, w, h, d) {
+  const pH = h;
+  const pW = (w / 2) - 0.003;
+  const pZ = d / 2 + T18 / 2 + 0.002;
+  [-1, 1].forEach(side => {
+    const px = cx + side * (w / 4);
+    mkBox('puerta', { x: px, y: pH / 2, z: pZ }, { w: pW, h: pH, d: T18 }, nid++);
+    const tCg = new THREE.CylinderGeometry(0.005, 0.005, 0.13, 10);
+    const tMt = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.9, roughness: 0.1 });
+    const tM = new THREE.Mesh(tCg, tMt);
+    tM.rotation.x = Math.PI / 2;
+    tM.position.set(px - side * 0.05, pH * 0.46, pZ + T18 / 2 + 0.015);
+    tM.castShadow = true; tM.userData = { id: nid, type: 'tirador' };
+    eg.add(tM); els.push({ id: nid++, t: 'tirador', m: tM, s: { w: 0.012, h: 0.012, d: 0.13 } });
   });
 }
 
-function mkZocaloM(cx,w,d){
-  mkBox('zocalo',{x:cx,y:ZH/2,z:d/2-T15/2},{w,h:ZH,d:T15},nid++);
+function mkZocaloM(cx, w, d) {
+  mkBox('zocalo', { x: cx, y: ZH / 2, z: d / 2 - T15 / 2 }, { w, h: ZH, d: T15 }, nid++);
 }
 
-function addZocalo(){
-  const totalW=nextX;
-  if(totalW<=0){alert('Primero genera al menos un módulo');return;}
-  const cx=totalW/2;
-  const d=lastModD||0.60;
-  mkBox('zocalo',{x:cx,y:ZH/2,z:d/2-T15/2},{w:totalW,h:ZH,d:T15},nid++);
+function genColgador(w, h, d, puertas, zocalo) {
+  const cx = nextX + w / 2;
+  mkCuerpo(cx, w, h, d);
+  const IW = w - 2 * T15, ID = d - T15;
+  const estY = h - 0.38;
+  mkBox('estante', { x: cx, y: estY - T15 / 2, z: -T15 / 2 }, { w: IW, h: T15, d: ID }, nid++);
+  const barY = Math.min(estY - 0.05, 1.60);
+  mkCyl('barra', { x: cx, y: barY, z: 0 }, BR, IW - 0.02, nid++);
+  if (puertas) mkPuertas(cx, w, h, d);
+  if (zocalo) mkZocaloM(cx, w, d);
+  modRegistry.push({ cx, w, h, d, hasPuertas: puertas });
+  nextX = cx + w / 2; modN++; updUI(); updPuertasBtn();
+}
+
+function genCajonesColg(w, h, d, puertas, zocalo) {
+  const cx = nextX + w / 2;
+  mkCuerpo(cx, w, h, d);
+  const IW = w - 2 * T15, ID = d - T15;
+  const cajonH = 0.20, nCaj = 3;
+  const cajonesH = nCaj * cajonH + (nCaj - 1) * T15;
+  const cajonesY0 = T15;
+  for (let i = 0; i < nCaj; i++) {
+    const cy = cajonesY0 + i * (cajonH + T15) + cajonH / 2;
+    mkBox('cajon', { x: cx, y: cy, z: -T15 / 2 }, { w: IW - 0.01, h: cajonH - 0.005, d: ID - 0.02 }, nid++);
+    mkBox('cajon_f', { x: cx, y: cy, z: d / 2 - T15 + T18 / 2 }, { w: IW + 0.002, h: cajonH + T15 - 0.001, d: T18 }, nid++);
+    const tCg = new THREE.CylinderGeometry(0.005, 0.005, IW * 0.28, 10);
+    const tMt = new THREE.MeshStandardMaterial({ color: 0xC4A46B, metalness: 0.9, roughness: 0.1 });
+    const tM = new THREE.Mesh(tCg, tMt);
+    tM.rotation.z = Math.PI / 2;
+    tM.position.set(cx, cy, d / 2 - T15 + T18 + 0.011);
+    tM.castShadow = true; tM.userData = { id: nid, type: 'tirador' };
+    eg.add(tM); els.push({ id: nid++, t: 'tirador', m: tM, s: { w: IW * 0.28, h: 0.01, d: 0.01 } });
+  }
+  const divY = cajonesY0 + cajonesH;
+  mkBox('estante', { x: cx, y: divY + T15 / 2, z: -T15 / 2 }, { w: IW, h: T15, d: ID }, nid++);
+  const estY = h - T15 - 0.38;
+  mkBox('estante', { x: cx, y: estY - T15 / 2, z: -T15 / 2 }, { w: IW, h: T15, d: ID }, nid++);
+  const zonaH = h - divY - T15 * 2;
+  const barY = divY + T15 + (zonaH * 0.45);
+  mkCyl('barra', { x: cx, y: barY, z: 0 }, BR, IW - 0.02, nid++);
+  if (puertas) mkPuertas(cx, w, h, d);
+  if (zocalo) mkZocaloM(cx, w, d);
+  modRegistry.push({ cx, w, h, d, hasPuertas: puertas });
+  nextX = cx + w / 2; modN++; updUI(); updPuertasBtn();
+}
+
+function genEstantes(w, h, d, puertas, zocalo) {
+  const cx = nextX + w / 2;
+  mkCuerpo(cx, w, h, d);
+  const IW = w - 2 * T15, ID = d - T15, nEst = 5;
+  const gap = (h - 2 * T15) / (nEst + 1);
+  for (let i = 1; i <= nEst; i++) {
+    const ey = T15 + gap * i;
+    mkBox('estante', { x: cx, y: ey, z: -T15 / 2 }, { w: IW, h: T15, d: ID }, nid++);
+  }
+  if (puertas) mkPuertas(cx, w, h, d);
+  if (zocalo) mkZocaloM(cx, w, d);
+  modRegistry.push({ cx, w, h, d, hasPuertas: puertas });
+  nextX = cx + w / 2; modN++; updUI(); updPuertasBtn();
+}
+
+function genMaletas(w, h, d, puertas, zocalo) {
+  const cx = nextX + w / 2;
+  mkCuerpo(cx, w, h, d);
+  if (puertas) mkPuertas(cx, w, h, d);
+  if (zocalo) mkZocaloM(cx, w, d);
+  modRegistry.push({ cx, w, h, d, hasPuertas: puertas });
+  nextX = cx + w / 2; modN++; updUI(); updPuertasBtn();
+}
+
+function genBasico(w, h, d, puertas, zocalo) {
+  const cx = nextX + w / 2;
+  mkCuerpo(cx, w, h, d);
+  if (puertas) mkPuertas(cx, w, h, d);
+  if (zocalo) mkZocaloM(cx, w, d);
+  modRegistry.push({ cx, w, h, d, hasPuertas: puertas });
+  nextX = cx + w / 2; modN++; updUI(); updPuertasBtn();
+}
+
+function addZocalo() {
+  const totalW = nextX;
+  if (totalW <= 0) { alert('Primero genera al menos un módulo'); return; }
+  mkBox('zocalo', { x: totalW / 2, y: ZH / 2, z: lastModD / 2 - T15 / 2 }, { w: totalW, h: ZH, d: T15 }, nid++);
   updUI();
 }
 
-function addTapeta(){
-  const totalW=nextX;
-  if(totalW<=0){alert('Primero genera al menos un módulo');return;}
-  const cx=totalW/2;
-  const h=lastModH||2.0;
-  const d=lastModD||0.60;
-  mkBox('tapeta',{x:cx,y:h+TAP/2,z:0},{w:totalW+T15,h:TAP,d:d},nid++);
+function addTapeta() {
+  const totalW = nextX;
+  if (totalW <= 0) { alert('Primero genera al menos un módulo'); return; }
+  mkBox('tapeta', { x: totalW / 2, y: lastModH + TAP / 2, z: 0 }, { w: totalW + T15, h: TAP, d: lastModD }, nid++);
   updUI();
 }
 
-function addPuertasActivo(){
-  if(modRegistry.length===0){alert('Primero genera al menos un módulo');return;}
-  const pending=modRegistry.filter(m=>!m.hasPuertas);
-  if(pending.length===0) return;
-  const mod=pending[0];
+function addPuertas() {
+  if (modRegistry.length === 0) { alert('Primero genera al menos un módulo'); return; }
+  const pending = modRegistry.filter(m => !m.hasPuertas);
+  if (pending.length === 0) return;
+  const mod = pending[0];
   mkPuertas(mod.cx, mod.w, mod.h, mod.d);
-  mod.hasPuertas=true;
-  updUI();
-  updPuertasBtn();
+  mod.hasPuertas = true;
+  updUI(); updPuertasBtn();
 }
 
-function updPuertasBtn(){
-  const pending=modRegistry.filter(m=>!m.hasPuertas).length;
-  const total=modRegistry.length;
-  ['btn-puertas-tb','btn-puertas-sb'].forEach(id=>{
-    const btn=document.getElementById(id);
-    if(!btn)return;
-    if(total===0){
-      btn.disabled=false;
-      btn.style.opacity='1';
-      btn.title='Añade módulos primero';
-      btn.textContent='🚪 Puertas';
-    }else if(pending===0){
-      btn.disabled=true;
-      btn.style.opacity='0.35';
-      btn.style.cursor='not-allowed';
-      btn.title='✓ Todos los módulos tienen puertas';
-      btn.textContent='🚪 Puertas ✓';
-    }else{
-      btn.disabled=false;
-      btn.style.opacity='1';
-      btn.style.cursor='pointer';
-      btn.title=`Añadir puertas (${pending} módulo${pending>1?'s':''} pendiente${pending>1?'s':''})`;
-      btn.textContent=`🚪 Puertas (${pending})`;
+function updPuertasBtn() {
+  const pending = modRegistry.filter(m => !m.hasPuertas).length;
+  ['btn-puertas-tb', 'btn-puertas-sb'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (pending === 0) {
+      btn.disabled = true;
+      btn.style.opacity = '0.35';
+      btn.textContent = '🚪 Puertas ✓';
+    } else {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.textContent = `🚪 Puertas (${pending})`;
     }
   });
 }
 
-function addEl(type){
-  const id=nid++;
-  if(type==='barra'){
-    mkCyl('barra',{x:nextX>0?nextX/2:0,y:1.6,z:0},BR,0.55,id);
-  }else if(type==='estante'){
-    mkBox('estante',{x:nextX>0?nextX/2:0,y:1.1,z:0},{w:0.55,h:T15,d:0.55},id);
-  }else if(type==='cajon'){
-    mkBox('cajon',{x:nextX>0?nextX/2:0,y:0.25,z:0},{w:0.55,h:0.20,d:0.55},id);
-  }
+function addEl(type) {
+  if (type === 'barra') mkCyl('barra', { x: nextX > 0 ? nextX / 2 : 0, y: 1.6, z: 0 }, BR, 0.55, nid++);
+  else if (type === 'estante') mkBox('estante', { x: nextX > 0 ? nextX / 2 : 0, y: 1.1, z: 0 }, { w: 0.55, h: T15, d: 0.55 }, nid++);
+  else if (type === 'cajon') mkBox('cajon', { x: nextX > 0 ? nextX / 2 : 0, y: 0.25, z: 0 }, { w: 0.55, h: 0.20, d: 0.55 }, nid++);
   updUI();
 }
 
-function onCanvasClick(e){
-  const rect=ren.domElement.getBoundingClientRect();
-  const mx=((e.clientX-rect.left)/rect.width)*2-1;
-  const my=-((e.clientY-rect.top)/rect.height)*2+1;
-  const ray=new THREE.Raycaster();
-  ray.setFromCamera(new THREE.Vector2(mx,my),cam);
-  const hits=ray.intersectObjects(els.map(x=>x.m));
-  if(hits.length>0){
-    const el=els.find(x=>x.m===hits[0].object);
-    if(el){
-      if(e.ctrlKey||e.metaKey){sel.has(el)?sel.delete(el):sel.add(el);}
-      else{sel.clear();sel.add(el);}
+// ========== SELECCIÓN Y UI ==========
+function onCanvasClick(e) {
+  const rect = ren.domElement.getBoundingClientRect();
+  const mx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  const my = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(new THREE.Vector2(mx, my), cam);
+  const hits = ray.intersectObjects(els.map(x => x.m));
+  if (hits.length > 0) {
+    const el = els.find(x => x.m === hits[0].object);
+    if (el) {
+      if (e.ctrlKey || e.metaKey) { sel.has(el) ? sel.delete(el) : sel.add(el); }
+      else { sel.clear(); sel.add(el); }
       updSel();
     }
-  }else if(!e.ctrlKey&&!e.metaKey){sel.clear();updSel();}
+  } else if (!e.ctrlKey && !e.metaKey) { sel.clear(); updSel(); }
   updUI();
 }
 
-function updSel(){
-  if(sel.size===1){
-    const el=Array.from(sel)[0];tc.attach(el.m);
-    document.getElementById('tp').style.display='block';syncInputs();
-  }else{
-    tc.detach();document.getElementById('tp').style.display='none';
-  }
-  const ind=document.getElementById('si');
-  const mb=document.getElementById('multi-badge');
-  if(sel.size>1){
+function updSel() {
+  if (sel.size === 1) {
+    const el = Array.from(sel)[0]; tc.attach(el.m);
+    document.getElementById('tp').style.display = 'block'; syncInputs();
+  } else { tc.detach(); document.getElementById('tp').style.display = 'none'; }
+  const ind = document.getElementById('si'), mb = document.getElementById('multi-badge');
+  if (sel.size > 1) {
     ind.classList.add('show');
-    document.getElementById('si-t').textContent=`${sel.size} elementos seleccionados`;
-    mb.style.display='block';
-    document.getElementById('mc-lbl').textContent=`${sel.size} seleccionados`;
-  }else{ind.classList.remove('show');mb.style.display='none';}
-  const si=document.getElementById('sel-info');
-  if(sel.size===1){const el=Array.from(sel)[0];si.innerHTML=`<span style="color:var(--gold)">${ET[el.t]?.n||el.t} #${el.id}</span>`;}
-  else if(sel.size>1){si.innerHTML=`<span style="color:var(--green)">${sel.size} elementos</span>`;}
-  else si.textContent='Ningún elemento';
+    document.getElementById('si-t').textContent = `${sel.size} elementos seleccionados`;
+    mb.style.display = 'block';
+    document.getElementById('mc-lbl').textContent = `${sel.size} seleccionados`;
+  } else { ind.classList.remove('show'); mb.style.display = 'none'; }
+  const si = document.getElementById('sel-info');
+  if (sel.size === 1) { const el = Array.from(sel)[0]; si.innerHTML = `<span style="color:var(--gold)">${ET[el.t]?.n || el.t} #${el.id}</span>`; }
+  else if (sel.size > 1) { si.innerHTML = `<span style="color:var(--green)">${sel.size} elementos</span>`; }
+  else si.textContent = 'Ningún elemento';
   updUI();
 }
 
-function syncInputs(){
-  if(sel.size!==1)return;
-  const el=Array.from(sel)[0];const p=el.m.position;
-  document.getElementById('px').value=(p.x*100).toFixed(1);
-  document.getElementById('py').value=(p.y*100).toFixed(1);
-  document.getElementById('pz').value=(p.z*100).toFixed(1);
-  document.getElementById('sw').value=(el.s.w*100).toFixed(1);
-  document.getElementById('sh').value=(el.s.h*100).toFixed(1);
-  document.getElementById('sd').value=(el.s.d*100).toFixed(1);
+function syncInputs() {
+  if (sel.size !== 1) return;
+  const el = Array.from(sel)[0]; const p = el.m.position;
+  document.getElementById('px').value = (p.x * 100).toFixed(1);
+  document.getElementById('py').value = (p.y * 100).toFixed(1);
+  document.getElementById('pz').value = (p.z * 100).toFixed(1);
+  document.getElementById('sw').value = (el.s.w * 100).toFixed(1);
+  document.getElementById('sh').value = (el.s.h * 100).toFixed(1);
+  document.getElementById('sd').value = (el.s.d * 100).toFixed(1);
 }
 
-function updUI(){
-  const list=document.getElementById('el-list');
-  if(els.length===0){
-    list.innerHTML='<div class="empty"><div class="empty-i">◻</div>Sin elementos aún</div>';
-  }else{
-    list.innerHTML='';
-    els.forEach(el=>{
-      const cfg=ET[el.t]||{n:el.t,i:'◻'};
-      const isSel=sel.has(el);
-      const div=document.createElement('div');
-      div.className='eli'+(isSel?(sel.size===1?' sel':' selm'):'');
-      div.innerHTML=`<div class="eii">${cfg.i}</div><span class="ein">${cfg.n}</span><span class="eid">#${el.id}</span><button class="eeb" onclick="event.stopPropagation();W.selById(${el.id})">✏</button>`;
-      div.onclick=(e)=>{
-        if(e.ctrlKey||e.metaKey){sel.has(el)?sel.delete(el):sel.add(el);}
-        else{sel.clear();sel.add(el);}
-        updSel();updUI();
+function updUI() {
+  const list = document.getElementById('el-list');
+  if (els.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-i">◻</div>Sin elementos aún</div>';
+  } else {
+    list.innerHTML = '';
+    els.forEach(el => {
+      const cfg = ET[el.t] || { n: el.t, i: '◻' };
+      const isSel = sel.has(el);
+      const div = document.createElement('div');
+      div.className = 'eli' + (isSel ? (sel.size === 1 ? ' sel' : ' selm') : '');
+      div.innerHTML = `<div class="eii">${cfg.i}</div><span class="ein">${cfg.n}</span><span class="eid">#${el.id}</span><button class="eeb" onclick="event.stopPropagation();app.selById(${el.id})">✏</button>`;
+      div.onclick = (e) => {
+        if (e.ctrlKey || e.metaKey) { sel.has(el) ? sel.delete(el) : sel.add(el); }
+        else { sel.clear(); sel.add(el); }
+        updSel(); updUI();
       };
       list.appendChild(div);
     });
   }
-  document.getElementById('st').textContent=els.length;
-  document.getElementById('ss').textContent=sel.size;
-  document.getElementById('sm').textContent=modN;
-  const hint=document.getElementById('ctx');
-  if(sel.size>0)hint.innerHTML=`<span style="color:var(--gold)">${ET[Array.from(sel)[sel.size-1]?.t]?.n||''}</span>`;
-  else hint.textContent=nextX>0?`Armario ${(nextX*100).toFixed(0)}cm ancho`:'Elige un módulo para empezar';
+  document.getElementById('st').textContent = els.length;
+  document.getElementById('ss').textContent = sel.size;
+  document.getElementById('sm').textContent = modN;
+  const hint = document.getElementById('ctx');
+  if (sel.size > 0) hint.innerHTML = `<span style="color:var(--gold)">${ET[Array.from(sel)[sel.size - 1]?.t]?.n || ''}</span>`;
+  else hint.textContent = nextX > 0 ? `Armario ${(nextX * 100).toFixed(0)}cm` : 'Elige un módulo';
 }
 
-function updPos(){
-  if(sel.size!==1)return;
-  const el=Array.from(sel)[0];
-  el.m.position.set(
-    parseFloat(document.getElementById('px').value)/100,
-    parseFloat(document.getElementById('py').value)/100,
-    parseFloat(document.getElementById('pz').value)/100
-  );
+function updPos() {
+  if (sel.size !== 1) return;
+  const el = Array.from(sel)[0];
+  el.m.position.set(parseFloat(document.getElementById('px').value) / 100, parseFloat(document.getElementById('py').value) / 100, parseFloat(document.getElementById('pz').value) / 100);
 }
 
-function updSize(){
-  if(sel.size!==1)return;
-  const el=Array.from(sel)[0];
-  const w=parseFloat(document.getElementById('sw').value)/100;
-  const h=parseFloat(document.getElementById('sh').value)/100;
-  const d=parseFloat(document.getElementById('sd').value)/100;
-  const op=el.m.position.clone();eg.remove(el.m);
-  const geo=new THREE.BoxGeometry(w,h,d);
-  const mat=new THREE.MeshStandardMaterial({color:ET[el.t]?.c||0xD4BC98,roughness:0.48,metalness:0.04});
-  const nm=new THREE.Mesh(geo,mat);
-  nm.position.copy(op);nm.castShadow=true;nm.receiveShadow=true;nm.userData={id:el.id,type:el.t};
-  eg.add(nm);el.m=nm;el.s={w,h,d};tc.attach(nm);updUI();
+function updSize() {
+  if (sel.size !== 1) return;
+  const el = Array.from(sel)[0];
+  const w = parseFloat(document.getElementById('sw').value) / 100;
+  const h = parseFloat(document.getElementById('sh').value) / 100;
+  const d = parseFloat(document.getElementById('sd').value) / 100;
+  const op = el.m.position.clone(); eg.remove(el.m);
+  const geo = new THREE.BoxGeometry(w, h, d);
+  const mat = new THREE.MeshStandardMaterial({ color: ET[el.t]?.c || 0xD4BC98, roughness: 0.48, metalness: 0.04 });
+  const nm = new THREE.Mesh(geo, mat);
+  nm.position.copy(op); nm.castShadow = true; nm.receiveShadow = true; nm.userData = { id: el.id, type: el.t };
+  eg.add(nm); el.m = nm; el.s = { w, h, d }; tc.attach(nm); updUI();
 }
 
-function deleteEl(){
-  if(sel.size===0)return;
-  sel.forEach(el=>{
-    const i=els.findIndex(x=>x.id===el.id);
-    if(i!==-1){eg.remove(el.m);els.splice(i,1);}
-  });
-  sel.clear();tc.detach();
-  if(els.length===0){
-    modRegistry=[];nextX=0;modN=0;nid=1;
-    lastModW=0.60;lastModH=2.0;lastModD=0.60;
-    updPuertasBtn();
-  }
-  updSel();updUI();
+function deleteSelected() {
+  if (sel.size === 0) return;
+  sel.forEach(el => { const i = els.findIndex(x => x.id === el.id); if (i !== -1) { eg.remove(el.m); els.splice(i, 1); } });
+  sel.clear(); tc.detach();
+  if (els.length === 0) { modRegistry = []; nextX = 0; modN = 0; nid = 1; updPuertasBtn(); }
+  updSel(); updUI();
 }
 
-function setView(v){
-  const cx=nextX/2||0;
-  const views={
-    front:[cx,1.4,6,cx,1.1,0],
-    side:[5,1.4,cx,0,1.1,cx],
-    top:[cx,7,0.1,cx,0,0],
-    iso:[cx+3.5,2.8,5,cx,1.1,0]
-  };
-  const vd=views[v]||views.iso;
-  cam.position.set(vd[0],vd[1],vd[2]);
-  oc.target.set(vd[3],vd[4],vd[5]);oc.update();
+function clearSel() { sel.clear(); tc.detach(); updSel(); updUI(); }
+function setView(v) {
+  const cx = nextX / 2 || 0;
+  const views = { front: [cx, 1.4, 6, cx, 1.1, 0], side: [5, 1.4, cx, 0, 1.1, cx], top: [cx, 7, 0.1, cx, 0, 0], iso: [cx + 3.5, 2.8, 5, cx, 1.1, 0] };
+  const vd = views[v] || views.iso;
+  cam.position.set(vd[0], vd[1], vd[2]); oc.target.set(vd[3], vd[4], vd[5]); oc.update();
 }
+function resetView() { setView('iso'); }
+function selById(id) { const el = els.find(x => x.id === id); if (el) { sel.clear(); sel.add(el); updSel(); updUI(); } }
 
-const MOD_DEFS={
-  colgador: {title:'👔 Módulo colgador',   info:'Estante superior a 38cm del techo + barra para colgar a 160cm del suelo.', w:60,h:200,d:60},
-  cajones:  {title:'🗂 Cajones + Colgador',info:'3 cajones de 20cm en la parte inferior con frentes y tiradores.', w:60,h:200,d:60},
-  estantes: {title:'📚 Torre de estantes', info:'5 estantes regulables distribuidos uniformemente.', w:35,h:200,d:60},
-  maletas:  {title:'🧳 Módulo superior',   info:'Cuerpo abierto de 40cm de alto para maletas y bultos.', w:60,h:40, d:60},
-  basico:   {title:'✦ Módulo básico',      info:'Cuerpo vacío con dimensiones completamente libres.', w:60,h:200,d:60},
+// ========== MODAL MÓDULO ==========
+const MOD_DEFS = {
+  colgador: { title: '👔 Colgador', info: 'Estante superior + barra', w: 60, h: 200, d: 60 },
+  cajones: { title: '🗂 Cajones+Colgador', info: '3 cajones + barra', w: 60, h: 200, d: 60 },
+  estantes: { title: '📚 Estantes', info: '5 estantes regulables', w: 35, h: 200, d: 60 },
+  maletas: { title: '🧳 Superior', info: 'Para maletas y bultos', w: 60, h: 40, d: 60 },
+  basico: { title: '✦ Básico', info: 'Medidas libres', w: 60, h: 200, d: 60 }
 };
 
-function setModType(type){
-  curType=type;
-  const def=MOD_DEFS[type];
-  document.getElementById('mm-title').innerHTML=`<span class="ac">${def.title}</span>`;
-  document.getElementById('mm-sub').textContent='Ajusta el ancho según tu espacio';
-  document.getElementById('mm-info').innerHTML=`<strong>Contenido:</strong> ${def.info}`;
-  document.getElementById('pm-w').value=def.w;
-  document.getElementById('pm-h').value=def.h;
-  document.getElementById('pm-d').value=def.d;
-  ['colgador','cajones','estantes','maletas','basico'].forEach(t=>{
-    const btn=document.getElementById('tt-'+t);
-    const colorMap={colgador:'ac-g',cajones:'ac-b',estantes:'ac-p',maletas:'ac-a',basico:'ac-go'};
-    btn.className='ttab'+(t===type?' '+colorMap[t]:'');
+function setModType(type) {
+  curType = type;
+  const def = MOD_DEFS[type];
+  document.getElementById('mm-title').innerHTML = `<span class="ac">${def.title}</span>`;
+  document.getElementById('mm-info').innerHTML = `<strong>Contenido:</strong> ${def.info}`;
+  document.getElementById('pm-w').value = def.w;
+  document.getElementById('pm-h').value = def.h;
+  document.getElementById('pm-d').value = def.d;
+  ['colgador', 'cajones', 'estantes', 'maletas', 'basico'].forEach(t => {
+    const btn = document.getElementById('tt-' + t);
+    const colorMap = { colgador: 'ac-g', cajones: 'ac-b', estantes: 'ac-p', maletas: 'ac-a', basico: 'ac-go' };
+    btn.className = 'ttab' + (t === type ? ' ' + colorMap[t] : '');
   });
 }
 
-let igShown=false;
-function showIgToast(){
-  if(igShown)return;
-  igShown=true;
-  const t=document.getElementById('ig-toast');
-  if(t)t.classList.add('show');
+function openMod(type) { setModType(type || 'colgador'); document.getElementById('mm').classList.add('show'); }
+function closeMM() { document.getElementById('mm').classList.remove('show'); }
+function confirmMod() {
+  const w = parseFloat(document.getElementById('pm-w').value) / 100;
+  const h = parseFloat(document.getElementById('pm-h').value) / 100;
+  const d = parseFloat(document.getElementById('pm-d').value) / 100;
+  if (isNaN(w) || isNaN(h) || isNaN(d) || w <= 0 || h <= 0 || d <= 0) return;
+  const puertas = document.getElementById('opt-puertas').checked;
+  const zocalo = document.getElementById('opt-zocalo').checked;
+  closeMM();
+  if (curType === 'colgador') genColgador(w, h, d, puertas, zocalo);
+  else if (curType === 'cajones') genCajonesColg(w, h, d, puertas, zocalo);
+  else if (curType === 'estantes') genEstantes(w, h, d, puertas, zocalo);
+  else if (curType === 'maletas') genMaletas(w, h, d, puertas, zocalo);
+  else genBasico(w, h, d, puertas, zocalo);
+  setView('iso');
 }
-function closeIgToast(){
-  const t=document.getElementById('ig-toast');
-  if(t){t.classList.remove('show');}
+
+// ========== ENVÍO ==========
+function showSend() { if (els.length === 0) { alert('No hay elementos para enviar'); return; } document.getElementById('modal-send').classList.add('show'); }
+function closeSend() { document.getElementById('modal-send').classList.remove('show'); }
+function doSend() {
+  const nm = document.getElementById('fn').value.trim();
+  const ph = document.getElementById('fp').value.trim();
+  if (!nm || !ph) { alert('Nombre y teléfono son requeridos'); return; }
+  const spin = document.getElementById('fspin'); spin.style.display = 'block';
+  ren.render(sc, cam);
+  const imgDataURL = ren.domElement.toDataURL('image/png');
+  let lista = '━━━━ LISTA DE PIEZAS ━━━━\n\n';
+  els.forEach(e => { lista += `${ET[e.t]?.n || e.t}: ${(e.s.w * 100).toFixed(0)}×${(e.s.h * 100).toFixed(0)}×${(e.s.d * 100).toFixed(0)} cm\n`; });
+  lista += `\nAncho total: ${(nextX * 100).toFixed(0)} cm\n━━━━ CLIENTE ━━━━\nNombre: ${nm}\nTeléfono: ${ph}\nEmail: ${document.getElementById('fe').value || '-'}\nDirección: ${document.getElementById('fa').value || '-'}\nNecesita: ${document.getElementById('fq').value || '-'}\nComentarios: ${document.getElementById('fc').value || '-'}`;
+  const form = document.createElement('form'); form.method = 'POST'; form.action = 'https://formsubmit.co/miguel_716@hotmail.com'; form.style.display = 'none'; form.enctype = 'multipart/form-data';
+  [{ name: 'name', value: nm }, { name: 'email', value: document.getElementById('fe').value || 'cliente@crmuebles.com' }, { name: '_subject', value: `Diseño Armario - ${nm}` }, { name: 'message', value: lista }, { name: '_captcha', value: 'false' }, { name: '_template', value: 'table' }].forEach(f => { const i = document.createElement('input'); i.type = 'hidden'; i.name = f.name; i.value = f.value; form.appendChild(i); });
+  fetch(imgDataURL).then(r => r.blob()).then(b => {
+    const file = new File([b], `armario_${nm.replace(/\s/g, '_')}.png`, { type: 'image/png' });
+    const fi = document.createElement('input'); fi.type = 'file'; fi.name = 'attachment';
+    const dt = new DataTransfer(); dt.items.add(file); fi.files = dt.files;
+    form.appendChild(fi); document.body.appendChild(form); form.submit();
+    setTimeout(() => { spin.style.display = 'none'; closeSend(); alert('✓ Diseño enviado a CR Muebles'); ['fn', 'fp', 'fe', 'fa', 'fq', 'fc'].forEach(id => document.getElementById(id).value = ''); }, 2000);
+  }).catch(() => { spin.style.display = 'none'; alert('Error al enviar'); });
 }
+
+// ========== INSTAGRAM TOAST ==========
+let igShown = false;
+function showIgToast() { if (igShown) return; igShown = true; const t = document.getElementById('ig-toast'); if (t) t.classList.add('show'); }
+function closeIgToast() { const t = document.getElementById('ig-toast'); if (t) t.classList.remove('show'); }
 setTimeout(showIgToast, 90000);
 
-function animate(){requestAnimationFrame(animate);oc.update();ren.render(sc,cam);}
-function onResize(){
-  const cw=document.getElementById('cw');
-  cam.aspect=cw.clientWidth/cw.clientHeight;
-  cam.updateProjectionMatrix();ren.setSize(cw.clientWidth,cw.clientHeight);
+// ========== INICIALIZACIÓN ==========
+function init() {
+  const cw = document.getElementById('cw');
+  const W = cw.clientWidth, H = cw.clientHeight;
+  sc = new THREE.Scene(); sc.background = new THREE.Color(0x0a0a0b); sc.fog = new THREE.Fog(0x0a0a0b, 14, 28);
+  cam = new THREE.PerspectiveCamera(42, W / H, 0.05, 60); cam.position.set(3.5, 2.2, 5);
+  ren = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); ren.setPixelRatio(Math.min(devicePixelRatio, 2)); ren.setSize(W, H); ren.shadowMap.enabled = true; ren.toneMapping = THREE.ACESFilmicToneMapping;
+  cw.appendChild(ren.domElement);
+  oc = new OrbitControls(cam, ren.domElement); oc.enableDamping = true; oc.dampingFactor = 0.07; oc.target.set(0, 1.1, 0); oc.minDistance = 0.8; oc.maxDistance = 18;
+  sc.add(new THREE.AmbientLight(0x504844, 0.9));
+  const ml = new THREE.DirectionalLight(0xfff5e8, 1.35); ml.position.set(6, 10, 5); ml.castShadow = true; ml.shadow.mapSize.width = ml.shadow.mapSize.height = 2048; sc.add(ml);
+  const bl = new THREE.DirectionalLight(0x8090c0, 0.3); bl.position.set(-5, 3, -3); sc.add(bl);
+  const fl = new THREE.PointLight(0xc8b890, 0.45, 14); fl.position.set(-2, 4, 4); sc.add(fl);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(22, 22), new THREE.MeshStandardMaterial({ color: 0x111113, roughness: 0.95, metalness: 0.1 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; sc.add(floor);
+  const grid = new THREE.GridHelper(18, 26, 0x1c1c22, 0x141418); grid.position.y = 0.001; sc.add(grid);
+  sc.add(eg);
+  tc = new TransformControls(cam, ren.domElement); tc.addEventListener('dragging-changed', e => { oc.enabled = !e.value; if (!e.value) { syncInputs(); updUI(); } }); tc.addEventListener('objectChange', () => syncInputs()); sc.add(tc);
+  ren.domElement.addEventListener('click', onCanvasClick);
+  window.addEventListener('resize', () => { const cw = document.getElementById('cw'); cam.aspect = cw.clientWidth / cw.clientHeight; cam.updateProjectionMatrix(); ren.setSize(cw.clientWidth, cw.clientHeight); });
+  function animate() { requestAnimationFrame(animate); oc.update(); ren.render(sc, cam); }
+  animate(); updUI();
 }
 
-function doSend(){
-  const nm=document.getElementById('fn').value.trim();
-  const ph=document.getElementById('fp').value.trim();
-  if(!nm||!ph){alert('Nombre y teléfono son requeridos');return;}
-  const spin=document.getElementById('fspin');spin.style.display='block';
-  ren.render(sc,cam);
-  const imgDataURL=ren.domElement.toDataURL('image/png');
-  let lista='━━━━ LISTA DE PIEZAS ━━━━\n\n';
-  els.forEach(e=>{lista+=`${ET[e.t]?.n||e.t}: ${(e.s.w*100).toFixed(0)}×${(e.s.h*100).toFixed(0)}×${(e.s.d*100).toFixed(0)} cm\n`;});
-  lista+=`\nAncho total armario: ${(nextX*100).toFixed(0)} cm\n`;
-  lista+=`\n━━━━ CLIENTE ━━━━\nNombre: ${nm}\nTeléfono: ${ph}\nEmail: ${document.getElementById('fe').value||'-'}\nDirección: ${document.getElementById('fa').value||'-'}\nNecesita: ${document.getElementById('fq').value||'-'}\nComentarios: ${document.getElementById('fc').value||'-'}`;
-  const form=document.createElement('form');
-  form.method='POST';form.action='https://formsubmit.co/miguel_716@hotmail.com';
-  form.style.display='none';form.enctype='multipart/form-data';
-  [{name:'name',value:nm},{name:'email',value:document.getElementById('fe').value||'cliente@crmuebles.com'},{name:'_subject',value:`Diseño Armario 3D - ${nm}`},{name:'message',value:lista},{name:'_captcha',value:'false'},{name:'_template',value:'table'}]
-  .forEach(f=>{const i=document.createElement('input');i.type='hidden';i.name=f.name;i.value=f.value;form.appendChild(i);});
-  fetch(imgDataURL).then(r=>r.blob()).then(b=>{
-    const file=new File([b],`armario_${nm.replace(/\s/g,'_')}.png`,{type:'image/png'});
-    const fi=document.createElement('input');fi.type='file';fi.name='attachment';
-    const dt=new DataTransfer();dt.items.add(file);fi.files=dt.files;
-    form.appendChild(fi);document.body.appendChild(form);form.submit();
-    setTimeout(()=>{spin.style.display='none';W.closeSend();alert('✓ Diseño enviado a CR Muebles');['fn','fp','fe','fa','fq','fc'].forEach(id=>document.getElementById(id).value='');},2000);
-  }).catch(()=>{spin.style.display='none';alert('Error al generar imagen.');});
-}
-
-window.W={
-  openMod:(type)=>{setModType(type||'colgador');document.getElementById('mm').classList.add('show');},
-  setModType,
-  closeMM:()=>document.getElementById('mm').classList.remove('show'),
-  confirmMod:()=>{
-    const w=parseFloat(document.getElementById('pm-w').value)/100;
-    const h=parseFloat(document.getElementById('pm-h').value)/100;
-    const d=parseFloat(document.getElementById('pm-d').value)/100;
-    if(isNaN(w)||isNaN(h)||isNaN(d)||w<=0||h<=0||d<=0)return;
-    const puertas=document.getElementById('opt-puertas').checked;
-    const zocalo=document.getElementById('opt-zocalo').checked;
-    W.closeMM();
-    if     (curType==='colgador') genColgador(w,h,d,puertas,zocalo);
-    else if(curType==='cajones')  genCajonesColg(w,h,d,puertas,zocalo);
-    else if(curType==='estantes') genEstantes(w,h,d,puertas,zocalo);
-    else if(curType==='maletas')  genMaletas(w,h,d,puertas,zocalo);
-    else                          genBasico(w,h,d,puertas,zocalo);
-    setView('iso');
-  },
-  addEl, addZocalo, addTapeta, addPuertasActivo, updPuertasBtn, closeIgToast,
-  deleteSelected: deleteEl,
-  clearSel:()=>{sel.clear();tc.detach();updSel();updUI();},
-  setView, resetView:()=>setView('iso'),
-  selById:(id)=>{const el=els.find(x=>x.id===id);if(el){sel.clear();sel.add(el);updSel();updUI();}},
-  updPos, updSize,
-  showSend:()=>{if(els.length===0){alert('No hay elementos para enviar');return;}document.getElementById('modal-send').classList.add('show');},
-  closeSend:()=>document.getElementById('modal-send').classList.remove('show'),
-  doSend,
+// ========== EXPORTAR API ==========
+window.app = {
+  openMod, setModType, closeMM, confirmMod,
+  addZocalo, addTapeta, addPuertas, addEl,
+  deleteSelected, clearSel, setView, resetView, selById, updPos, updSize,
+  showSend, closeSend, doSend, closeIgToast
 };
 
 init();
+</script>
+
+<!-- ========== SERVICE WORKER PARA PWA ========== -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+  });
+}
+// Ocultar splash screen
+setTimeout(() => { const splash = document.getElementById('splash'); if (splash) splash.classList.add('hide'); }, 1500);
 </script>
 </body>
 </html>
